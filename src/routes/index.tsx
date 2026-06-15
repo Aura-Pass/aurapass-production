@@ -1,29 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageWrapper } from "@/components/layout/PageWrapper";
+import { HomepageHero } from "@/components/sections/HomepageHero";
+import { FeaturedEvents } from "@/components/sections/FeaturedEvents";
+import { EventCategories } from "@/components/sections/EventCategories";
+import { OrganizerCTA } from "@/components/sections/OrganizerCTA";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "AuraPass — Access The Moment" },
+      {
+        name: "description",
+        content:
+          "Discover and book concerts, conferences, festivals and more across Nigeria. Get your tickets in seconds with AuraPass.",
+      },
+      { property: "og:title", content: "AuraPass — Access The Moment" },
+      {
+        property: "og:description",
+        content: "Nigeria's modern home for event discovery and ticketing.",
+      },
     ],
   }),
-  component: Index,
+  component: HomePage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function HomePage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <PageWrapper>
+      <HomepageHero />
+      <FeaturedEvents />
+      <EventCategories />
+      <OrganizerCTA />
+    </PageWrapper>
   );
 }
