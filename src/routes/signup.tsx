@@ -143,7 +143,10 @@ function SignUpPage() {
 
                 {error ? (
                   <p className="rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
-                    {error}
+                    {typeof error === "string"
+                      ? error
+                      : (error as { message?: string })?.message
+                      ?? "Something went wrong. Please try again."}
                   </p>
                 ) : null}
 
