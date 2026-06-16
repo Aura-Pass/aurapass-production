@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Ticket, Megaphone, CheckCircle2 } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Ticket, Megaphone } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/signup")({
 type Role = "attendee" | "organiser";
 
 function SignUpPage() {
+  const navigate = useNavigate();
   const [role, setRole] = useState<Role>("attendee");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,52 +28,59 @@ function SignUpPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
     setError(null);
 
-    if (!fullName.trim() || !email.trim() || !phone.trim() || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
+    if (!fullName.trim()) { setError("Please enter your full name."); return; }
+
+    if (!email.trim()) { setError("Please enter your email address."); return; }
+
+    if (!phone.trim()) { setError("Please enter your phone number."); return; }
+
+    if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
 
     setSubmitting(true);
-    try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login`,
-          data: {
-            full_name: fullName.trim(),
-            phone: phone.trim(),
-            role,
-          },
-        },
-      });
-      setSubmitting(false);
 
-      if (signUpError) {
-        console.error("[signup] signUp error:", signUpError);
-        const msg =
-          (typeof signUpError.message === "string" && signUpError.message.trim() && signUpError.message !== "{}")
-            ? signUpError.message
-            : "Sign up failed. Please check your details and try again.";
-        setError(msg);
-        return;
-      }
-      setSuccess(true);
-    } catch (err) {
-      setSubmitting(false);
-      console.error("[signup] unexpected error:", err);
-      const msg =
-        err instanceof Error && err.message
-          ? err.message
-          : "Unable to reach the sign-up service. Please try again.";
-      setError(msg);
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim(),
+          phone: phone.trim(),
+          role,
+        },
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
+    });
+
+    setSubmitting(false);
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
     }
+
+    // Supabase returns a session if email confirmation is OFF
+    // It returns no session but a user if confirmation is ON
+    if (data?.user && !data?.session) {
+      // Email confirmation is ON — show check email message
+      setSuccess(true);
+      return;
+    }
+
+    if (data?.session) {
+      // Email confirmation is OFF — redirect immediately
+      if (role === "organiser") {
+        navigate({ to: "/dashboard/organiser" });
+      } else {
+        navigate({ to: "/dashboard/attendee" });
+      }
+      return;
+    }
+
+    // Fallback
+    setError("Something went wrong. Please try again.");
   }
 
   return (
@@ -80,17 +88,26 @@ function SignUpPage() {
       <div className="flex items-center justify-center bg-[#F9FAFB] px-4 py-16">
         <Card className="w-full max-w-lg p-8" style={{ borderRadius: 12 }}>
           {success ? (
-            <div className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF4FF] text-[#D946EF]">
-                <CheckCircle2 className="h-6 w-6" />
+            <div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-6 text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF]/10">
+                <span className="text-2xl">📩</span>
               </div>
-              <h1 className="mt-4 text-2xl font-bold text-[#111827]">Almost there</h1>
-              <p className="mt-2 text-sm text-[#6B7280]">
-                Check your email to verify your account before logging in.
+              <h3 className="font-semibold text-[#111827]">Check your email</h3>
+              <p className="mt-1 text-sm text-[#6B7280]">
+                We sent a confirmation link to <strong>{email}</strong>. 
+                Click it to activate your AuraPass account.
               </p>
-              <Button asChild variant="primary" size="lg" className="mt-6 w-full">
-                <Link to="/login">Back to log in</Link>
-              </Button>
+              <p className="mt-3 text-xs text-[#9CA3AF]">
+                Didn't receive it? Check your spam folder or{" "}
+                <button
+                  type="button"
+                  onClick={() => setSuccess(false)}
+                  className="text-[#D946EF] underline"
+                >
+                  try again
+                </button>
+                .
+              </p>
             </div>
           ) : (
             <>
