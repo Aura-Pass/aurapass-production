@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Ticket, Megaphone, CheckCircle2 } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Ticket, Megaphone } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
