@@ -39,25 +39,40 @@ function SignUpPage() {
     }
 
     setSubmitting(true);
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/login`,
-        data: {
-          full_name: fullName.trim(),
-          phone: phone.trim(),
-          role,
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            full_name: fullName.trim(),
+            phone: phone.trim(),
+            role,
+          },
         },
-      },
-    });
-    setSubmitting(false);
+      });
+      setSubmitting(false);
 
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
+      if (signUpError) {
+        console.error("[signup] signUp error:", signUpError);
+        const msg =
+          (typeof signUpError.message === "string" && signUpError.message.trim() && signUpError.message !== "{}")
+            ? signUpError.message
+            : "Sign up failed. Please check your details and try again.";
+        setError(msg);
+        return;
+      }
+      setSuccess(true);
+    } catch (err) {
+      setSubmitting(false);
+      console.error("[signup] unexpected error:", err);
+      const msg =
+        err instanceof Error && err.message
+          ? err.message
+          : "Unable to reach the sign-up service. Please try again.";
+      setError(msg);
     }
-    setSuccess(true);
   }
 
   return (
