@@ -17,10 +17,12 @@ export function useOrganiserEvents(organiserId: string | undefined) {
     setLoading(true);
 
     async function fetchEvents() {
-      const { data, error } = await supabase
+      // Cast: the generated types.ts is stale relative to the Build 3 schema
+      // until the migration in docs/build-3-migration.sql is applied and types regenerated.
+      const { data, error } = await (supabase as any)
         .from("events")
         .select("*")
-        .eq("organiser_id", organiserId)
+        .eq("organiser_id", organiserId as string)
         .order("created_at", { ascending: false });
 
       if (active) {
