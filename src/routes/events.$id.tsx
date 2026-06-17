@@ -1,29 +1,23 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, MapPin, Clock, ImageIcon } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MOCK_EVENTS } from "@/constants/mockEvents";
-import { formatCurrency, formatDate, formatPriceRange } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import { supabase } from "@/lib/supabase";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import type { Event, TicketType } from "@/types";
+
+interface EventWithTickets extends Event {
+  ticket_types: TicketType[];
+  organiser_name: string;
+}
 
 export const Route = createFileRoute("/events/$id")({
-  loader: ({ params }) => {
-    const event = MOCK_EVENTS.find((e) => e.id === params.id);
-    if (!event) throw notFound();
-    return { event };
-  },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.event.title} — AuraPass` },
-          { name: "description", content: loaderData.event.description },
-          { property: "og:title", content: loaderData.event.title },
-          { property: "og:description", content: loaderData.event.description },
-        ]
-      : [{ title: "Event — AuraPass" }],
-  }),
+  head: () => ({ meta: [{ title: "Event — AuraPass" }] }),
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
@@ -48,20 +42,89 @@ export const Route = createFileRoute("/events/$id")({
 });
 
 function EventDetailPage() {
-  const { event } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const [event, setEvent] = useState<EventWithTickets | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const tiers = [
-    { name: "Regular", price: event.is_free ? 0 : event.min_price },
-    { name: "VIP", price: event.is_free ? 0 : Math.round((event.min_price + event.max_price) / 2) },
-    { name: "VVIP", price: event.is_free ? 0 : event.max_price },
-  ];
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+
+    (async () => {
+      const { data, error } = await (supabase as any)
+        .from("events")
+        .select(`*, ticket_types (*), profiles!events_organiser_id_fkey ( full_name )`)
+        .eq("id", id)
+        .maybeSingle();
+
+      if (!active) return;
+      if (error || !data) {
+        setEvent(null);
+      } else {
+        setEvent({
+          ...(data as any),
+          ticket_types: (data as any).ticket_types ?? [],
+          organiser_name: (data as any).profiles?.full_name ?? "Organiser",
+        });
+      }
+      setLoading(false);
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <PageWrapper>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Spinner className="h-8 w-8" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (!event) {
+    return (
+      <PageWrapper>
+        <div className="mx-auto max-w-3xl px-4 py-24 text-center">
+          <h1 className="text-2xl font-bold text-[#111827]">Event not found</h1>
+          <p className="mt-2 text-[#6B7280]">This event may have been removed or never existed.</p>
+          <div className="mt-6">
+            <Button asChild variant="primary">
+              <Link to="/events">Back to events</Link>
+            </Button>
+          </div>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  const tiers = event.ticket_types ?? [];
+  const prices = tiers.map((t) => Number(t.price));
+  const minPrice = prices.length ? Math.min(...prices) : 0;
+  const maxPrice = prices.length ? Math.max(...prices) : 0;
+  const isFree = prices.length > 0 && maxPrice === 0;
+
+  const startingFrom = isFree
+    ? "Free"
+    : prices.length === 0
+    ? "TBA"
+    : minPrice === maxPrice
+    ? formatCurrency(minPrice)
+    : `${formatCurrency(minPrice)} – ${formatCurrency(maxPrice)}`;
 
   return (
     <PageWrapper>
       <div className="bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex aspect-[21/9] w-full items-center justify-center overflow-hidden rounded-2xl bg-[#F3F4F6]">
-            <ImageIcon className="h-14 w-14 text-[#9CA3AF]" />
+            {event.banner_url ? (
+              <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" />
+            ) : (
+              <ImageIcon className="h-14 w-14 text-[#9CA3AF]" />
+            )}
           </div>
 
           <div className="mt-8 grid gap-10 lg:grid-cols-3">
@@ -76,11 +139,11 @@ function EventDetailPage() {
               <div className="grid gap-3 sm:grid-cols-2 text-sm text-[#111827]">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-[#D946EF]" />
-                  {formatDate(event.date)}
+                  {formatDate(event.event_date)}
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-[#D946EF]" />
-                  {event.time}
+                  {(event.event_time ?? "").slice(0, 5)}
                 </div>
                 <div className="flex items-center gap-2 sm:col-span-2">
                   <MapPin className="h-4 w-4 text-[#D946EF]" />
@@ -90,41 +153,41 @@ function EventDetailPage() {
 
               <div className="space-y-2">
                 <h2 className="text-lg font-semibold text-[#111827]">About this event</h2>
-                <p className="text-[#6B7280] leading-relaxed">{event.description}</p>
+                <p className="whitespace-pre-line text-[#6B7280] leading-relaxed">{event.description}</p>
               </div>
 
               <div className="space-y-3">
                 <h2 className="text-lg font-semibold text-[#111827]">Tickets</h2>
-                <div className="space-y-2">
-                  {tiers.map((t) => (
-                    <Card key={t.name} className="flex items-center justify-between p-4">
-                      <div>
-                        <p className="font-semibold text-[#111827]">{t.name}</p>
-                        <p className="text-sm text-[#6B7280]">
-                          {t.price === 0 ? "Free" : formatCurrency(t.price)}
-                        </p>
-                      </div>
-                      <Button variant="secondary" size="sm" disabled>
-                        Select
-                      </Button>
-                    </Card>
-                  ))}
-                </div>
+                {tiers.length === 0 ? (
+                  <p className="text-sm text-[#6B7280]">No ticket types available yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {tiers.map((t) => (
+                      <Card key={t.id} className="flex items-center justify-between p-4">
+                        <div>
+                          <p className="font-semibold text-[#111827]">{t.name}</p>
+                          <p className="text-sm text-[#6B7280]">
+                            {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
+                          </p>
+                        </div>
+                        <Button variant="secondary" size="sm" disabled>
+                          Select
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             <aside className="space-y-4">
               <Card className="p-6">
                 <p className="text-sm text-[#6B7280]">Starting from</p>
-                <p className="mt-1 text-2xl font-bold text-[#111827]">
-                  {formatPriceRange(event.min_price, event.max_price, event.is_free)}
-                </p>
+                <p className="mt-1 text-2xl font-bold text-[#111827]">{startingFrom}</p>
                 <Button variant="primary" size="lg" className="mt-4 w-full" disabled>
                   Buy Tickets
                 </Button>
-                <p className="mt-2 text-xs text-[#6B7280] text-center">
-                  Checkout coming soon.
-                </p>
+                <p className="mt-2 text-xs text-[#6B7280] text-center">Checkout coming soon.</p>
               </Card>
 
               <Card className="p-6">
@@ -134,11 +197,11 @@ function EventDetailPage() {
                 <div className="mt-3 flex items-center gap-3">
                   <Avatar>
                     <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
-                      {event.organizer_name.charAt(0)}
+                      {event.organiser_name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold text-[#111827]">{event.organizer_name}</p>
+                    <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
                     <p className="text-xs text-[#6B7280]">Verified organiser</p>
                   </div>
                 </div>

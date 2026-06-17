@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { EventCard } from "@/components/ui/event-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MOCK_EVENTS } from "@/constants/mockEvents";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { usePublishedEvents } from "@/hooks/usePublishedEvents";
+import { toEventCardData } from "@/lib/event-adapter";
 
 export const Route = createFileRoute("/events/")({
   head: () => ({
@@ -20,6 +22,22 @@ export const Route = createFileRoute("/events/")({
 function EventsPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [paidFilter, setPaidFilter] = useState<"all" | "free" | "paid">("all");
+  const [city, setCity] = useState<string>("all");
+
+  const { events, loading } = usePublishedEvents();
+
+  const items = useMemo(() => {
+    return events.map(toEventCardData).filter((e) => {
+      if (activeCategory !== "all") {
+        const slug = EVENT_CATEGORIES.find((c) => c.label === e.category)?.slug;
+        if (slug !== activeCategory && e.category !== activeCategory) return false;
+      }
+      if (city !== "all" && e.city !== city) return false;
+      if (paidFilter === "free" && !e.is_free) return false;
+      if (paidFilter === "paid" && e.is_free) return false;
+      return true;
+    });
+  }, [events, activeCategory, city, paidFilter]);
 
   return (
     <PageWrapper>
@@ -51,12 +69,14 @@ function EventsPage() {
 
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
               <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 className="h-11 rounded-md border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] focus:outline-none focus:border-[#D946EF] focus:ring-2 focus:ring-[#D946EF]/20"
                 aria-label="City"
-                defaultValue="Lagos"
               >
+                <option value="all">All cities</option>
                 {CITIES.map((c) => (
-                  <option key={c}>{c}</option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
               <Input type="date" aria-label="Date" />
@@ -84,11 +104,25 @@ function EventsPage() {
 
       <section className="bg-[#F9FAFB] py-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {MOCK_EVENTS.map((e) => (
-              <EventCard key={e.id} event={e} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-72 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : items.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-[#E5E7EB] bg-white py-16 text-center">
+              <p className="text-sm text-[#6B7280]">
+                No events found. Try adjusting your filters.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((e) => (
+                <EventCard key={e.id} event={e} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </PageWrapper>
