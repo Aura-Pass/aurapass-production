@@ -20,6 +20,8 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
+import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
+import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -76,6 +78,17 @@ const DashboardAdminRoute = DashboardAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
+  id: '/organiser/',
+  path: '/organiser/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrganiserCreateEventRoute =
+  DashboardOrganiserCreateEventRouteImport.update({
+    id: '/organiser/create-event',
+    path: '/organiser/create-event',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +102,8 @@ export interface FileRoutesByFullPath {
   '/events/$id': typeof EventsIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,6 +116,8 @@ export interface FileRoutesByTo {
   '/events/$id': typeof EventsIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
+  '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,6 +132,8 @@ export interface FileRoutesById {
   '/events/$id': typeof EventsIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,6 +149,8 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/dashboard/'
     | '/events/'
+    | '/dashboard/organiser/create-event'
+    | '/dashboard/organiser/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,6 +163,8 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/dashboard'
     | '/events'
+    | '/dashboard/organiser/create-event'
+    | '/dashboard/organiser'
   id:
     | '__root__'
     | '/'
@@ -155,6 +178,8 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/dashboard/'
     | '/events/'
+    | '/dashboard/organiser/create-event'
+    | '/dashboard/organiser/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -247,6 +272,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/organiser/': {
+      id: '/dashboard/organiser/'
+      path: '/organiser'
+      fullPath: '/dashboard/organiser/'
+      preLoaderRoute: typeof DashboardOrganiserIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/organiser/create-event': {
+      id: '/dashboard/organiser/create-event'
+      path: '/organiser/create-event'
+      fullPath: '/dashboard/organiser/create-event'
+      preLoaderRoute: typeof DashboardOrganiserCreateEventRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
@@ -254,12 +293,16 @@ interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardAttendeeRoute: typeof DashboardAttendeeRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardOrganiserCreateEventRoute: typeof DashboardOrganiserCreateEventRoute
+  DashboardOrganiserIndexRoute: typeof DashboardOrganiserIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardAttendeeRoute: DashboardAttendeeRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardOrganiserCreateEventRoute: DashboardOrganiserCreateEventRoute,
+  DashboardOrganiserIndexRoute: DashboardOrganiserIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
