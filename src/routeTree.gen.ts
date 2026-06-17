@@ -18,7 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
-import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 
@@ -67,11 +66,6 @@ const EventsIdRoute = EventsIdRouteImport.update({
   path: '/events/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardOrganiserRoute = DashboardOrganiserRouteImport.update({
-  id: '/organiser',
-  path: '/organiser',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardAttendeeRoute = DashboardAttendeeRouteImport.update({
   id: '/attendee',
   path: '/attendee',
@@ -92,7 +86,6 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/attendee': typeof DashboardAttendeeRoute
-  '/dashboard/organiser': typeof DashboardOrganiserRoute
   '/events/$id': typeof EventsIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
@@ -105,7 +98,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/attendee': typeof DashboardAttendeeRoute
-  '/dashboard/organiser': typeof DashboardOrganiserRoute
   '/events/$id': typeof EventsIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
@@ -120,7 +112,6 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/attendee': typeof DashboardAttendeeRoute
-  '/dashboard/organiser': typeof DashboardOrganiserRoute
   '/events/$id': typeof EventsIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
@@ -136,7 +127,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/admin'
     | '/dashboard/attendee'
-    | '/dashboard/organiser'
     | '/events/$id'
     | '/dashboard/'
     | '/events/'
@@ -149,7 +139,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/admin'
     | '/dashboard/attendee'
-    | '/dashboard/organiser'
     | '/events/$id'
     | '/dashboard'
     | '/events'
@@ -163,7 +152,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/admin'
     | '/dashboard/attendee'
-    | '/dashboard/organiser'
     | '/events/$id'
     | '/dashboard/'
     | '/events/'
@@ -245,13 +233,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/organiser': {
-      id: '/dashboard/organiser'
-      path: '/organiser'
-      fullPath: '/dashboard/organiser'
-      preLoaderRoute: typeof DashboardOrganiserRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/attendee': {
       id: '/dashboard/attendee'
       path: '/attendee'
@@ -272,14 +253,12 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardAttendeeRoute: typeof DashboardAttendeeRoute
-  DashboardOrganiserRoute: typeof DashboardOrganiserRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardAttendeeRoute: DashboardAttendeeRoute,
-  DashboardOrganiserRoute: DashboardOrganiserRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -300,13 +279,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
