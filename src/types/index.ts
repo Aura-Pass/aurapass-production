@@ -11,28 +11,18 @@ export interface Profile {
 
 export interface Event {
   id: string;
+  organiser_id: string;
   title: string;
   description: string;
-  banner_url: string;
+  banner_url: string | null;
   category: string;
   venue: string;
   city: string;
-  date: string;
-  time: string;
-  organizer_name: string;
-  min_price: number;
-  max_price: number;
-  is_free: boolean;
-  status: "published" | "draft" | "sold_out";
-}
-
-export interface User {
-  id: string;
-  full_name: string;
-  email: string;
-  phone: string;
-  role: "attendee" | "organizer" | "admin";
-  avatar_url?: string;
+  event_date: string;
+  event_time: string;
+  status: "pending_review" | "published" | "rejected" | "draft" | "sold_out" | "ended";
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TicketType {
@@ -42,8 +32,19 @@ export interface TicketType {
   price: number;
   quantity: number;
   quantity_sold: number;
-  sale_start: string;
-  sale_end: string;
+  sale_start: string | null;
+  sale_end: string | null;
+  is_hidden: boolean;
+  created_at: string;
+}
+
+export interface User {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  role: "attendee" | "organizer" | "admin";
+  avatar_url?: string;
 }
 
 export interface Order {

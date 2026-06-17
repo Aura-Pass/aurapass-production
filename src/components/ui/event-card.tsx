@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatDate, formatPriceRange } from "@/lib/utils";
-import type { Event } from "@/types";
+import type { MockEvent } from "@/constants/mockEvents";
 
-export function EventCard({ event }: { event: Event }) {
+export function EventCard({ event }: { event: MockEvent }) {
   return (
     <Card className="flex h-full flex-col overflow-hidden group">
       <div className="relative aspect-[16/10] w-full bg-[#F3F4F6] flex items-center justify-center overflow-hidden">
