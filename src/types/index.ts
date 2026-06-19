@@ -50,22 +50,29 @@ export interface User {
 export interface Order {
   id: string;
   event_id: string;
-  user_id: string;
   ticket_type_id: string;
+  buyer_name: string;
+  buyer_email: string;
+  buyer_phone: string;
   quantity: number;
-  total_amount: number;
+  ticket_price: number;
   platform_fee: number;
-  status: "pending" | "confirmed" | "refunded" | "cancelled";
+  total_amount: number;
+  status: "pending" | "confirmed" | "failed" | "cancelled" | "refunded";
+  paystack_reference: string | null;
+  user_id: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 export interface Payment {
   id: string;
   order_id: string;
+  paystack_reference: string;
   amount: number;
-  currency: string;
-  provider: "paystack";
-  provider_reference: string;
   status: "pending" | "success" | "failed";
-  paid_at: string;
+  paid_at: string | null;
+  raw_response: Record<string, unknown> | null;
+  created_at: string;
 }
+

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Calendar, MapPin, Clock, ImageIcon } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
@@ -45,6 +47,8 @@ function EventDetailPage() {
   const { id } = Route.useParams();
   const [event, setEvent] = useState<EventWithTickets | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedTicketId, setSelectedTicketId] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
@@ -161,21 +165,42 @@ function EventDetailPage() {
                 {tiers.length === 0 ? (
                   <p className="text-sm text-[#6B7280]">No ticket types available yet.</p>
                 ) : (
-                  <div className="space-y-2">
-                    {tiers.map((t) => (
-                      <Card key={t.id} className="flex items-center justify-between p-4">
-                        <div>
-                          <p className="font-semibold text-[#111827]">{t.name}</p>
-                          <p className="text-sm text-[#6B7280]">
-                            {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
-                          </p>
-                        </div>
-                        <Button variant="secondary" size="sm" disabled>
-                          Select
-                        </Button>
-                      </Card>
-                    ))}
-                  </div>
+                  <RadioGroup
+                    value={selectedTicketId}
+                    onValueChange={setSelectedTicketId}
+                    className="space-y-2"
+                  >
+                    {tiers.map((t) => {
+                      const remaining = Math.max(
+                        0,
+                        Number(t.quantity) - Number(t.quantity_sold),
+                      );
+                      const soldOut = remaining < 1;
+                      return (
+                        <Label
+                          key={t.id}
+                          htmlFor={`tt-${t.id}`}
+                          className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition ${
+                            selectedTicketId === t.id
+                              ? "border-[#D946EF] bg-[#FDF4FF]"
+                              : "border-[#E5E7EB] bg-white"
+                          } ${soldOut ? "opacity-50" : ""}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem id={`tt-${t.id}`} value={t.id} disabled={soldOut} />
+                            <div>
+                              <p className="font-semibold text-[#111827]">{t.name}</p>
+                              <p className="text-sm text-[#6B7280]">
+                                {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
+                                {" · "}
+                                {soldOut ? "Sold out" : `${remaining} left`}
+                              </p>
+                            </div>
+                          </div>
+                        </Label>
+                      );
+                    })}
+                  </RadioGroup>
                 )}
               </div>
             </div>
@@ -184,10 +209,28 @@ function EventDetailPage() {
               <Card className="p-6">
                 <p className="text-sm text-[#6B7280]">Starting from</p>
                 <p className="mt-1 text-2xl font-bold text-[#111827]">{startingFrom}</p>
-                <Button variant="primary" size="lg" className="mt-4 w-full" disabled>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="mt-4 w-full"
+                  disabled={tiers.length === 0}
+                  onClick={() => {
+                    const ttId = selectedTicketId || tiers[0]?.id;
+                    if (!ttId) return;
+                    navigate({
+                      to: "/events/$id/checkout",
+                      params: { id: event.id },
+                      search: { ticketTypeId: ttId },
+                    });
+                  }}
+                >
                   Buy Tickets
                 </Button>
-                <p className="mt-2 text-xs text-[#6B7280] text-center">Checkout coming soon.</p>
+                {tiers.length > 1 && !selectedTicketId && (
+                  <p className="mt-2 text-xs text-[#6B7280] text-center">
+                    Select a ticket type above.
+                  </p>
+                )}
               </Card>
 
               <Card className="p-6">
