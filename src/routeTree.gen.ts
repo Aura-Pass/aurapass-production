@@ -11,16 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PaymentCallbackRouteImport } from './routes/payment-callback'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
+import { Route as EventsIdCheckoutRouteImport } from './routes/events.$id.checkout'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
 
 const SignupRoute = SignupRouteImport.update({
@@ -31,6 +34,11 @@ const SignupRoute = SignupRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
+  id: '/payment-callback',
+  path: '/payment-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -63,6 +71,12 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const OrderConfirmationOrderIdRoute =
+  OrderConfirmationOrderIdRouteImport.update({
+    id: '/order-confirmation/$orderId',
+    path: '/order-confirmation/$orderId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
   path: '/events/$id',
@@ -83,6 +97,11 @@ const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   path: '/organiser/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const EventsIdCheckoutRoute = EventsIdCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => EventsIdRoute,
+} as any)
 const DashboardOrganiserCreateEventRoute =
   DashboardOrganiserCreateEventRouteImport.update({
     id: '/organiser/create-event',
@@ -95,28 +114,34 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/attendee': typeof DashboardAttendeeRoute
-  '/events/$id': typeof EventsIdRoute
+  '/events/$id': typeof EventsIdRouteWithChildren
+  '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/events/$id/checkout': typeof EventsIdCheckoutRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/attendee': typeof DashboardAttendeeRoute
-  '/events/$id': typeof EventsIdRoute
+  '/events/$id': typeof EventsIdRouteWithChildren
+  '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/events/$id/checkout': typeof EventsIdCheckoutRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
 }
 export interface FileRoutesById {
@@ -125,14 +150,17 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/attendee': typeof DashboardAttendeeRoute
-  '/events/$id': typeof EventsIdRoute
+  '/events/$id': typeof EventsIdRouteWithChildren
+  '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/events/$id/checkout': typeof EventsIdCheckoutRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
 }
 export interface FileRouteTypes {
@@ -142,28 +170,34 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/payment-callback'
     | '/reset-password'
     | '/signup'
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/events/$id'
+    | '/order-confirmation/$orderId'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/organiser/create-event'
+    | '/events/$id/checkout'
     | '/dashboard/organiser/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/payment-callback'
     | '/reset-password'
     | '/signup'
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/events/$id'
+    | '/order-confirmation/$orderId'
     | '/dashboard'
     | '/events'
     | '/dashboard/organiser/create-event'
+    | '/events/$id/checkout'
     | '/dashboard/organiser'
   id:
     | '__root__'
@@ -171,14 +205,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/payment-callback'
     | '/reset-password'
     | '/signup'
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/events/$id'
+    | '/order-confirmation/$orderId'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/organiser/create-event'
+    | '/events/$id/checkout'
     | '/dashboard/organiser/'
   fileRoutesById: FileRoutesById
 }
@@ -187,9 +224,11 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  PaymentCallbackRoute: typeof PaymentCallbackRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
-  EventsIdRoute: typeof EventsIdRoute
+  EventsIdRoute: typeof EventsIdRouteWithChildren
+  OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   EventsIndexRoute: typeof EventsIndexRoute
 }
 
@@ -207,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-callback': {
+      id: '/payment-callback'
+      path: '/payment-callback'
+      fullPath: '/payment-callback'
+      preLoaderRoute: typeof PaymentCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -251,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/order-confirmation/$orderId': {
+      id: '/order-confirmation/$orderId'
+      path: '/order-confirmation/$orderId'
+      fullPath: '/order-confirmation/$orderId'
+      preLoaderRoute: typeof OrderConfirmationOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events/$id': {
       id: '/events/$id'
       path: '/events/$id'
@@ -278,6 +331,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/organiser/'
       preLoaderRoute: typeof DashboardOrganiserIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/events/$id/checkout': {
+      id: '/events/$id/checkout'
+      path: '/checkout'
+      fullPath: '/events/$id/checkout'
+      preLoaderRoute: typeof EventsIdCheckoutRouteImport
+      parentRoute: typeof EventsIdRoute
     }
     '/dashboard/organiser/create-event': {
       id: '/dashboard/organiser/create-event'
@@ -309,26 +369,30 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface EventsIdRouteChildren {
+  EventsIdCheckoutRoute: typeof EventsIdCheckoutRoute
+}
+
+const EventsIdRouteChildren: EventsIdRouteChildren = {
+  EventsIdCheckoutRoute: EventsIdCheckoutRoute,
+}
+
+const EventsIdRouteWithChildren = EventsIdRoute._addFileChildren(
+  EventsIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  PaymentCallbackRoute: PaymentCallbackRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
-  EventsIdRoute: EventsIdRoute,
+  EventsIdRoute: EventsIdRouteWithChildren,
+  OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   EventsIndexRoute: EventsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
