@@ -209,10 +209,28 @@ function EventDetailPage() {
               <Card className="p-6">
                 <p className="text-sm text-[#6B7280]">Starting from</p>
                 <p className="mt-1 text-2xl font-bold text-[#111827]">{startingFrom}</p>
-                <Button variant="primary" size="lg" className="mt-4 w-full" disabled>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="mt-4 w-full"
+                  disabled={tiers.length === 0}
+                  onClick={() => {
+                    const ttId = selectedTicketId || tiers[0]?.id;
+                    if (!ttId) return;
+                    navigate({
+                      to: "/events/$id/checkout",
+                      params: { id: event.id },
+                      search: { ticketTypeId: ttId },
+                    });
+                  }}
+                >
                   Buy Tickets
                 </Button>
-                <p className="mt-2 text-xs text-[#6B7280] text-center">Checkout coming soon.</p>
+                {tiers.length > 1 && !selectedTicketId && (
+                  <p className="mt-2 text-xs text-[#6B7280] text-center">
+                    Select a ticket type above.
+                  </p>
+                )}
               </Card>
 
               <Card className="p-6">
