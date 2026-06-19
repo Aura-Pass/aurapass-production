@@ -47,6 +47,8 @@ function EventDetailPage() {
   const { id } = Route.useParams();
   const [event, setEvent] = useState<EventWithTickets | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedTicketId, setSelectedTicketId] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
@@ -163,21 +165,42 @@ function EventDetailPage() {
                 {tiers.length === 0 ? (
                   <p className="text-sm text-[#6B7280]">No ticket types available yet.</p>
                 ) : (
-                  <div className="space-y-2">
-                    {tiers.map((t) => (
-                      <Card key={t.id} className="flex items-center justify-between p-4">
-                        <div>
-                          <p className="font-semibold text-[#111827]">{t.name}</p>
-                          <p className="text-sm text-[#6B7280]">
-                            {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
-                          </p>
-                        </div>
-                        <Button variant="secondary" size="sm" disabled>
-                          Select
-                        </Button>
-                      </Card>
-                    ))}
-                  </div>
+                  <RadioGroup
+                    value={selectedTicketId}
+                    onValueChange={setSelectedTicketId}
+                    className="space-y-2"
+                  >
+                    {tiers.map((t) => {
+                      const remaining = Math.max(
+                        0,
+                        Number(t.quantity) - Number(t.quantity_sold),
+                      );
+                      const soldOut = remaining < 1;
+                      return (
+                        <Label
+                          key={t.id}
+                          htmlFor={`tt-${t.id}`}
+                          className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition ${
+                            selectedTicketId === t.id
+                              ? "border-[#D946EF] bg-[#FDF4FF]"
+                              : "border-[#E5E7EB] bg-white"
+                          } ${soldOut ? "opacity-50" : ""}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem id={`tt-${t.id}`} value={t.id} disabled={soldOut} />
+                            <div>
+                              <p className="font-semibold text-[#111827]">{t.name}</p>
+                              <p className="text-sm text-[#6B7280]">
+                                {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
+                                {" · "}
+                                {soldOut ? "Sold out" : `${remaining} left`}
+                              </p>
+                            </div>
+                          </div>
+                        </Label>
+                      );
+                    })}
+                  </RadioGroup>
                 )}
               </div>
             </div>
