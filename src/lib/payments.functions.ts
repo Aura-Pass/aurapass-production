@@ -95,8 +95,16 @@ export const initializePayment = createServerFn({ method: "POST" })
         .update({ quantity_sold: ticketType.quantity_sold + data.quantity })
         .eq("id", data.ticketTypeId);
 
+      await generateTicketsForOrder(sb, {
+        id: order.id,
+        event_id: data.eventId,
+        ticket_type_id: data.ticketTypeId,
+        quantity: data.quantity,
+      });
+
       return { free: true as const, orderId: order.id as string };
     }
+
 
     const secret = process.env.PAYSTACK_SECRET_KEY;
     if (!secret) return { error: "Payment provider not configured" as const };
