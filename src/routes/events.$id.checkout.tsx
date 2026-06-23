@@ -125,6 +125,11 @@ function CheckoutPage() {
       <PageWrapper>
         <div className="mx-auto max-w-2xl px-4 py-24 text-center">
           <h1 className="text-2xl font-bold text-[#111827]">Ticket not available</h1>
+          {fetchError && (
+            <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+              {fetchError}
+            </p>
+          )}
           <div className="mt-6">
             <Button asChild variant="primary">
               <Link to="/events/$id" params={{ id }}>Back to event</Link>
@@ -134,6 +139,7 @@ function CheckoutPage() {
       </PageWrapper>
     );
   }
+
 
   const remaining = Math.max(0, Number(ticket.quantity) - Number(ticket.quantity_sold));
   const maxQty = Math.min(remaining, 10);
