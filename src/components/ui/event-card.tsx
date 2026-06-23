@@ -10,7 +10,11 @@ export function EventCard({ event }: { event: MockEvent }) {
   return (
     <Card className="flex h-full flex-col overflow-hidden group">
       <div className="relative aspect-[16/10] w-full bg-[#F3F4F6] flex items-center justify-center overflow-hidden">
-        <ImageIcon className="h-10 w-10 text-[#9CA3AF]" />
+        {event.banner_url ? (
+          <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" />
+        ) : (
+          <ImageIcon className="h-10 w-10 text-[#9CA3AF]" />
+        )}
         <div className="absolute left-3 top-3">
           {event.status === "sold_out" ? (
             <Badge variant="sold-out">Sold out</Badge>
