@@ -1,4 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
+import { generateTicketCode } from "@/lib/generateTicketCode";
+
+async function generateTicketsForOrder(
+  sb: any,
+  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
+) {
+  const rows = Array.from({ length: order.quantity }, () => ({
+    order_id: order.id,
+    event_id: order.event_id,
+    ticket_type_id: order.ticket_type_id,
+    qr_code: generateTicketCode(order.id),
+  }));
+  await sb.from("tickets").insert(rows);
+}
+
 
 interface InitInput {
   eventId: string;
