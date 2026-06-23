@@ -56,16 +56,42 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data } = await (supabase as any)
+      setFetchError(null);
+      if (!ticketTypeId) {
+        setFetchError("Missing ticketTypeId in URL. Please pick a ticket on the event page.");
+        setLoading(false);
+        return;
+      }
+      const { data, error } = await (supabase as any)
         .from("events")
-        .select("id, title, event_date, event_time, venue, city, ticket_types(*)")
+        .select("id, title, event_date, event_time, venue, city, status, ticket_types(*)")
         .eq("id", id)
         .maybeSingle();
       if (!active) return;
+      if (error) {
+        console.error("[checkout] events query failed", error);
+        setFetchError(`Could not load event: ${error.message} (code ${error.code ?? "n/a"})`);
+        setLoading(false);
+        return;
+      }
+      if (!data) {
+        setFetchError(
+          "Event not found or not visible. It may be unpublished or RLS is blocking public read access.",
+        );
+        setLoading(false);
+        return;
+      }
       const t = data?.ticket_types?.find((x: any) => x.id === ticketTypeId) ?? null;
+      if (!t) {
+        setFetchError(
+          "Ticket type not found for this event. It may have been removed, or RLS is hiding ticket_types from anonymous visitors.",
+        );
+      }
       setEvent(data);
       setTicket(t);
       setLoading(false);
@@ -74,6 +100,7 @@ function CheckoutPage() {
       active = false;
     };
   }, [id, ticketTypeId]);
+
 
   useEffect(() => {
     if (profile) {
@@ -98,6 +125,11 @@ function CheckoutPage() {
       <PageWrapper>
         <div className="mx-auto max-w-2xl px-4 py-24 text-center">
           <h1 className="text-2xl font-bold text-[#111827]">Ticket not available</h1>
+          {fetchError && (
+            <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+              {fetchError}
+            </p>
+          )}
           <div className="mt-6">
             <Button asChild variant="primary">
               <Link to="/events/$id" params={{ id }}>Back to event</Link>
@@ -107,6 +139,7 @@ function CheckoutPage() {
       </PageWrapper>
     );
   }
+
 
   const remaining = Math.max(0, Number(ticket.quantity) - Number(ticket.quantity_sold));
   const maxQty = Math.min(remaining, 10);

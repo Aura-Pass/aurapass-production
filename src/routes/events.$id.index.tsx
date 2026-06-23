@@ -18,7 +18,7 @@ interface EventWithTickets extends Event {
   organiser_name: string;
 }
 
-export const Route = createFileRoute("/events/$id")({
+export const Route = createFileRoute("/events/$id/")({
   head: () => ({ meta: [{ title: "Event — AuraPass" }] }),
   notFoundComponent: () => (
     <PageWrapper>
