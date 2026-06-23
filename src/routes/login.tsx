@@ -51,7 +51,7 @@ function LoginPage() {
     const role = (profile?.role as "attendee" | "organiser" | "admin" | undefined) ?? "attendee";
     if (role === "organiser") navigate({ to: "/dashboard/organiser" });
     else if (role === "admin") navigate({ to: "/dashboard/admin" });
-    else navigate({ to: "/dashboard/attendee" });
+    else navigate({ to: "/" });
   }
 
   return (
