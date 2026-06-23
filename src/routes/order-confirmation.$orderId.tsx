@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Download } from "lucide-react";
+import QRCode from "qrcode";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import { TicketQRCode } from "@/components/ui/TicketQRCode";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
+import type { Ticket } from "@/types";
 
 export const Route = createFileRoute("/order-confirmation/$orderId")({
   head: () => ({ meta: [{ title: "Order confirmed — AuraPass" }] }),
@@ -17,6 +20,7 @@ function OrderConfirmationPage() {
   const { orderId } = Route.useParams();
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any | null>(null);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -28,6 +32,14 @@ function OrderConfirmationPage() {
         .maybeSingle();
       if (!active) return;
       setOrder(data);
+
+      const { data: ticketRows } = await (supabase as any)
+        .from("tickets")
+        .select("*")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: true });
+      if (!active) return;
+      setTickets((ticketRows ?? []) as Ticket[]);
       setLoading(false);
     })();
     return () => {
@@ -84,6 +96,22 @@ function OrderConfirmationPage() {
             <Row label="Email" value={order.buyer_email} />
           </div>
 
+          {tickets.length > 0 && (
+            <div className="mt-8 space-y-4">
+              <h2 className="text-left text-base font-semibold text-[#111827]">
+                Your tickets
+              </h2>
+              {tickets.map((ticket, idx) => (
+                <TicketCard
+                  key={ticket.id}
+                  ticket={ticket}
+                  index={idx}
+                  total={tickets.length}
+                />
+              ))}
+            </div>
+          )}
+
           <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
             <Button asChild variant="primary">
               <Link to="/dashboard/attendee">View My Tickets</Link>
@@ -95,6 +123,50 @@ function OrderConfirmationPage() {
         </Card>
       </div>
     </PageWrapper>
+  );
+}
+
+function TicketCard({
+  ticket,
+  index,
+  total,
+}: {
+  ticket: Ticket;
+  index: number;
+  total: number;
+}) {
+  const downloadRef = useRef<HTMLAnchorElement>(null);
+
+  async function handleDownload() {
+    const dataUrl = await QRCode.toDataURL(ticket.qr_code, { width: 600, margin: 2 });
+    const a = downloadRef.current;
+    if (!a) return;
+    a.href = dataUrl;
+    a.download = `${ticket.qr_code}.png`;
+    a.click();
+  }
+
+  return (
+    <div className="rounded-xl border border-[#E5E7EB] bg-white p-5 flex flex-col items-center">
+      <p className="text-sm font-medium text-[#6B7280]">
+        Ticket {index + 1} of {total}
+      </p>
+      <div className="mt-3">
+        <TicketQRCode value={ticket.qr_code} size={180} />
+      </div>
+      <p className="mt-2 text-xs font-mono text-[#6B7280] break-all">{ticket.qr_code}</p>
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        className="mt-3"
+        onClick={handleDownload}
+      >
+        <Download className="h-4 w-4" />
+        Download
+      </Button>
+      <a ref={downloadRef} className="hidden" />
+    </div>
   );
 }
 
