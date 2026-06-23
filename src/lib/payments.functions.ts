@@ -1,4 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
+import { generateTicketCode } from "@/lib/generateTicketCode";
+
+async function generateTicketsForOrder(
+  sb: any,
+  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
+) {
+  const rows = Array.from({ length: order.quantity }, () => ({
+    order_id: order.id,
+    event_id: order.event_id,
+    ticket_type_id: order.ticket_type_id,
+    qr_code: generateTicketCode(order.id),
+  }));
+  await sb.from("tickets").insert(rows);
+}
+
 
 interface InitInput {
   eventId: string;
@@ -80,8 +95,16 @@ export const initializePayment = createServerFn({ method: "POST" })
         .update({ quantity_sold: ticketType.quantity_sold + data.quantity })
         .eq("id", data.ticketTypeId);
 
+      await generateTicketsForOrder(sb, {
+        id: order.id,
+        event_id: data.eventId,
+        ticket_type_id: data.ticketTypeId,
+        quantity: data.quantity,
+      });
+
       return { free: true as const, orderId: order.id as string };
     }
+
 
     const secret = process.env.PAYSTACK_SECRET_KEY;
     if (!secret) return { error: "Payment provider not configured" as const };
@@ -174,7 +197,15 @@ export const verifyPayment = createServerFn({ method: "POST" })
         paid_at: new Date().toISOString(),
         raw_response: verifyData.data,
       });
+
+      await generateTicketsForOrder(sb, {
+        id: order.id,
+        event_id: order.event_id,
+        ticket_type_id: order.ticket_type_id,
+        quantity: order.quantity,
+      });
     }
+
 
     return { success: true as const, orderId: order.id as string };
   });

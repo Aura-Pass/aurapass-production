@@ -65,6 +65,17 @@ export interface Order {
   updated_at: string;
 }
 
+export interface Ticket {
+  id: string;
+  order_id: string;
+  event_id: string;
+  ticket_type_id: string;
+  qr_code: string;
+  status: "valid" | "used" | "voided";
+  checked_in_at: string | null;
+  created_at: string;
+}
+
 export interface Payment {
   id: string;
   order_id: string;
