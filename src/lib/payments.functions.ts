@@ -197,7 +197,15 @@ export const verifyPayment = createServerFn({ method: "POST" })
         paid_at: new Date().toISOString(),
         raw_response: verifyData.data,
       });
+
+      await generateTicketsForOrder(sb, {
+        id: order.id,
+        event_id: order.event_id,
+        ticket_type_id: order.ticket_type_id,
+        quantity: order.quantity,
+      });
     }
+
 
     return { success: true as const, orderId: order.id as string };
   });
