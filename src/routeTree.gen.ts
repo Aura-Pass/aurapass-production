@@ -25,6 +25,7 @@ import { Route as EventsIdIndexRouteImport } from './routes/events.$id.index'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
 import { Route as EventsIdCheckoutRouteImport } from './routes/events.$id.checkout'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
+import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -108,6 +109,12 @@ const DashboardOrganiserCreateEventRoute =
     path: '/organiser/create-event',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardOrganiserEditEventEventIdRoute =
+  DashboardOrganiserEditEventEventIdRouteImport.update({
+    id: '/organiser/edit-event/$eventId',
+    path: '/organiser/edit-event/$eventId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/events/$id/checkout': typeof EventsIdCheckoutRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$id/': typeof EventsIdIndexRoute
+  '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -143,6 +151,7 @@ export interface FileRoutesByTo {
   '/events/$id/checkout': typeof EventsIdCheckoutRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
   '/events/$id': typeof EventsIdIndexRoute
+  '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -162,6 +171,7 @@ export interface FileRoutesById {
   '/events/$id/checkout': typeof EventsIdCheckoutRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$id/': typeof EventsIdIndexRoute
+  '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/events/$id/checkout'
     | '/dashboard/organiser/'
     | '/events/$id/'
+    | '/dashboard/organiser/edit-event/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/events/$id/checkout'
     | '/dashboard/organiser'
     | '/events/$id'
+    | '/dashboard/organiser/edit-event/$eventId'
   id:
     | '__root__'
     | '/'
@@ -217,6 +229,7 @@ export interface FileRouteTypes {
     | '/events/$id/checkout'
     | '/dashboard/organiser/'
     | '/events/$id/'
+    | '/dashboard/organiser/edit-event/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -347,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserCreateEventRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/organiser/edit-event/$eventId': {
+      id: '/dashboard/organiser/edit-event/$eventId'
+      path: '/organiser/edit-event/$eventId'
+      fullPath: '/dashboard/organiser/edit-event/$eventId'
+      preLoaderRoute: typeof DashboardOrganiserEditEventEventIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
@@ -356,6 +376,7 @@ interface DashboardRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardOrganiserCreateEventRoute: typeof DashboardOrganiserCreateEventRoute
   DashboardOrganiserIndexRoute: typeof DashboardOrganiserIndexRoute
+  DashboardOrganiserEditEventEventIdRoute: typeof DashboardOrganiserEditEventEventIdRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -364,6 +385,8 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardOrganiserCreateEventRoute: DashboardOrganiserCreateEventRoute,
   DashboardOrganiserIndexRoute: DashboardOrganiserIndexRoute,
+  DashboardOrganiserEditEventEventIdRoute:
+    DashboardOrganiserEditEventEventIdRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
