@@ -11,7 +11,11 @@ async function generateTicketsForOrder(
     ticket_type_id: order.ticket_type_id,
     qr_code: generateTicketCode(order.id),
   }));
-  await sb.from("tickets").insert(rows);
+  const { error } = await sb.from("tickets").insert(rows);
+  if (error) {
+    console.error("[generateTicketsForOrder] insert failed", error);
+    throw new Error(`Ticket generation failed: ${error.message}`);
+  }
 }
 
 
