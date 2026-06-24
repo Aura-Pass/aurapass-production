@@ -123,7 +123,14 @@ function EventRow({ event }: { event: Event }) {
             {formatDate(event.event_date)} · {event.event_time?.slice(0, 5)} · {event.venue}
           </p>
         </div>
-        <TicketCount eventId={event.id} />
+        <div className="flex items-center gap-3">
+          <TicketCount eventId={event.id} />
+          <Button asChild variant="outline" size="sm">
+            <Link to="/dashboard/organiser/edit-event/$eventId" params={{ eventId: event.id }}>
+              Edit
+            </Link>
+          </Button>
+        </div>
       </div>
     </Card>
   );
