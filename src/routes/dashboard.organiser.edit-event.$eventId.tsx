@@ -158,18 +158,31 @@ function EditEventPage() {
 
     setSubmitting(true);
     try {
+      const newTitle = form.title.trim();
+      const newDescription = form.description.trim();
+      const newBanner = form.banner_url.trim() || null;
+      const originalBanner = originalReviewFields.banner_url || null;
+      const reviewFieldChanged =
+        newTitle !== originalReviewFields.title ||
+        newDescription !== originalReviewFields.description ||
+        newBanner !== originalBanner;
+      const shouldResetToReview = originalStatus === "published" && reviewFieldChanged;
+
+      const updatePayload: Record<string, unknown> = {
+        title: newTitle,
+        description: newDescription,
+        category: form.category,
+        city: form.city,
+        venue: form.venue.trim(),
+        event_date: form.event_date,
+        event_time: form.event_time,
+        banner_url: newBanner,
+      };
+      if (shouldResetToReview) updatePayload.status = "pending_review";
+
       const { error: updErr } = await (supabase as any)
         .from("events")
-        .update({
-          title: form.title.trim(),
-          description: form.description.trim(),
-          category: form.category,
-          city: form.city,
-          venue: form.venue.trim(),
-          event_date: form.event_date,
-          event_time: form.event_time,
-          banner_url: form.banner_url.trim() || null,
-        })
+        .update(updatePayload)
         .eq("id", eventId)
         .eq("organiser_id", user.id);
       if (updErr) throw new Error(updErr.message);
