@@ -210,7 +210,11 @@ function EditEventPage() {
         }
       }
 
-      toast.success("Event updated");
+      toast.success(
+        shouldResetToReview
+          ? "Event updated — sent back for review because key details changed"
+          : "Event updated",
+      );
       navigate({ to: "/dashboard/organiser" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
