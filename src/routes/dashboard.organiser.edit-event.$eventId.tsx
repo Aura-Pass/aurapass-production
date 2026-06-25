@@ -64,6 +64,12 @@ function EditEventPage() {
     banner_url: "",
   });
   const [tickets, setTickets] = useState<TicketRow[]>([]);
+  const [originalStatus, setOriginalStatus] = useState<string>("");
+  const [originalReviewFields, setOriginalReviewFields] = useState<{
+    title: string;
+    description: string;
+    banner_url: string;
+  }>({ title: "", description: "", banner_url: "" });
 
   function setField<K extends keyof EventForm>(k: K, v: EventForm[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -97,6 +103,12 @@ function EditEventPage() {
         venue: evt.venue ?? "",
         event_date: evt.event_date ?? "",
         event_time: (evt.event_time ?? "").slice(0, 5),
+        banner_url: evt.banner_url ?? "",
+      });
+      setOriginalStatus(evt.status ?? "");
+      setOriginalReviewFields({
+        title: evt.title ?? "",
+        description: evt.description ?? "",
         banner_url: evt.banner_url ?? "",
       });
       setTickets(
@@ -146,18 +158,31 @@ function EditEventPage() {
 
     setSubmitting(true);
     try {
+      const newTitle = form.title.trim();
+      const newDescription = form.description.trim();
+      const newBanner = form.banner_url.trim() || null;
+      const originalBanner = originalReviewFields.banner_url || null;
+      const reviewFieldChanged =
+        newTitle !== originalReviewFields.title ||
+        newDescription !== originalReviewFields.description ||
+        newBanner !== originalBanner;
+      const shouldResetToReview = originalStatus === "published" && reviewFieldChanged;
+
+      const updatePayload: Record<string, unknown> = {
+        title: newTitle,
+        description: newDescription,
+        category: form.category,
+        city: form.city,
+        venue: form.venue.trim(),
+        event_date: form.event_date,
+        event_time: form.event_time,
+        banner_url: newBanner,
+      };
+      if (shouldResetToReview) updatePayload.status = "pending_review";
+
       const { error: updErr } = await (supabase as any)
         .from("events")
-        .update({
-          title: form.title.trim(),
-          description: form.description.trim(),
-          category: form.category,
-          city: form.city,
-          venue: form.venue.trim(),
-          event_date: form.event_date,
-          event_time: form.event_time,
-          banner_url: form.banner_url.trim() || null,
-        })
+        .update(updatePayload)
         .eq("id", eventId)
         .eq("organiser_id", user.id);
       if (updErr) throw new Error(updErr.message);
@@ -185,7 +210,11 @@ function EditEventPage() {
         }
       }
 
-      toast.success("Event updated");
+      toast.success(
+        shouldResetToReview
+          ? "Event updated — sent back for review because key details changed"
+          : "Event updated",
+      );
       navigate({ to: "/dashboard/organiser" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
