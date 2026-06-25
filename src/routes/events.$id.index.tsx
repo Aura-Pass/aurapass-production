@@ -123,24 +123,26 @@ function EventDetailPage() {
     <PageWrapper>
       <div className="bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
-          <div className="flex aspect-[21/9] w-full items-center justify-center overflow-hidden rounded-2xl bg-[#F3F4F6]">
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#F3F4F6] md:aspect-[16/9]">
             {event.banner_url ? (
               <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" />
             ) : (
-              <ImageIcon className="h-14 w-14 text-[#9CA3AF]" />
-            )}
-          </div>
-
-          <div className="mt-8 grid gap-10 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-6">
-              <div>
-                <Badge variant="default">{event.category}</Badge>
-                <h1 className="mt-3 text-3xl font-bold tracking-tight text-[#111827] md:text-4xl">
-                  {event.title}
-                </h1>
+              <div className="flex h-full w-full items-center justify-center">
+                <ImageIcon className="h-14 w-14 text-[#9CA3AF]" />
               </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 text-sm text-[#111827]">
+            )}
+            <div
+              className="absolute inset-x-0 bottom-0 p-5 md:p-8"
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }}
+            >
+              <Badge variant="default">{event.category}</Badge>
+              <h1
+                className="mt-3 text-3xl font-bold tracking-tight text-white md:text-5xl"
+                style={{ fontFamily: '"Playfair Display", serif' }}
+              >
+                {event.title}
+              </h1>
+              <div className="mt-4 grid gap-2 text-sm text-white/90 sm:grid-cols-2">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-[#D946EF]" />
                   {formatDate(event.event_date)}
@@ -154,7 +156,11 @@ function EventDetailPage() {
                   {event.venue}, {event.city}
                 </div>
               </div>
+            </div>
+          </div>
 
+          <div className="mt-8 grid gap-10 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-6">
               <div className="space-y-2">
                 <h2 className="text-lg font-semibold text-[#111827]">About this event</h2>
                 <p className="whitespace-pre-line text-[#6B7280] leading-relaxed">{event.description}</p>
