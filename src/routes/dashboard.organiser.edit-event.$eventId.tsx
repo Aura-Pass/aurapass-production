@@ -64,6 +64,12 @@ function EditEventPage() {
     banner_url: "",
   });
   const [tickets, setTickets] = useState<TicketRow[]>([]);
+  const [originalStatus, setOriginalStatus] = useState<string>("");
+  const [originalReviewFields, setOriginalReviewFields] = useState<{
+    title: string;
+    description: string;
+    banner_url: string;
+  }>({ title: "", description: "", banner_url: "" });
 
   function setField<K extends keyof EventForm>(k: K, v: EventForm[K]) {
     setForm((f) => ({ ...f, [k]: v }));
