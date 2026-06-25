@@ -105,6 +105,12 @@ function EditEventPage() {
         event_time: (evt.event_time ?? "").slice(0, 5),
         banner_url: evt.banner_url ?? "",
       });
+      setOriginalStatus(evt.status ?? "");
+      setOriginalReviewFields({
+        title: evt.title ?? "",
+        description: evt.description ?? "",
+        banner_url: evt.banner_url ?? "",
+      });
       setTickets(
         (evt.ticket_types ?? []).map((t: any) => ({
           id: t.id,
