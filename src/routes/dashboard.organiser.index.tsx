@@ -7,6 +7,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
+import { useOrganiserStats } from "@/hooks/useOrganiserStats";
+import { useMyTickets } from "@/hooks/useMyTickets";
+import { MyTicketsList } from "@/components/tickets/MyTicketsList";
 import { formatDate } from "@/lib/utils";
 import type { Event } from "@/types";
 
@@ -22,11 +25,17 @@ export const Route = createFileRoute("/dashboard/organiser/")({
 function OrganiserDashboard() {
   const { profile, user } = useAuth();
   const { events, loading } = useOrganiserEvents(user?.id);
+  const { ticketsSold, revenue, loading: statsLoading } = useOrganiserStats(user?.id);
+  const email = profile?.email ?? user?.email;
+  const { tickets: myTickets, loading: ticketsLoading } = useMyTickets(email);
 
   const eventsCreated = events.length;
   const upcoming = events.filter(
     (e) => e.status === "published" && new Date(e.event_date) >= new Date(),
   ).length;
+
+  const formatNaira = (n: number) =>
+    `₦${n.toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
   return (
     <PageWrapper>
@@ -48,8 +57,14 @@ function OrganiserDashboard() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Stat label="Events Created" value={String(eventsCreated)} />
-            <Stat label="Total Tickets Sold" value="0" />
-            <Stat label="Revenue" value="₦0" />
+            <Stat
+              label="Total Tickets Sold"
+              value={statsLoading ? "—" : String(ticketsSold)}
+            />
+            <Stat
+              label="Revenue"
+              value={statsLoading ? "—" : formatNaira(revenue)}
+            />
             <Stat label="Upcoming Events" value={String(upcoming)} />
           </div>
 
@@ -74,6 +89,24 @@ function OrganiserDashboard() {
                 ))}
               </div>
             )}
+          </section>
+
+          <section className="mt-10">
+            <h2 className="text-xl font-bold text-[#111827]">My Tickets</h2>
+            <p className="mt-1 text-sm text-[#6B7280]">
+              Tickets you've purchased as an attendee. Tap an event to reveal QR codes.
+            </p>
+            <div className="mt-4">
+              <MyTicketsList
+                tickets={myTickets}
+                loading={ticketsLoading}
+                emptyCta={
+                  <Button asChild variant="primary">
+                    <Link to="/events">Discover Events</Link>
+                  </Button>
+                }
+              />
+            </div>
           </section>
         </div>
       </div>
