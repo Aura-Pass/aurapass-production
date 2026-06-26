@@ -61,6 +61,15 @@ function SignUpPage() {
       return;
     }
 
+    // Supabase security behaviour: when "Confirm email" is ON and the email
+    // already exists, signUp returns a fake user object with an empty
+    // `identities` array and NO session — instead of an error. Detect that
+    // and surface a clear message rather than showing "Check your email".
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setError("An account with this email already exists. Try logging in instead.");
+      return;
+    }
+
     // Supabase returns a session if email confirmation is OFF
     // It returns no session but a user if confirmation is ON
     if (data?.user && !data?.session) {
