@@ -99,18 +99,44 @@ function EventTicketGroup({ group }: { group: { event: MyTicket["event"]; ticket
         </div>
       </button>
 
-      {open && (
-        <div className="grid gap-4 border-t border-[#E5E7EB] bg-[#FAFAFA] p-5 sm:grid-cols-2">
-          {tickets.map((t, idx) => (
-            <TicketTile key={t.id} ticket={t} index={idx} total={tickets.length} />
-          ))}
-        </div>
-      )}
+      {open && (() => {
+        const byType = new Map<string, MyTicket[]>();
+        for (const t of tickets) {
+          const key = t.ticket_type?.name ?? "Ticket";
+          if (!byType.has(key)) byType.set(key, []);
+          byType.get(key)!.push(t);
+        }
+        return (
+          <div className="grid gap-4 border-t border-[#E5E7EB] bg-[#FAFAFA] p-5 sm:grid-cols-2">
+            {Array.from(byType.entries()).flatMap(([typeName, list]) =>
+              list.map((t, idx) => (
+                <TicketTile
+                  key={t.id}
+                  ticket={t}
+                  typeName={typeName}
+                  index={idx}
+                  total={list.length}
+                />
+              ))
+            )}
+          </div>
+        );
+      })()}
     </Card>
   );
 }
 
-function TicketTile({ ticket, index, total }: { ticket: MyTicket; index: number; total: number }) {
+function TicketTile({
+  ticket,
+  typeName,
+  index,
+  total,
+}: {
+  ticket: MyTicket;
+  typeName: string;
+  index: number;
+  total: number;
+}) {
   const downloadRef = useRef<HTMLAnchorElement>(null);
   const used = !!ticket.checked_in_at || ticket.status === "used";
 
@@ -125,17 +151,20 @@ function TicketTile({ ticket, index, total }: { ticket: MyTicket; index: number;
 
   return (
     <div className="flex flex-col items-center rounded-xl border border-[#E5E7EB] bg-white p-4">
-      <div className="flex w-full items-center justify-between">
-        <span className="text-xs font-medium text-[#6B7280]">
-          {ticket.ticket_type?.name ?? "Ticket"} · {index + 1}/{total}
+      <div className="flex w-full flex-col gap-1">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#D946EF]">
+          {typeName}
+          {total > 1 ? ` — Ticket ${index + 1} of ${total}` : ""}
         </span>
-        {ticket.status === "voided" ? (
-          <Badge variant="sold-out">Voided</Badge>
-        ) : used ? (
-          <Badge variant="outline">Used</Badge>
-        ) : (
-          <Badge variant="success">Valid</Badge>
-        )}
+        <div className="flex w-full items-center justify-end">
+          {ticket.status === "voided" ? (
+            <Badge variant="sold-out">Voided</Badge>
+          ) : used ? (
+            <Badge variant="outline">Used</Badge>
+          ) : (
+            <Badge variant="success">Valid</Badge>
+          )}
+        </div>
       </div>
       <div className="mt-3">
         <TicketQRCode value={ticket.qr_code} size={160} />
