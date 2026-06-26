@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
 import { useOrganiserStats } from "@/hooks/useOrganiserStats";
 import { useMyTickets } from "@/hooks/useMyTickets";
+import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
 import { formatDate } from "@/lib/utils";
 import type { Event } from "@/types";
@@ -144,6 +145,7 @@ function statusVariant(status: Event["status"]) {
 
 function EventRow({ event }: { event: Event }) {
   const s = statusVariant(event.status);
+  const { checkedIn, total } = useEventCheckInCount(event.id);
   return (
     <Card className="p-5" style={{ borderRadius: 12 }}>
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -155,9 +157,18 @@ function EventRow({ event }: { event: Event }) {
           <p className="mt-1 text-sm text-[#6B7280]">
             {formatDate(event.event_date)} · {event.event_time?.slice(0, 5)} · {event.venue}
           </p>
+          <p className="mt-1 text-xs font-medium text-[#6B7280]">
+            {checkedIn} / {total} checked in
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <TicketCount eventId={event.id} />
+        <div className="flex flex-wrap items-center gap-2">
+          {event.status === "published" ? (
+            <Button asChild variant="primary" size="sm">
+              <Link to="/dashboard/organiser/scan/$eventId" params={{ eventId: event.id }}>
+                Scan Tickets
+              </Link>
+            </Button>
+          ) : null}
           <Button asChild variant="outline" size="sm">
             <Link to="/dashboard/organiser/edit-event/$eventId" params={{ eventId: event.id }}>
               Edit
@@ -166,13 +177,5 @@ function EventRow({ event }: { event: Event }) {
         </div>
       </div>
     </Card>
-  );
-}
-
-function TicketCount({ eventId }: { eventId: string }) {
-  return (
-    <span className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
-      Event ID: <span className="font-mono normal-case text-[#9CA3AF]">{eventId.slice(0, 8)}</span>
-    </span>
   );
 }

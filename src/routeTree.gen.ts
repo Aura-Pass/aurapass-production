@@ -25,6 +25,7 @@ import { Route as EventsIdIndexRouteImport } from './routes/events.$id.index'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
 import { Route as EventsIdCheckoutRouteImport } from './routes/events.$id.checkout'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
+import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
 
 const SignupRoute = SignupRouteImport.update({
@@ -109,6 +110,12 @@ const DashboardOrganiserCreateEventRoute =
     path: '/organiser/create-event',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardOrganiserScanEventIdRoute =
+  DashboardOrganiserScanEventIdRouteImport.update({
+    id: '/organiser/scan/$eventId',
+    path: '/organiser/scan/$eventId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardOrganiserEditEventEventIdRoute =
   DashboardOrganiserEditEventEventIdRouteImport.update({
     id: '/organiser/edit-event/$eventId',
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$id/': typeof EventsIdIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
+  '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -152,6 +160,7 @@ export interface FileRoutesByTo {
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
   '/events/$id': typeof EventsIdIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
+  '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -172,6 +181,7 @@ export interface FileRoutesById {
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$id/': typeof EventsIdIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
+  '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/'
     | '/events/$id/'
     | '/dashboard/organiser/edit-event/$eventId'
+    | '/dashboard/organiser/scan/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser'
     | '/events/$id'
     | '/dashboard/organiser/edit-event/$eventId'
+    | '/dashboard/organiser/scan/$eventId'
   id:
     | '__root__'
     | '/'
@@ -230,6 +242,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/'
     | '/events/$id/'
     | '/dashboard/organiser/edit-event/$eventId'
+    | '/dashboard/organiser/scan/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -360,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserCreateEventRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/organiser/scan/$eventId': {
+      id: '/dashboard/organiser/scan/$eventId'
+      path: '/organiser/scan/$eventId'
+      fullPath: '/dashboard/organiser/scan/$eventId'
+      preLoaderRoute: typeof DashboardOrganiserScanEventIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/organiser/edit-event/$eventId': {
       id: '/dashboard/organiser/edit-event/$eventId'
       path: '/organiser/edit-event/$eventId'
@@ -377,6 +397,7 @@ interface DashboardRouteChildren {
   DashboardOrganiserCreateEventRoute: typeof DashboardOrganiserCreateEventRoute
   DashboardOrganiserIndexRoute: typeof DashboardOrganiserIndexRoute
   DashboardOrganiserEditEventEventIdRoute: typeof DashboardOrganiserEditEventEventIdRoute
+  DashboardOrganiserScanEventIdRoute: typeof DashboardOrganiserScanEventIdRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -387,6 +408,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardOrganiserIndexRoute: DashboardOrganiserIndexRoute,
   DashboardOrganiserEditEventEventIdRoute:
     DashboardOrganiserEditEventEventIdRoute,
+  DashboardOrganiserScanEventIdRoute: DashboardOrganiserScanEventIdRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
