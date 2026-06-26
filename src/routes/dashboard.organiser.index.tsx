@@ -25,11 +25,17 @@ export const Route = createFileRoute("/dashboard/organiser/")({
 function OrganiserDashboard() {
   const { profile, user } = useAuth();
   const { events, loading } = useOrganiserEvents(user?.id);
+  const { ticketsSold, revenue, loading: statsLoading } = useOrganiserStats(user?.id);
+  const email = profile?.email ?? user?.email;
+  const { tickets: myTickets, loading: ticketsLoading } = useMyTickets(email);
 
   const eventsCreated = events.length;
   const upcoming = events.filter(
     (e) => e.status === "published" && new Date(e.event_date) >= new Date(),
   ).length;
+
+  const formatNaira = (n: number) =>
+    `₦${n.toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
   return (
     <PageWrapper>
