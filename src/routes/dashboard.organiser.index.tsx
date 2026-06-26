@@ -57,8 +57,14 @@ function OrganiserDashboard() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Stat label="Events Created" value={String(eventsCreated)} />
-            <Stat label="Total Tickets Sold" value="0" />
-            <Stat label="Revenue" value="₦0" />
+            <Stat
+              label="Total Tickets Sold"
+              value={statsLoading ? "—" : String(ticketsSold)}
+            />
+            <Stat
+              label="Revenue"
+              value={statsLoading ? "—" : formatNaira(revenue)}
+            />
             <Stat label="Upcoming Events" value={String(upcoming)} />
           </div>
 
@@ -83,6 +89,24 @@ function OrganiserDashboard() {
                 ))}
               </div>
             )}
+          </section>
+
+          <section className="mt-10">
+            <h2 className="text-xl font-bold text-[#111827]">My Tickets</h2>
+            <p className="mt-1 text-sm text-[#6B7280]">
+              Tickets you've purchased as an attendee. Tap an event to reveal QR codes.
+            </p>
+            <div className="mt-4">
+              <MyTicketsList
+                tickets={myTickets}
+                loading={ticketsLoading}
+                emptyCta={
+                  <Button asChild variant="primary">
+                    <Link to="/events">Discover Events</Link>
+                  </Button>
+                }
+              />
+            </div>
           </section>
         </div>
       </div>
