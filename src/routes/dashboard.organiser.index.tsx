@@ -7,6 +7,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
+import { useOrganiserStats } from "@/hooks/useOrganiserStats";
+import { useMyTickets } from "@/hooks/useMyTickets";
+import { MyTicketsList } from "@/components/tickets/MyTicketsList";
 import { formatDate } from "@/lib/utils";
 import type { Event } from "@/types";
 
