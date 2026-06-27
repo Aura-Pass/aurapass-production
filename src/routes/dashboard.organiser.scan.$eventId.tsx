@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import type { Html5Qrcode as Html5QrcodeType } from "html5-qrcode";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ function ScanPage() {
   const [searching, setSearching] = useState(false);
   const [scannerActive, setScannerActive] = useState(true);
 
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerRef = useRef<Html5QrcodeType | null>(null);
   const isProcessingRef = useRef(false);
   const containerId = "qr-reader";
 
@@ -52,39 +52,50 @@ function ScanPage() {
     })();
   }, [eventId]);
 
-  // Scanner lifecycle
+  // Scanner lifecycle (client-only: dynamic import so SSR doesn't touch navigator)
   useEffect(() => {
     if (!scannerActive) return;
+    if (typeof window === "undefined") return;
 
-    const scanner = new Html5Qrcode(containerId);
-    scannerRef.current = scanner;
+    let cancelled = false;
+    let scanner: Html5QrcodeType | null = null;
 
-    scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          if (isProcessingRef.current) return;
-          isProcessingRef.current = true;
-          handleScan(decodedText);
-        },
-        () => {
-          /* ignore scan failures (frame had no QR) */
-        },
-      )
-      .catch((err) => {
-        setScanState({
-          kind: "error",
-          message: "Camera unavailable",
-          sub: err?.message ?? "Allow camera access and reload.",
+    (async () => {
+      const { Html5Qrcode } = await import("html5-qrcode");
+      if (cancelled) return;
+      scanner = new Html5Qrcode(containerId);
+      scannerRef.current = scanner;
+
+      scanner
+        .start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText: string) => {
+            if (isProcessingRef.current) return;
+            isProcessingRef.current = true;
+            handleScan(decodedText);
+          },
+          () => {
+            /* ignore scan failures (frame had no QR) */
+          },
+        )
+        .catch((err: { message?: string }) => {
+          setScanState({
+            kind: "error",
+            message: "Camera unavailable",
+            sub: err?.message ?? "Allow camera access and reload.",
+          });
         });
-      });
+    })();
 
     return () => {
-      scanner
-        .stop()
-        .then(() => scanner.clear())
-        .catch(() => {});
+      cancelled = true;
+      const s = scannerRef.current;
+      if (s) {
+        s.stop()
+          .then(() => s.clear())
+          .catch(() => {});
+      }
       scannerRef.current = null;
     };
   }, [scannerActive, eventId]);
