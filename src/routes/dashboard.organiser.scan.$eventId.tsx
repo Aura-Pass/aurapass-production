@@ -34,7 +34,7 @@ function ScanPage() {
   const [searching, setSearching] = useState(false);
   const [scannerActive, setScannerActive] = useState(true);
 
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerRef = useRef<Html5QrcodeType | null>(null);
   const isProcessingRef = useRef(false);
   const containerId = "qr-reader";
 
