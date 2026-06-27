@@ -387,7 +387,7 @@ function ScanPage() {
 
           <Card className="mt-4 p-4" style={{ borderRadius: 12 }}>
             <p className="text-sm text-[#6B7280]">
-              <span className="font-semibold text-[#111827]">{checkedIn}</span> checked in /{" "}
+              <span className="font-semibold text-[#111827]">{visibleCheckedIn}</span> checked in /{" "}
               <span className="font-semibold text-[#111827]">{total}</span> total tickets
             </p>
           </Card>
