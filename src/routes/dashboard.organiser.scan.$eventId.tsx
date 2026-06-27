@@ -5,7 +5,6 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { supabase } from "@/lib/supabase";
 import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
@@ -21,8 +20,10 @@ export const Route = createFileRoute("/dashboard/organiser/scan/$eventId")({
 
 type ScanState =
   | { kind: "idle" }
-  | { kind: "success"; message: string }
+  | { kind: "success"; message: string; sub?: string }
   | { kind: "error"; message: string; sub?: string };
+
+const RESULT_HOLD_MS = 2500;
 
 function ScanPage() {
   const { eventId } = Route.useParams();
@@ -32,15 +33,15 @@ function ScanPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
-  const [scannerActive, setScannerActive] = useState(true);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   const scannerRef = useRef<Html5QrcodeType | null>(null);
   const isProcessingRef = useRef(false);
+  const lastCodeRef = useRef<string | null>(null);
   const containerId = "qr-reader";
 
   const { checkedIn, total } = useEventCheckInCount(eventId, refreshKey);
 
-  // Load event title
   useEffect(() => {
     (async () => {
       const { data } = await (supabase as any)
@@ -52,82 +53,112 @@ function ScanPage() {
     })();
   }, [eventId]);
 
-  // Scanner lifecycle (client-only: dynamic import so SSR doesn't touch navigator)
+  // Scanner lifecycle — dynamic import so SSR doesn't touch navigator.
   useEffect(() => {
-    if (!scannerActive) return;
     if (typeof window === "undefined") return;
-
     let cancelled = false;
     let scanner: Html5QrcodeType | null = null;
 
     (async () => {
       const { Html5Qrcode } = await import("html5-qrcode");
       if (cancelled) return;
-      scanner = new Html5Qrcode(containerId);
+      scanner = new Html5Qrcode(containerId, { verbose: false });
       scannerRef.current = scanner;
 
-      scanner
-        .start(
+      try {
+        await scanner.start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText: string) => {
+            // eslint-disable-next-line no-console
+            console.log("[scanner] decoded:", decodedText);
             if (isProcessingRef.current) return;
+            if (lastCodeRef.current === decodedText) return;
             isProcessingRef.current = true;
-            handleScan(decodedText);
+            lastCodeRef.current = decodedText;
+
+            // Pause the camera immediately so we don't spam frames.
+            try {
+              scanner?.pause(true);
+            } catch (e) {
+              console.warn("[scanner] pause failed", e);
+            }
+            void handleScan(decodedText);
           },
           () => {
-            /* ignore scan failures (frame had no QR) */
+            /* per-frame "no QR found" — ignore */
           },
-        )
-        .catch((err: { message?: string }) => {
-          setScanState({
-            kind: "error",
-            message: "Camera unavailable",
-            sub: err?.message ?? "Allow camera access and reload.",
-          });
-        });
+        );
+        console.log("[scanner] started");
+      } catch (err: any) {
+        console.error("[scanner] start failed", err);
+        setCameraError(err?.message ?? "Allow camera access and reload.");
+      }
     })();
 
     return () => {
       cancelled = true;
       const s = scannerRef.current;
       if (s) {
-        s.stop()
-          .then(() => s.clear())
-          .catch(() => {});
+        s.stop().then(() => s.clear()).catch(() => {});
       }
       scannerRef.current = null;
     };
-  }, [scannerActive, eventId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId]);
 
   async function handleScan(code: string) {
-    const result = await processCode(code);
-    setScanState(result);
-    setRefreshKey((k) => k + 1);
-    setTimeout(() => {
-      setScanState({ kind: "idle" });
-      isProcessingRef.current = false;
-    }, 2000);
+    try {
+      const result = await processCode(code);
+      console.log("[scanner] result:", result);
+      setScanState(result);
+      setRefreshKey((k) => k + 1);
+    } catch (err: any) {
+      console.error("[scanner] processCode threw:", err);
+      setScanState({
+        kind: "error",
+        message: "Scan failed",
+        sub: err?.message ?? String(err),
+      });
+    } finally {
+      window.setTimeout(() => {
+        setScanState({ kind: "idle" });
+        isProcessingRef.current = false;
+        lastCodeRef.current = null;
+        const s = scannerRef.current;
+        if (s) {
+          try {
+            s.resume();
+          } catch (e) {
+            console.warn("[scanner] resume failed", e);
+          }
+        }
+      }, RESULT_HOLD_MS);
+    }
   }
 
   async function processCode(code: string): Promise<ScanState> {
-    const { data: ticket } = await (supabase as any)
+    const { data: ticket, error: qErr } = await (supabase as any)
       .from("tickets")
       .select("id, status, event_id, checked_in_at, ticket_type:ticket_types(name)")
       .eq("qr_code", code)
       .maybeSingle();
 
+    if (qErr) {
+      console.error("[scanner] ticket lookup error:", qErr);
+      return { kind: "error", message: "Lookup failed", sub: qErr.message };
+    }
     if (!ticket) {
-      return { kind: "error", message: "Invalid ticket — not found" };
+      return { kind: "error", message: "Invalid ticket", sub: "QR not found in database" };
     }
     if (ticket.event_id !== eventId) {
-      return { kind: "error", message: "This ticket is for a different event" };
+      return { kind: "error", message: "Wrong event", sub: "This ticket is for a different event" };
     }
     if (ticket.status === "used") {
       const when = ticket.checked_in_at
         ? new Date(ticket.checked_in_at).toLocaleString()
         : "previously";
-      return { kind: "error", message: "Already checked in", sub: `Scanned at ${when}` };
+      return { kind: "error", message: "Already checked in", sub: `Scanned ${when}` };
     }
     if (ticket.status === "voided") {
       return { kind: "error", message: "Ticket voided" };
@@ -144,8 +175,21 @@ function ScanPage() {
     }
     return {
       kind: "success",
-      message: `✅ Admitted — ${ticket.ticket_type?.name ?? "Ticket"}`,
+      message: "Admitted",
+      sub: ticket.ticket_type?.name ?? "Ticket",
     };
+  }
+
+  function dismissResult() {
+    setScanState({ kind: "idle" });
+    isProcessingRef.current = false;
+    lastCodeRef.current = null;
+    const s = scannerRef.current;
+    if (s) {
+      try {
+        s.resume();
+      } catch {}
+    }
   }
 
   async function runManualSearch() {
@@ -165,17 +209,13 @@ function ScanPage() {
       setSearching(false);
       return;
     }
-
     const { data: tickets } = await (supabase as any)
       .from("tickets")
       .select("id, status, checked_in_at, order_id, ticket_type:ticket_types(name)")
       .in("order_id", orderIds);
 
     const byOrder = new Map<string, any>((orders ?? []).map((o: any) => [o.id, o]));
-    const merged = (tickets ?? []).map((t: any) => ({
-      ...t,
-      order: byOrder.get(t.order_id),
-    }));
+    const merged = (tickets ?? []).map((t: any) => ({ ...t, order: byOrder.get(t.order_id) }));
     setSearchResults(merged);
     setSearching(false);
   }
@@ -191,6 +231,10 @@ function ScanPage() {
       runManualSearch();
     }
   }
+
+  const isSuccess = scanState.kind === "success";
+  const isError = scanState.kind === "error";
+  const showOverlay = isSuccess || isError;
 
   return (
     <PageWrapper>
@@ -215,34 +259,48 @@ function ScanPage() {
             </p>
           </Card>
 
-          <Card className="mt-4 overflow-hidden" style={{ borderRadius: 12 }}>
+          <Card className="mt-4 overflow-hidden relative" style={{ borderRadius: 12 }}>
             <div
               id={containerId}
               className="aspect-square w-full bg-black"
               style={{ minHeight: 280 }}
             />
-            <div
-              className={`p-4 text-center font-semibold transition-colors ${
-                scanState.kind === "success"
-                  ? "bg-[#ECFDF5] text-[#047857]"
-                  : scanState.kind === "error"
-                    ? "bg-[#FEE2E2] text-[#B91C1C] animate-pulse"
-                    : "bg-white text-[#6B7280]"
-              }`}
-            >
-              {scanState.kind === "idle"
-                ? "Point camera at a ticket QR code"
-                : scanState.message}
-              {scanState.kind !== "idle" && "sub" in scanState && scanState.sub ? (
-                <p className="mt-1 text-xs font-normal opacity-80">{scanState.sub}</p>
-              ) : null}
-            </div>
+
+            {/* Full-card overlay for scan results — impossible to miss */}
+            {showOverlay && (
+              <button
+                type="button"
+                onClick={dismissResult}
+                className={`absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center transition-opacity ${
+                  isSuccess ? "bg-[#047857]/95 text-white" : "bg-[#B91C1C]/95 text-white"
+                }`}
+              >
+                <div className="text-5xl" aria-hidden>
+                  {isSuccess ? "✓" : "✕"}
+                </div>
+                <div className="text-2xl font-bold">{scanState.message}</div>
+                {"sub" in scanState && scanState.sub ? (
+                  <div className="text-sm opacity-90">{scanState.sub}</div>
+                ) : null}
+                <div className="mt-2 text-xs uppercase tracking-wide opacity-80">
+                  Tap to scan next
+                </div>
+              </button>
+            )}
+
+            {!showOverlay && (
+              <div className="p-4 text-center text-sm font-medium text-[#6B7280] bg-white">
+                {cameraError ? (
+                  <span className="text-[#B91C1C]">Camera: {cameraError}</span>
+                ) : (
+                  "Point camera at a ticket QR code"
+                )}
+              </div>
+            )}
           </Card>
 
           <Card className="mt-6 p-4" style={{ borderRadius: 12 }}>
-            <h2 className="text-sm font-semibold text-[#111827]">
-              Or search by name/email
-            </h2>
+            <h2 className="text-sm font-semibold text-[#111827]">Or search by name/email</h2>
             <div className="mt-2 flex gap-2">
               <Input
                 placeholder="Buyer name or email"
@@ -270,9 +328,7 @@ function ScanPage() {
                       </p>
                     </div>
                     {t.status === "used" ? (
-                      <span className="text-xs font-semibold text-[#B91C1C]">
-                        Checked in
-                      </span>
+                      <span className="text-xs font-semibold text-[#B91C1C]">Checked in</span>
                     ) : t.status === "voided" ? (
                       <span className="text-xs font-semibold text-[#6B7280]">Voided</span>
                     ) : (
