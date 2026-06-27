@@ -35,6 +35,7 @@ function ScanPage() {
   const [searching, setSearching] = useState(false);
   const [admittingTicketId, setAdmittingTicketId] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [optimisticCheckedIn, setOptimisticCheckedIn] = useState<number | null>(null);
 
   const scannerRef = useRef<Html5QrcodeType | null>(null);
   const isProcessingRef = useRef(false);
@@ -42,6 +43,13 @@ function ScanPage() {
   const containerId = "qr-reader";
 
   const { checkedIn, total } = useEventCheckInCount(eventId, refreshKey);
+  const visibleCheckedIn = optimisticCheckedIn ?? checkedIn;
+
+  useEffect(() => {
+    if (optimisticCheckedIn !== null && checkedIn >= optimisticCheckedIn) {
+      setOptimisticCheckedIn(null);
+    }
+  }, [checkedIn, optimisticCheckedIn]);
 
   useEffect(() => {
     (async () => {
@@ -114,6 +122,7 @@ function ScanPage() {
       console.log("[scanner] result:", result);
       setScanState(result);
       if (result.kind === "success") {
+        markSuccessfulCheckIn();
         setRefreshKey((k) => k + 1);
       }
     } catch (err: any) {
@@ -156,6 +165,10 @@ function ScanPage() {
     }
 
     return validateAndAdmitTicket(ticket, "scan");
+  }
+
+  function markSuccessfulCheckIn() {
+    setOptimisticCheckedIn((current) => Math.min((current ?? checkedIn) + 1, total || Infinity));
   }
 
   async function validateAndAdmitTicket(ticket: any, source: "scan" | "manual"): Promise<ScanState> {
@@ -333,6 +346,7 @@ function ScanPage() {
       setScanState(result);
 
       if (result.kind === "success") {
+        markSuccessfulCheckIn();
         setRefreshKey((k) => k + 1);
         setSearchResults((current) =>
           current.map((item) =>
