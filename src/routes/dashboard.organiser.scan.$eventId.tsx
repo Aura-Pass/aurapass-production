@@ -33,6 +33,7 @@ function ScanPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
+  const [admittingTicketId, setAdmittingTicketId] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
 
   const scannerRef = useRef<Html5QrcodeType | null>(null);
@@ -112,7 +113,9 @@ function ScanPage() {
       const result = await processCode(code);
       console.log("[scanner] result:", result);
       setScanState(result);
-      setRefreshKey((k) => k + 1);
+      if (result.kind === "success") {
+        setRefreshKey((k) => k + 1);
+      }
     } catch (err: any) {
       console.error("[scanner] processCode threw:", err);
       setScanState({
@@ -151,6 +154,11 @@ function ScanPage() {
     if (!ticket) {
       return { kind: "error", message: "Invalid ticket", sub: "QR not found in database" };
     }
+
+    return validateAndAdmitTicket(ticket, "scan");
+  }
+
+  async function validateAndAdmitTicket(ticket: any, source: "scan" | "manual"): Promise<ScanState> {
     if (ticket.event_id !== eventId) {
       return { kind: "error", message: "Wrong event", sub: "This ticket is for a different event" };
     }
@@ -164,15 +172,79 @@ function ScanPage() {
       return { kind: "error", message: "Ticket voided" };
     }
 
-    const { error } = await (supabase as any)
+    return admitTicket(ticket, source);
+  }
+
+  async function admitTicket(ticket: any, source: "scan" | "manual"): Promise<ScanState> {
+    const checkedInAt = new Date().toISOString();
+
+    console.log(`[scanner] ${source} update request:`, {
+      ticketId: ticket.id,
+      eventId: ticket.event_id,
+      previousStatus: ticket.status,
+      checkedInAt,
+    });
+
+    const { data: updatedTicket, error } = await (supabase as any)
       .from("tickets")
       .update({ status: "used", checked_in_at: new Date().toISOString() })
       .eq("id", ticket.id)
-      .eq("status", "valid");
+      .eq("status", "valid")
+      .select("id, status, checked_in_at")
+      .maybeSingle();
+
+    console.log(`[scanner] ${source} update response:`, { data: updatedTicket, error });
 
     if (error) {
+      console.error(`[scanner] ${source} update failed:`, error);
       return { kind: "error", message: "Check-in failed", sub: error.message };
     }
+
+    if (!updatedTicket) {
+      const { data: latest, error: latestError } = await (supabase as any)
+        .from("tickets")
+        .select("id, status, checked_in_at")
+        .eq("id", ticket.id)
+        .maybeSingle();
+
+      console.warn(`[scanner] ${source} update affected no rows:`, { latest, latestError });
+
+      if (latest?.status === "used") {
+        const when = latest.checked_in_at
+          ? new Date(latest.checked_in_at).toLocaleString()
+          : "previously";
+        return { kind: "error", message: "Already checked in", sub: `Scanned ${when}` };
+      }
+
+      return {
+        kind: "error",
+        message: "Check-in not saved",
+        sub: latestError?.message ?? "No ticket row was updated. Check the tickets UPDATE grant/RLS policy.",
+      };
+    }
+
+    const { data: verified, error: verifyError } = await (supabase as any)
+      .from("tickets")
+      .select("id, status, checked_in_at")
+      .eq("id", ticket.id)
+      .maybeSingle();
+
+    console.log(`[scanner] ${source} verification response:`, { data: verified, error: verifyError });
+
+    if (verifyError) {
+      console.error(`[scanner] ${source} verification failed:`, verifyError);
+      return { kind: "error", message: "Check-in verify failed", sub: verifyError.message };
+    }
+
+    if (verified?.status !== "used") {
+      console.error(`[scanner] ${source} update did not persist:`, { verified });
+      return {
+        kind: "error",
+        message: "Check-in not saved",
+        sub: "Database did not keep the ticket status as used.",
+      };
+    }
+
     return {
       kind: "success",
       message: "Admitted",
@@ -196,12 +268,19 @@ function ScanPage() {
     if (!searchTerm.trim()) return;
     setSearching(true);
     const term = `%${searchTerm.trim()}%`;
-    const { data: orders } = await (supabase as any)
+    const { data: orders, error: ordersError } = await (supabase as any)
       .from("orders")
       .select("id, buyer_name, buyer_email")
       .eq("event_id", eventId)
       .eq("status", "confirmed")
       .or(`buyer_name.ilike.${term},buyer_email.ilike.${term}`);
+
+    if (ordersError) {
+      console.error("[scanner] manual search orders error:", ordersError);
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
 
     const orderIds = (orders ?? []).map((o: any) => o.id);
     if (orderIds.length === 0) {
@@ -209,10 +288,17 @@ function ScanPage() {
       setSearching(false);
       return;
     }
-    const { data: tickets } = await (supabase as any)
+    const { data: tickets, error: ticketsError } = await (supabase as any)
       .from("tickets")
-      .select("id, status, checked_in_at, order_id, ticket_type:ticket_types(name)")
+      .select("id, status, event_id, checked_in_at, order_id, ticket_type:ticket_types(name)")
       .in("order_id", orderIds);
+
+    if (ticketsError) {
+      console.error("[scanner] manual search tickets error:", ticketsError);
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
 
     const byOrder = new Map<string, any>((orders ?? []).map((o: any) => [o.id, o]));
     const merged = (tickets ?? []).map((t: any) => ({ ...t, order: byOrder.get(t.order_id) }));
@@ -221,14 +307,47 @@ function ScanPage() {
   }
 
   async function manualAdmit(ticketId: string) {
-    const { error } = await (supabase as any)
-      .from("tickets")
-      .update({ status: "used", checked_in_at: new Date().toISOString() })
-      .eq("id", ticketId)
-      .eq("status", "valid");
-    if (!error) {
-      setRefreshKey((k) => k + 1);
-      runManualSearch();
+    setAdmittingTicketId(ticketId);
+    try {
+      const { data: ticket, error: lookupError } = await (supabase as any)
+        .from("tickets")
+        .select("id, status, event_id, checked_in_at, ticket_type:ticket_types(name)")
+        .eq("id", ticketId)
+        .maybeSingle();
+
+      console.log("[scanner] manual lookup response:", { data: ticket, error: lookupError });
+
+      if (lookupError) {
+        console.error("[scanner] manual lookup failed:", lookupError);
+        setScanState({ kind: "error", message: "Lookup failed", sub: lookupError.message });
+        return;
+      }
+
+      if (!ticket) {
+        setScanState({ kind: "error", message: "Invalid ticket", sub: "Ticket not found" });
+        return;
+      }
+
+      const result = await validateAndAdmitTicket(ticket, "manual");
+      console.log("[scanner] manual admit result:", result);
+      setScanState(result);
+
+      if (result.kind === "success") {
+        setRefreshKey((k) => k + 1);
+        setSearchResults((current) =>
+          current.map((item) =>
+            item.id === ticketId
+              ? { ...item, status: "used", checked_in_at: new Date().toISOString() }
+              : item,
+          ),
+        );
+        void runManualSearch();
+      }
+    } catch (err: any) {
+      console.error("[scanner] manual admit threw:", err);
+      setScanState({ kind: "error", message: "Check-in failed", sub: err?.message ?? String(err) });
+    } finally {
+      setAdmittingTicketId(null);
     }
   }
 
@@ -332,7 +451,11 @@ function ScanPage() {
                     ) : t.status === "voided" ? (
                       <span className="text-xs font-semibold text-[#6B7280]">Voided</span>
                     ) : (
-                      <Button size="sm" onClick={() => manualAdmit(t.id)}>
+                      <Button
+                        size="sm"
+                        onClick={() => manualAdmit(t.id)}
+                        loading={admittingTicketId === t.id}
+                      >
                         Admit
                       </Button>
                     )}
