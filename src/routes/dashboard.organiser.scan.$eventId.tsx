@@ -187,7 +187,7 @@ function ScanPage() {
 
     const { data: updatedTicket, error } = await (supabase as any)
       .from("tickets")
-      .update({ status: "used", checked_in_at: new Date().toISOString() })
+      .update({ status: "used", checked_in_at: checkedInAt })
       .eq("id", ticket.id)
       .eq("status", "valid")
       .select("id, status, checked_in_at")
