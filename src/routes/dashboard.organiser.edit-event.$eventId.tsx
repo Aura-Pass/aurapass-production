@@ -331,12 +331,13 @@ function EditEventPage() {
                   />
                 </div>
 
-                <Input
-                  label="Banner image URL"
-                  placeholder="https://…"
-                  value={form.banner_url}
-                  onChange={(e) => setField("banner_url", e.target.value)}
-                />
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-[#111827]">Event banner</label>
+                  <ImageUpload
+                    value={form.banner_url}
+                    onChange={(url) => setField("banner_url", url)}
+                  />
+                </div>
               </div>
 
               <div className="space-y-3">
