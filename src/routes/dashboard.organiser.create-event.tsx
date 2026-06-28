@@ -367,13 +367,13 @@ function Step1({
         />
       </div>
 
-      <Input
-        label="Banner image URL"
-        placeholder="https://…"
-        value={form.banner_url}
-        onChange={(e) => set("banner_url", e.target.value)}
-        hint="Image upload coming soon — paste a direct image link for now."
-      />
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-[#111827]">Event banner</label>
+        <ImageUpload
+          value={form.banner_url}
+          onChange={(url) => set("banner_url", url)}
+        />
+      </div>
     </div>
   );
 }
