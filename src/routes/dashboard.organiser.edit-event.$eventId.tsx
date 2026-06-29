@@ -136,6 +136,7 @@ function EditEventPage() {
     if (!form.venue.trim()) return "Please enter a venue.";
     if (!form.event_date) return "Please select an event date.";
     if (!form.event_time) return "Please select an event time.";
+    if (!form.banner_url.trim()) return "Please upload an event banner before continuing";
     if (tickets.length === 0) return "Add at least one ticket type.";
     for (const [i, t] of tickets.entries()) {
       if (!t.name.trim()) return `Ticket #${i + 1}: please enter a name.`;
