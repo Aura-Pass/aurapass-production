@@ -78,6 +78,7 @@ function CreateEventPage() {
     if (new Date(form.event_date) <= today)
       return "Event date must be in the future.";
     if (!form.event_time) return "Please select an event time.";
+    if (!form.banner_url.trim()) return "Please upload an event banner before continuing";
     return null;
   }
 
