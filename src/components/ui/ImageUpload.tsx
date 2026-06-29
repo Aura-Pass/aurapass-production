@@ -42,6 +42,13 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
     const { data } = supabase.storage.from("event-banners").getPublicUrl(fileName);
     onChange(data.publicUrl);
     setUploading(false);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function handleRemove() {
+    setError(null);
+    if (inputRef.current) inputRef.current.value = "";
+    onChange("");
   }
 
   return (
