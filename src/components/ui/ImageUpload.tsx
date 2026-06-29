@@ -42,11 +42,18 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
     const { data } = supabase.storage.from("event-banners").getPublicUrl(fileName);
     onChange(data.publicUrl);
     setUploading(false);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function handleRemove() {
+    setError(null);
+    if (inputRef.current) inputRef.current.value = "";
+    onChange("");
   }
 
   return (
     <div className="space-y-2">
-      {value ? (
+      {value && value.trim() !== "" ? (
         <div className="relative">
           <img
             src={value}
@@ -55,7 +62,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
           />
           <button
             type="button"
-            onClick={() => onChange("")}
+            onClick={handleRemove}
             className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
             aria-label="Remove image"
           >
