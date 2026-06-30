@@ -37,13 +37,16 @@ export const initializePayment = createServerFn({ method: "POST" })
       typeof data.eventId !== "string" ||
       typeof data.ticketTypeId !== "string" ||
       typeof data.quantity !== "number" ||
-      data.quantity < 1 ||
+      !Number.isInteger(data.quantity) ||
       typeof data.buyerName !== "string" ||
       typeof data.buyerEmail !== "string" ||
       typeof data.buyerPhone !== "string" ||
       typeof data.callbackUrl !== "string"
     ) {
       throw new Error("Invalid input");
+    }
+    if (data.quantity < 1 || data.quantity > 10) {
+      throw new Error("You can purchase between 1 and 10 tickets per order");
     }
     return data;
   })
@@ -53,12 +56,28 @@ export const initializePayment = createServerFn({ method: "POST" })
 
     const { data: ticketType, error: ticketError } = await sb
       .from("ticket_types")
-      .select("*, events(title)")
+      .select("*, events(title, status)")
       .eq("id", data.ticketTypeId)
       .single();
 
     if (ticketError || !ticketType) {
       return { error: "Ticket type not found" as const };
+    }
+
+    if (ticketType.events?.status !== "published") {
+      return { error: "This event is not currently available for purchase." as const };
+    }
+
+    if (ticketType.is_hidden === true) {
+      return { error: "This event is not currently available for purchase." as const };
+    }
+
+    const now = Date.now();
+    if (ticketType.sale_start && now < new Date(ticketType.sale_start).getTime()) {
+      return { error: "Ticket sales are not currently open for this ticket type." as const };
+    }
+    if (ticketType.sale_end && now > new Date(ticketType.sale_end).getTime()) {
+      return { error: "Ticket sales are not currently open for this ticket type." as const };
     }
 
     if (ticketType.quantity - ticketType.quantity_sold < data.quantity) {
