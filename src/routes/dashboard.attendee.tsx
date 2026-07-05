@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
+import { BecomeOrganiserCard } from "@/components/attendee/BecomeOrganiserCard";
 
 export const Route = createFileRoute("/dashboard/attendee")({
   head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
