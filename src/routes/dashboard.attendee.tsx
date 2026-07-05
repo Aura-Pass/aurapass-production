@@ -10,7 +10,7 @@ import { useMyTickets } from "@/hooks/useMyTickets";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
 
 export const Route = createFileRoute("/dashboard/attendee")({
-  head: () => ({ meta: [{ title: "Dashboard — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["attendee", "admin"]}>
       <AttendeeDashboard />
