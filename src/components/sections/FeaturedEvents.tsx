@@ -29,13 +29,15 @@ export function FeaturedEvents() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Spinner className="h-8 w-8" />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-72 w-full rounded-xl" />
+            ))}
           </div>
         ) : items.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] py-16 text-center">
             <p className="text-sm text-[#6B7280]">
-              New events coming soon — check back shortly!
+              No events right now — check back soon!
             </p>
           </div>
         ) : (
