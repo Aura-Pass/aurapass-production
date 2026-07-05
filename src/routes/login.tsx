@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Log in — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Log In | AuraPass" }] }),
   component: LoginPage,
 });
 
