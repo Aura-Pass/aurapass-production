@@ -58,7 +58,11 @@ function ScanPage() {
         .select("title")
         .eq("id", eventId)
         .maybeSingle();
-      setEventTitle(data?.title ?? "");
+      const t = data?.title ?? "";
+      setEventTitle(t);
+      if (typeof document !== "undefined" && t) {
+        document.title = `Ticket Scanner — ${t} | AuraPass`;
+      }
     })();
   }, [eventId]);
 
