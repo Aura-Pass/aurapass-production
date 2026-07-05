@@ -19,7 +19,7 @@ interface EventWithTickets extends Event {
 }
 
 export const Route = createFileRoute("/events/$id/")({
-  head: () => ({ meta: [{ title: "Event — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Event | AuraPass" }] }),
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
