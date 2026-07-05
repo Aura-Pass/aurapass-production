@@ -8,7 +8,7 @@ import { OrganizerCTA } from "@/components/sections/OrganizerCTA";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AuraPass — Access The Moment" },
+      { title: "AuraPass — Access The Moment | Event Discovery & Ticketing in Nigeria" },
       {
         name: "description",
         content:
