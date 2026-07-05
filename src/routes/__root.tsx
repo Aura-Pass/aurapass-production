@@ -15,25 +15,36 @@ import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+        <h1
+          className="text-[96px] leading-none font-bold text-[#D946EF] md:text-[128px]"
+          style={{ fontFamily: '"Playfair Display", serif' }}
+        >
+          404
+        </h1>
+        <p className="mt-4 text-base text-[#6B7280] md:text-lg">
+          This page doesn't exist or has been moved.
         </p>
-        <div className="mt-6">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex min-h-11 items-center justify-center rounded-md bg-[#D946EF] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#C026D3]"
           >
-            Go home
+            Go Home
+          </Link>
+          <Link
+            to="/events"
+            className="inline-flex min-h-11 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-5 py-2.5 text-sm font-semibold text-[#111827] transition-colors hover:border-[#D946EF] hover:text-[#D946EF]"
+          >
+            Discover Events
           </Link>
         </div>
       </div>
     </div>
   );
 }
+
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
