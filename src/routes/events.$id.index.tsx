@@ -79,6 +79,35 @@ function EventDetailPage() {
     };
   }, [id]);
 
+  // Dynamic head metadata (title + Open Graph) once the event is loaded.
+  useEffect(() => {
+    if (!event || typeof document === "undefined") return;
+    const title = `${event.title} | AuraPass`;
+    document.title = title;
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const desc = (event.description ?? "").slice(0, 160);
+    const setMeta = (attr: "name" | "property", key: string, value: string) => {
+      if (!value) return;
+      let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", value);
+    };
+    setMeta("name", "description", desc);
+    setMeta("property", "og:title", event.title);
+    setMeta("property", "og:description", desc);
+    setMeta("property", "og:url", url);
+    setMeta("property", "og:type", "event");
+    if (event.banner_url) {
+      setMeta("property", "og:image", event.banner_url);
+      setMeta("name", "twitter:image", event.banner_url);
+      setMeta("name", "twitter:card", "summary_large_image");
+    }
+  }, [event]);
+
   if (loading) {
     return (
       <PageWrapper>
