@@ -11,6 +11,7 @@ import { useOrganiserStats } from "@/hooks/useOrganiserStats";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
+import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
 import { formatDate } from "@/lib/utils";
 import type { Event } from "@/types";
 
