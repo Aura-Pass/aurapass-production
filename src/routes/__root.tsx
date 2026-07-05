@@ -89,14 +89,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "AuraPass — Access The Moment | Event Discovery & Ticketing in Nigeria" },
+      {
+        name: "description",
+        content:
+          "Discover and book concerts, conferences, festivals and more across Nigeria. Get your tickets in seconds with AuraPass.",
+      },
+      { property: "og:site_name", content: "AuraPass" },
+      { property: "og:title", content: "AuraPass — Access The Moment" },
+      {
+        property: "og:description",
+        content: "Nigeria's modern home for event discovery and ticketing.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
