@@ -12,7 +12,7 @@ import { toEventCardData } from "@/lib/event-adapter";
 export const Route = createFileRoute("/events/")({
   head: () => ({
     meta: [
-      { title: "Discover Events — AuraPass" },
+      { title: "Discover Events | AuraPass" },
       { name: "description", content: "Browse events happening across Nigeria on AuraPass." },
     ],
   }),
