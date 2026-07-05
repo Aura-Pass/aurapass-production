@@ -177,6 +177,9 @@ function EventRow({ event }: { event: Event }) {
               </Link>
             </Button>
           ) : null}
+          {event.status === "published" ? (
+            <ExportAttendeesButton eventId={event.id} eventTitle={event.title} />
+          ) : null}
           <Button asChild variant="outline" size="sm">
             <Link to="/dashboard/organiser/edit-event/$eventId" params={{ eventId: event.id }}>
               Edit
