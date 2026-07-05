@@ -12,7 +12,7 @@ import { toEventCardData } from "@/lib/event-adapter";
 export const Route = createFileRoute("/events/")({
   head: () => ({
     meta: [
-      { title: "Discover Events — AuraPass" },
+      { title: "Discover Events | AuraPass" },
       { name: "description", content: "Browse events happening across Nigeria on AuraPass." },
     ],
   }),
@@ -113,7 +113,9 @@ function EventsPage() {
           ) : items.length === 0 ? (
             <div className="rounded-xl border border-dashed border-[#E5E7EB] bg-white py-16 text-center">
               <p className="text-sm text-[#6B7280]">
-                No events found. Try adjusting your filters.
+                {events.length === 0
+                  ? "No events right now — check back soon!"
+                  : "No events match those filters. Try broadening your search."}
               </p>
             </div>
           ) : (

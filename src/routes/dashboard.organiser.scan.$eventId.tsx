@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
 
 export const Route = createFileRoute("/dashboard/organiser/scan/$eventId")({
-  head: () => ({ meta: [{ title: "Scan Tickets — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Ticket Scanner | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <ScanPage />
@@ -58,7 +58,11 @@ function ScanPage() {
         .select("title")
         .eq("id", eventId)
         .maybeSingle();
-      setEventTitle(data?.title ?? "");
+      const t = data?.title ?? "";
+      setEventTitle(t);
+      if (typeof document !== "undefined" && t) {
+        document.title = `Ticket Scanner — ${t} | AuraPass`;
+      }
     })();
   }, [eventId]);
 

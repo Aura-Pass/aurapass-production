@@ -12,7 +12,7 @@ import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/admin")({
-  head: () => ({ meta: [{ title: "Admin — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Admin Panel | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["admin"]}>
       <AdminDashboard />

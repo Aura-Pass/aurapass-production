@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Calendar, MapPin, Clock, ImageIcon } from "lucide-react";
+import { Calendar, MapPin, Clock, ImageIcon, Share2, Check } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ interface EventWithTickets extends Event {
 }
 
 export const Route = createFileRoute("/events/$id/")({
-  head: () => ({ meta: [{ title: "Event — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Event | AuraPass" }] }),
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
@@ -78,6 +78,35 @@ function EventDetailPage() {
       active = false;
     };
   }, [id]);
+
+  // Dynamic head metadata (title + Open Graph) once the event is loaded.
+  useEffect(() => {
+    if (!event || typeof document === "undefined") return;
+    const title = `${event.title} | AuraPass`;
+    document.title = title;
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const desc = (event.description ?? "").slice(0, 160);
+    const setMeta = (attr: "name" | "property", key: string, value: string) => {
+      if (!value) return;
+      let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", value);
+    };
+    setMeta("name", "description", desc);
+    setMeta("property", "og:title", event.title);
+    setMeta("property", "og:description", desc);
+    setMeta("property", "og:url", url);
+    setMeta("property", "og:type", "event");
+    if (event.banner_url) {
+      setMeta("property", "og:image", event.banner_url);
+      setMeta("name", "twitter:image", event.banner_url);
+      setMeta("name", "twitter:card", "summary_large_image");
+    }
+  }, [event]);
 
   if (loading) {
     return (
@@ -237,7 +266,9 @@ function EventDetailPage() {
                     Select a ticket type above.
                   </p>
                 )}
+                <ShareEventButton title={event.title} description={event.description ?? ""} />
               </Card>
+
 
               <Card className="p-6">
                 <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
@@ -262,3 +293,54 @@ function EventDetailPage() {
     </PageWrapper>
   );
 }
+
+function ShareEventButton({ title, description }: { title: string; description: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleShare() {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    const text = (description || "").slice(0, 160);
+    const nav = window.navigator as Navigator & {
+      share?: (data: ShareData) => Promise<void>;
+    };
+    if (nav.share) {
+      try {
+        await nav.share({ title, text, url });
+        return;
+      } catch {
+        // user cancelled — fall through to clipboard
+      }
+    }
+    try {
+      await window.navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  }
+
+  return (
+    <div className="relative mt-3">
+      <Button
+        type="button"
+        variant="outline"
+        size="md"
+        className="w-full"
+        onClick={handleShare}
+      >
+        {copied ? (
+          <>
+            <Check className="mr-2 h-4 w-4" /> Link copied!
+          </>
+        ) : (
+          <>
+            <Share2 className="mr-2 h-4 w-4" /> Share Event
+          </>
+        )}
+      </Button>
+    </div>
+  );
+}
+

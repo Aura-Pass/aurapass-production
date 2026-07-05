@@ -11,11 +11,12 @@ import { useOrganiserStats } from "@/hooks/useOrganiserStats";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
+import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
 import { formatDate } from "@/lib/utils";
 import type { Event } from "@/types";
 
 export const Route = createFileRoute("/dashboard/organiser/")({
-  head: () => ({ meta: [{ title: "Organiser Dashboard — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Organiser Dashboard | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <OrganiserDashboard />
@@ -73,8 +74,15 @@ function OrganiserDashboard() {
             <h2 className="text-xl font-bold text-[#111827]">My Events</h2>
 
             {loading ? (
-              <div className="mt-6 flex items-center justify-center py-10">
-                <Spinner className="h-8 w-8" />
+              <div className="mt-6 grid gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="p-5" style={{ borderRadius: 12 }}>
+                    <div className="space-y-2">
+                      <div className="h-4 w-1/3 animate-pulse rounded bg-[#F3F4F6]" />
+                      <div className="h-3 w-1/2 animate-pulse rounded bg-[#F3F4F6]" />
+                    </div>
+                  </Card>
+                ))}
               </div>
             ) : events.length === 0 ? (
               <Card className="mt-6 flex flex-col items-center justify-center gap-3 p-10 text-center" style={{ borderRadius: 12 }}>
@@ -168,6 +176,9 @@ function EventRow({ event }: { event: Event }) {
                 Scan Tickets
               </Link>
             </Button>
+          ) : null}
+          {event.status === "published" ? (
+            <ExportAttendeesButton eventId={event.id} eventTitle={event.title} />
           ) : null}
           <Button asChild variant="outline" size="sm">
             <Link to="/dashboard/organiser/edit-event/$eventId" params={{ eventId: event.id }}>

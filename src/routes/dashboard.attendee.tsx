@@ -8,9 +8,10 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
+import { BecomeOrganiserCard } from "@/components/attendee/BecomeOrganiserCard";
 
 export const Route = createFileRoute("/dashboard/attendee")({
-  head: () => ({ meta: [{ title: "Dashboard — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["attendee", "admin"]}>
       <AttendeeDashboard />
@@ -95,6 +96,19 @@ function AttendeeDashboard() {
                         <Link to="/events">Discover Events</Link>
                       </Button>
                     }
+                  />
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-xl font-bold text-[#111827]">Settings</h2>
+                <p className="mt-1 text-sm text-[#6B7280]">
+                  Manage your account and access.
+                </p>
+                <div className="mt-4">
+                  <BecomeOrganiserCard
+                    fullName={profile?.full_name ?? ""}
+                    email={email ?? ""}
                   />
                 </div>
               </div>
