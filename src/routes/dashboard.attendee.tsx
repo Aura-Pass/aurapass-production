@@ -98,6 +98,19 @@ function AttendeeDashboard() {
                   />
                 </div>
               </div>
+
+              <div>
+                <h2 className="text-xl font-bold text-[#111827]">Settings</h2>
+                <p className="mt-1 text-sm text-[#6B7280]">
+                  Manage your account and access.
+                </p>
+                <div className="mt-4">
+                  <BecomeOrganiserCard
+                    fullName={profile?.full_name ?? ""}
+                    email={email ?? ""}
+                  />
+                </div>
+              </div>
             </section>
           </div>
         </div>
