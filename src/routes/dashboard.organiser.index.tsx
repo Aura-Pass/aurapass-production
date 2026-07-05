@@ -15,7 +15,7 @@ import { formatDate } from "@/lib/utils";
 import type { Event } from "@/types";
 
 export const Route = createFileRoute("/dashboard/organiser/")({
-  head: () => ({ meta: [{ title: "Organiser Dashboard — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Organiser Dashboard | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <OrganiserDashboard />
