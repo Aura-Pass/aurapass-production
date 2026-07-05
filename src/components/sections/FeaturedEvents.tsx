@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { EventCard } from "@/components/ui/event-card";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePublishedEvents } from "@/hooks/usePublishedEvents";
 import { toEventCardData } from "@/lib/event-adapter";
 
