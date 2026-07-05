@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/signup")({
-  head: () => ({ meta: [{ title: "Create account — AuraPass" }] }),
+  head: () => ({ meta: [{ title: "Create Account | AuraPass" }] }),
   component: SignUpPage,
 });
 
