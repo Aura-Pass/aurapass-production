@@ -266,7 +266,9 @@ function EventDetailPage() {
                     Select a ticket type above.
                   </p>
                 )}
+                <ShareEventButton title={event.title} description={event.description ?? ""} />
               </Card>
+
 
               <Card className="p-6">
                 <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
