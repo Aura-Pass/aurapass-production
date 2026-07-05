@@ -293,3 +293,54 @@ function EventDetailPage() {
     </PageWrapper>
   );
 }
+
+function ShareEventButton({ title, description }: { title: string; description: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleShare() {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    const text = (description || "").slice(0, 160);
+    const nav = window.navigator as Navigator & {
+      share?: (data: ShareData) => Promise<void>;
+    };
+    if (nav.share) {
+      try {
+        await nav.share({ title, text, url });
+        return;
+      } catch {
+        // user cancelled — fall through to clipboard
+      }
+    }
+    try {
+      await window.navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  }
+
+  return (
+    <div className="relative mt-3">
+      <Button
+        type="button"
+        variant="outline"
+        size="md"
+        className="w-full"
+        onClick={handleShare}
+      >
+        {copied ? (
+          <>
+            <Check className="mr-2 h-4 w-4" /> Link copied!
+          </>
+        ) : (
+          <>
+            <Share2 className="mr-2 h-4 w-4" /> Share Event
+          </>
+        )}
+      </Button>
+    </div>
+  );
+}
+
