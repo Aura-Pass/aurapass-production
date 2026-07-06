@@ -157,6 +157,8 @@ export const initializePayment = createServerFn({ method: "POST" })
         quantity: data.quantity,
       });
 
+      await sendConfirmationEmailSafely(sb, order.id);
+
       return { free: true as const, orderId: order.id as string };
     }
 
