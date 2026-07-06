@@ -1,5 +1,37 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateTicketCode } from "@/lib/generateTicketCode";
+import { sendTicketConfirmationEmail } from "@/lib/email.functions";
+
+async function sendConfirmationEmailSafely(sb: any, orderId: string) {
+  try {
+    const { data: order } = await sb
+      .from("orders")
+      .select(
+        "id, buyer_name, buyer_email, quantity, total_amount, ticket_price, ticket_types(name), events(title, event_date, event_time, venue, city)",
+      )
+      .eq("id", orderId)
+      .single();
+    if (!order) return;
+    await sendTicketConfirmationEmail({
+      data: {
+        to: order.buyer_email,
+        buyerName: order.buyer_name,
+        eventTitle: order.events?.title ?? "Your event",
+        eventDate: order.events?.event_date ?? "",
+        eventTime: order.events?.event_time ?? "",
+        eventVenue: order.events?.venue ?? "",
+        eventCity: order.events?.city ?? "",
+        ticketTypeName: order.ticket_types?.name ?? "Ticket",
+        quantity: Number(order.quantity),
+        totalAmount: Number(order.total_amount),
+        orderId: order.id,
+        isFree: Number(order.ticket_price) === 0,
+      },
+    });
+  } catch (err) {
+    console.error("[sendConfirmationEmailSafely] failed", err);
+  }
+}
 
 async function generateTicketsForOrder(
   sb: any,
