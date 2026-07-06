@@ -261,6 +261,8 @@ export const verifyPayment = createServerFn({ method: "POST" })
         ticket_type_id: order.ticket_type_id,
         quantity: order.quantity,
       });
+
+      await sendConfirmationEmailSafely(sb, order.id);
     }
 
 
