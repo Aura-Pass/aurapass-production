@@ -11,23 +11,36 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
       )
       .eq("id", orderId)
       .single();
-    if (!order) return;
-    await sendTicketConfirmationEmail({
-      data: {
-        to: order.buyer_email,
-        buyerName: order.buyer_name,
-        eventTitle: order.events?.title ?? "Your event",
-        eventDate: order.events?.event_date ?? "",
-        eventTime: order.events?.event_time ?? "",
-        eventVenue: order.events?.venue ?? "",
-        eventCity: order.events?.city ?? "",
-        ticketTypeName: order.ticket_types?.name ?? "Ticket",
-        quantity: Number(order.quantity),
-        totalAmount: Number(order.total_amount),
-        orderId: order.id,
-        isFree: Number(order.ticket_price) === 0,
-      },
-    });
+    if (!order) {
+      console.error("[sendConfirmationEmailSafely] order not found", orderId);
+      return;
+    }
+    if (!process.env.RESEND_API_KEY) {
+      console.error("❌ RESEND_API_KEY not configured — skipping ticket confirmation email");
+      return;
+    }
+    try {
+      await sendTicketConfirmationEmail({
+        data: {
+          to: order.buyer_email,
+          buyerName: order.buyer_name,
+          eventTitle: order.events?.title ?? "Your event",
+          eventDate: order.events?.event_date ?? "",
+          eventTime: order.events?.event_time ?? "",
+          eventVenue: order.events?.venue ?? "",
+          eventCity: order.events?.city ?? "",
+          ticketTypeName: order.ticket_types?.name ?? "Ticket",
+          quantity: Number(order.quantity),
+          totalAmount: Number(order.total_amount),
+          orderId: order.id,
+          isFree: Number(order.ticket_price) === 0,
+        },
+      });
+      console.log("✅ Ticket confirmation email sent to", order.buyer_email);
+    } catch (emailError) {
+      console.error("❌ Failed to send ticket confirmation email:", emailError);
+      // Never re-throw — email failure must not block the buyer's confirmation page
+    }
   } catch (err) {
     console.error("[sendConfirmationEmailSafely] failed", err);
   }

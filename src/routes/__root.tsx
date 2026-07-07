@@ -99,10 +99,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "AuraPass — Access The Moment" },
       {
         property: "og:description",
-        content: "Nigeria's modern home for event discovery and ticketing.",
+        content: "Discover the biggest events across Nigeria. Book tickets instantly.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://aurapassticket.com/og-default.png" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://aurapassticket.com/og-default.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
