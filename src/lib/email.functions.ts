@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import QRCode from "qrcode";
 
 interface TicketConfirmationInput {
   to: string;
@@ -51,6 +52,46 @@ export const sendTicketConfirmationEmail = createServerFn({ method: "POST" })
       ? "Free"
       : `₦${Number(data.totalAmount).toLocaleString("en-NG")}`;
 
+    // Fetch tickets for this order and generate QR code images
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: tickets, error: ticketsError } = await supabaseAdmin
+      .from("tickets")
+      .select("id, qr_code")
+      .eq("order_id", data.orderId);
+
+    if (ticketsError) {
+      console.error("[sendTicketConfirmationEmail] failed to fetch tickets", ticketsError);
+    }
+
+    const ticketList = tickets ?? [];
+    const totalQuantity = ticketList.length || data.quantity;
+
+    const qrSections: string[] = [];
+    for (let i = 0; i < ticketList.length; i++) {
+      const ticket = ticketList[i];
+      try {
+        const qrDataUrl = await QRCode.toDataURL(ticket.qr_code, {
+          width: 200,
+          margin: 1,
+          color: { dark: "#111827", light: "#FFFFFF" },
+        });
+        qrSections.push(`
+          <tr><td style="padding:24px 32px;border-top:1px solid #E5E7EB;text-align:center;">
+            <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;">
+              ${escapeHtml(data.ticketTypeName)} — Ticket ${i + 1} of ${totalQuantity}
+            </p>
+            <p style="margin:0 0 16px;font-size:11px;color:#9CA3AF;font-family:monospace;">${escapeHtml(ticket.qr_code)}</p>
+            <img src="${qrDataUrl}" width="180" height="180" alt="QR Code"
+                 style="display:block;margin:0 auto;border:1px solid #E5E7EB;border-radius:8px;padding:8px;background:#fff;" />
+            <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show this QR code at the gate for entry</p>
+          </td></tr>`);
+      } catch (err) {
+        console.error("[sendTicketConfirmationEmail] QR generation failed", err);
+      }
+    }
+
+    const qrHtml = qrSections.join("");
+
     const html = `<!doctype html>
 <html>
   <head>
@@ -88,12 +129,13 @@ export const sendTicketConfirmationEmail = createServerFn({ method: "POST" })
                 </table>
               </td>
             </tr>
+            ${qrHtml}
             <tr>
               <td style="padding:24px 32px 8px;text-align:center;">
                 <a href="${confirmationUrl}" style="display:inline-block;background:#111827;color:#FFFFFF;text-decoration:none;padding:14px 24px;border-radius:10px;font-weight:600;font-size:15px;">
-                  View My Tickets &amp; QR Codes
+                  View My Tickets Online
                 </a>
-                <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show your QR code at the gate for entry</p>
+                <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">You can also show this email at the gate</p>
               </td>
             </tr>
             <tr>
@@ -134,7 +176,7 @@ export const sendTicketConfirmationEmail = createServerFn({ method: "POST" })
       throw new Error(result?.message ?? "Failed to send email");
     }
 
-    return { success: true as const };
+    return { success: true as const, qrCount: ticketList.length };
   });
 
 function escapeHtml(s: string): string {
