@@ -18,8 +18,39 @@ interface EventWithTickets extends Event {
   organiser_name: string;
 }
 
+import { getPublishedEventForHead } from "@/lib/events.functions";
+
 export const Route = createFileRoute("/events/$id/")({
-  head: () => ({ meta: [{ title: "Event | AuraPass" }] }),
+  loader: ({ params }) => getPublishedEventForHead({ data: { id: params.id } }),
+  head: ({ loaderData: event, params }) => ({
+    meta: event
+      ? [
+          { title: `${event.title} | AuraPass` },
+          { name: "description", content: (event.description ?? "").slice(0, 160) },
+          { property: "og:title", content: event.title },
+          { property: "og:description", content: (event.description ?? "").slice(0, 160) },
+          {
+            property: "og:image",
+            content: event.banner_url ?? "https://aurapassticket.com/og-default.png",
+          },
+          {
+            property: "og:url",
+            content: `https://aurapassticket.com/events/${event.id}`,
+          },
+          { property: "og:type", content: "website" },
+          { property: "og:site_name", content: "AuraPass" },
+          { name: "twitter:card", content: "summary_large_image" },
+          { name: "twitter:title", content: event.title },
+          {
+            name: "twitter:image",
+            content: event.banner_url ?? "https://aurapassticket.com/og-default.png",
+          },
+        ]
+      : [{ title: "Event | AuraPass" }],
+    links: event
+      ? [{ rel: "canonical", href: `https://aurapassticket.com/events/${event.id}` }]
+      : [{ rel: "canonical", href: `https://aurapassticket.com/events/${params.id}` }],
+  }),
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
