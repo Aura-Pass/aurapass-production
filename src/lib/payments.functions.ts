@@ -21,21 +21,20 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
       return;
     }
     try {
-      await sendTicketConfirmationEmail({
-        data: {
-          to: String(order.buyer_email ?? ""),
-          buyerName: String(order.buyer_name ?? "Guest"),
-          eventTitle: String(order.events?.title ?? "Your Event"),
-          eventDate: String(order.events?.event_date ?? ""),
-          eventTime: String(order.events?.event_time ?? ""),
-          eventVenue: String(order.events?.venue ?? ""),
-          eventCity: String(order.events?.city ?? ""),
-          ticketTypeName: String(order.ticket_types?.name ?? "Ticket"),
-          quantity: Number(order.quantity ?? 1),
-          totalAmount: Number(order.total_amount ?? 0),
-          orderId: String(order.id),
-          isFree: Number(order.ticket_price ?? 0) === 0,
-        },
+      const { sendTicketConfirmationEmailImpl } = await import("@/lib/email.server");
+      await sendTicketConfirmationEmailImpl({
+        to: String(order.buyer_email ?? ""),
+        buyerName: String(order.buyer_name ?? "Guest"),
+        eventTitle: String(order.events?.title ?? "Your Event"),
+        eventDate: String(order.events?.event_date ?? ""),
+        eventTime: String(order.events?.event_time ?? ""),
+        eventVenue: String(order.events?.venue ?? ""),
+        eventCity: String(order.events?.city ?? ""),
+        ticketTypeName: String(order.ticket_types?.name ?? "Ticket"),
+        quantity: Number(order.quantity ?? 1),
+        totalAmount: Number(order.total_amount ?? 0),
+        orderId: String(order.id),
+        isFree: Number(order.ticket_price ?? 0) === 0,
       });
       console.log("✅ Ticket confirmation email sent to", order.buyer_email);
     } catch (emailError) {
