@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateTicketCode } from "@/lib/generateTicketCode";
-import { sendTicketConfirmationEmail } from "@/lib/email.functions";
+
 
 async function sendConfirmationEmailSafely(sb: any, orderId: string) {
   try {
