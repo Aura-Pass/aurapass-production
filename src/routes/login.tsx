@@ -9,11 +9,15 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Log In | AuraPass" }] }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { redirect: redirectTo } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -48,6 +52,10 @@ function LoginPage() {
 
     setSubmitting(false);
 
+    if (redirectTo) {
+      navigate({ to: redirectTo });
+      return;
+    }
     const role = (profile?.role as "attendee" | "organiser" | "admin" | undefined) ?? "attendee";
     if (role === "organiser") navigate({ to: "/dashboard/organiser" });
     else if (role === "admin") navigate({ to: "/dashboard/admin" });

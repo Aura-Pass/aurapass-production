@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
 import { Spinner } from "@/components/ui/spinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -80,6 +81,7 @@ function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     let active = true;
@@ -283,6 +285,15 @@ function EventDetailPage() {
                   onClick={() => {
                     const ttId = selectedTicketId || tiers[0]?.id;
                     if (!ttId) return;
+                    if (!user) {
+                      navigate({
+                        to: "/signup",
+                        search: {
+                          redirect: `/events/${event.id}/checkout?ticketTypeId=${ttId}`,
+                        },
+                      });
+                      return;
+                    }
                     navigate({
                       to: "/events/$id/checkout",
                       params: { id: event.id },

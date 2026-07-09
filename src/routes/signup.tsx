@@ -10,6 +10,9 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Create Account | AuraPass" }] }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   component: SignUpPage,
 });
 
@@ -17,6 +20,7 @@ type Role = "attendee" | "organiser";
 
 function SignUpPage() {
   const navigate = useNavigate();
+  const { redirect: redirectTo } = Route.useSearch();
   const [role, setRole] = useState<Role>("attendee");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -80,6 +84,10 @@ function SignUpPage() {
 
     if (data?.session) {
       // Email confirmation is OFF — redirect immediately
+      if (redirectTo) {
+        navigate({ to: redirectTo });
+        return;
+      }
       if (role === "organiser") {
         navigate({ to: "/dashboard/organiser" });
       } else {
