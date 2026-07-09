@@ -285,6 +285,15 @@ function EventDetailPage() {
                   onClick={() => {
                     const ttId = selectedTicketId || tiers[0]?.id;
                     if (!ttId) return;
+                    if (!user) {
+                      navigate({
+                        to: "/signup",
+                        search: {
+                          redirect: `/events/${event.id}/checkout?ticketTypeId=${ttId}`,
+                        },
+                      });
+                      return;
+                    }
                     navigate({
                       to: "/events/$id/checkout",
                       params: { id: event.id },
