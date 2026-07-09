@@ -83,6 +83,35 @@ function EventDetailPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
+  async function handleBuyTickets(ticketTypeId: string) {
+    if (authLoading) return;
+
+    // Double-check session directly from Supabase client as fallback
+    // in case useAuth state hasn't resolved yet on production
+    let isAuthenticated = !!user;
+    if (!isAuthenticated) {
+      const { supabase } = await import("@/lib/supabase");
+      const { data: { session } } = await supabase.auth.getSession();
+      isAuthenticated = !!session;
+    }
+
+    if (!isAuthenticated) {
+      navigate({
+        to: "/login",
+        search: {
+          redirect: `/events/${id}/checkout`,
+          ticketTypeId,
+        },
+      });
+      return;
+    }
+
+    navigate({
+      to: `/events/${id}/checkout`,
+      search: { ticketTypeId },
+    });
+  }
+
   useEffect(() => {
     let active = true;
     setLoading(true);
