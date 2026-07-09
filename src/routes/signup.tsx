@@ -20,6 +20,7 @@ type Role = "attendee" | "organiser";
 
 function SignUpPage() {
   const navigate = useNavigate();
+  const { redirect: redirectTo } = Route.useSearch();
   const [role, setRole] = useState<Role>("attendee");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
