@@ -287,7 +287,7 @@ function EventDetailPage() {
                     if (!ttId) return;
                     if (!user) {
                       navigate({
-                        to: "/signup",
+                        to: "/login",
                         search: {
                           redirect: `/events/${event.id}/checkout?ticketTypeId=${ttId}`,
                         },
