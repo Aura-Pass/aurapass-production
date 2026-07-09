@@ -81,7 +81,7 @@ function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     let active = true;
@@ -283,13 +283,15 @@ function EventDetailPage() {
                   className="mt-4 w-full"
                   disabled={tiers.length === 0}
                   onClick={() => {
+                    if (authLoading) return;
                     const ttId = selectedTicketId || tiers[0]?.id;
                     if (!ttId) return;
                     if (!user) {
                       navigate({
                         to: "/login",
                         search: {
-                          redirect: `/events/${event.id}/checkout?ticketTypeId=${ttId}`,
+                          redirect: `/events/${event.id}/checkout`,
+                          ticketTypeId: ttId,
                         },
                       });
                       return;
@@ -300,6 +302,7 @@ function EventDetailPage() {
                       search: { ticketTypeId: ttId },
                     });
                   }}
+                  disabled={tiers.length === 0 || authLoading}
                 >
                   Buy Tickets
                 </Button>
