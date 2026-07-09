@@ -99,7 +99,7 @@ function EventDetailPage() {
       navigate({
         to: "/login",
         search: {
-          redirect: `/events/${event.id}/checkout`,
+          redirect: `/events/${id}/checkout`,
           ticketTypeId,
         },
       });
@@ -107,7 +107,7 @@ function EventDetailPage() {
     }
 
     navigate({
-      to: `/events/${event.id}/checkout`,
+      to: `/events/${id}/checkout`,
       search: { ticketTypeId },
     });
   }
