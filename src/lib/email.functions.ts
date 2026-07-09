@@ -70,18 +70,38 @@ export const sendTicketConfirmationEmail = createServerFn({ method: "POST" })
     for (let i = 0; i < ticketList.length; i++) {
       const ticket = ticketList[i];
       try {
-        const qrDataUrl = await QRCode.toDataURL(ticket.qr_code, {
-          width: 200,
-          margin: 1,
+        const qrBuffer = await QRCode.toBuffer(ticket.qr_code, {
+          width: 300,
+          margin: 2,
           color: { dark: "#111827", light: "#FFFFFF" },
         });
+
+        const fileName = `qr-codes/qr-${ticket.id}.png`;
+        const { error: uploadError } = await supabaseAdmin.storage
+          .from("event-banners")
+          .upload(fileName, qrBuffer, {
+            contentType: "image/png",
+            upsert: true,
+            cacheControl: "31536000",
+          });
+
+        if (uploadError) {
+          console.error("[sendTicketConfirmationEmail] QR upload failed", uploadError);
+          continue;
+        }
+
+        const { data: urlData } = supabaseAdmin.storage
+          .from("event-banners")
+          .getPublicUrl(fileName);
+        const qrImageUrl = urlData.publicUrl;
+
         qrSections.push(`
           <tr><td style="padding:24px 32px;border-top:1px solid #E5E7EB;text-align:center;">
             <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;">
               ${escapeHtml(data.ticketTypeName)} — Ticket ${i + 1} of ${totalQuantity}
             </p>
             <p style="margin:0 0 16px;font-size:11px;color:#9CA3AF;font-family:monospace;">${escapeHtml(ticket.qr_code)}</p>
-            <img src="${qrDataUrl}" width="180" height="180" alt="QR Code"
+            <img src="${qrImageUrl}" width="200" height="200" alt="QR Code for ${escapeHtml(ticket.qr_code)}"
                  style="display:block;margin:0 auto;border:1px solid #E5E7EB;border-radius:8px;padding:8px;background:#fff;" />
             <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show this QR code at the gate for entry</p>
           </td></tr>`);
