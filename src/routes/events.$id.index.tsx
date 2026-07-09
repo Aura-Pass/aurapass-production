@@ -281,7 +281,6 @@ function EventDetailPage() {
                   variant="primary"
                   size="lg"
                   className="mt-4 w-full"
-                  disabled={tiers.length === 0}
                   onClick={() => {
                     if (authLoading) return;
                     const ttId = selectedTicketId || tiers[0]?.id;
