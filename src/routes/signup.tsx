@@ -84,6 +84,10 @@ function SignUpPage() {
 
     if (data?.session) {
       // Email confirmation is OFF — redirect immediately
+      if (redirectTo) {
+        navigate({ to: redirectTo });
+        return;
+      }
       if (role === "organiser") {
         navigate({ to: "/dashboard/organiser" });
       } else {
