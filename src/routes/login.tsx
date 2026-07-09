@@ -52,6 +52,10 @@ function LoginPage() {
 
     setSubmitting(false);
 
+    if (redirectTo) {
+      navigate({ to: redirectTo });
+      return;
+    }
     const role = (profile?.role as "attendee" | "organiser" | "admin" | undefined) ?? "attendee";
     if (role === "organiser") navigate({ to: "/dashboard/organiser" });
     else if (role === "admin") navigate({ to: "/dashboard/admin" });
