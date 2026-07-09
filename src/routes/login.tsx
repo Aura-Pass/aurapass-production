@@ -56,7 +56,7 @@ function LoginPage() {
     if (redirectTo) {
       navigate({
         to: redirectTo,
-        search: ticketTypeId ? { ticketTypeId } : undefined,
+        search: ticketTypeId ? ({ ticketTypeId } as any) : undefined,
       });
       return;
     }
