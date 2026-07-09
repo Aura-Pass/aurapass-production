@@ -81,6 +81,7 @@ function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     let active = true;
