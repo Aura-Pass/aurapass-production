@@ -278,8 +278,8 @@ export const verifyPayment = createServerFn({ method: "POST" })
         quantity: order.quantity,
       });
 
-      // Wait 1 second to ensure ticket rows are committed before email fetch (paid path only)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Ensure ticket rows are fully committed before email fetch
+      await new Promise<void>((resolve) => setTimeout(resolve, 1500));
 
       await sendConfirmationEmailSafely(sb, order.id);
     }
