@@ -208,7 +208,7 @@ function EventDetailPage() {
     ? formatCurrency(minPrice)
     : `${formatCurrency(minPrice)} – ${formatCurrency(maxPrice)}`;
 
-  const eventSlug = event.slug ?? slug;
+  
 
   return (
     <PageWrapper>
