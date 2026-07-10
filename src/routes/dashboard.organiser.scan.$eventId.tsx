@@ -138,6 +138,7 @@ function ScanPage() {
       if (result.kind === "success") {
         markSuccessfulCheckIn();
         setRefreshKey((k) => k + 1);
+        void refetchTickets();
       }
     } catch (err: any) {
       console.error("[scanner] processCode threw:", err);
