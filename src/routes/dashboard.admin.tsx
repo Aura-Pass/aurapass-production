@@ -122,7 +122,7 @@ function AdminDashboard() {
                 <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
                   My Tickets
                 </p>
-                <p className="mt-2 text-2xl font-bold text-[#111827]">View →</p>
+                <p className="mt-2 text-2xl font-bold text-[#111827]">{tickets.length}</p>
               </Card>
             </Link>
           </div>
