@@ -496,6 +496,69 @@ function ScanPage() {
               <p className="mt-3 text-xs text-[#6B7280]">No matching tickets.</p>
             ) : null}
           </Card>
+
+          <Card className="mt-6 p-4" style={{ borderRadius: 12 }}>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-[#111827]">
+                Checkin List
+              </h2>
+              <span className="text-xs text-[#6B7280]">
+                {tickets.filter((t) => t.status === "used").length} checked in
+              </span>
+            </div>
+
+            <div className="mt-3">
+              <input
+                type="text"
+                value={ticketSearch}
+                onChange={(e) => setTicketSearch(e.target.value)}
+                placeholder="Search by Ticket ID (e.g. AURAPASS-...)"
+                className="w-full rounded-lg border border-[#E5E7EB] px-4 py-2.5 text-sm focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+              />
+            </div>
+
+            <div className="mt-3 space-y-2 max-h-96 overflow-y-auto">
+              {filteredTickets.map((ticket) => (
+                <div
+                  key={ticket.id}
+                  className="rounded-md border border-[#E5E7EB] p-3"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[#111827]">
+                        {ticket.order?.buyer_name ?? "—"}
+                      </p>
+                      <p className="truncate text-xs text-[#6B7280]">
+                        {ticket.ticket_type?.name} · {ticket.qr_code}
+                      </p>
+                    </div>
+                    <span
+                      className={`shrink-0 text-xs font-semibold ${
+                        ticket.status === "used"
+                          ? "text-[#047857]"
+                          : "text-[#6B7280]"
+                      }`}
+                    >
+                      {ticket.status === "used" ? "✓ Checked In" : "Not Yet"}
+                    </span>
+                  </div>
+                  {ticket.checked_in_at ? (
+                    <p className="mt-1 text-[11px] text-[#6B7280]">
+                      {new Date(ticket.checked_in_at).toLocaleTimeString("en-NG", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+              {filteredTickets.length === 0 ? (
+                <p className="text-xs text-[#6B7280]">
+                  {ticketSearch ? "No tickets match your search." : "No tickets yet."}
+                </p>
+              ) : null}
+            </div>
+          </Card>
         </div>
       </div>
     </PageWrapper>
