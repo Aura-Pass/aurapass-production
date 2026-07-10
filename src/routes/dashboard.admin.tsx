@@ -291,11 +291,13 @@ function statusBadge(status: AdminEvent["status"]) {
 function EventModerationCard({
   event,
   showActions,
-  onDecision,
+  onApprove,
+  onReject,
 }: {
   event: AdminEvent;
   showActions: boolean;
-  onDecision: (e: AdminEvent, status: "published" | "rejected") => void;
+  onApprove: (e: AdminEvent) => void;
+  onReject: (e: AdminEvent) => void;
 }) {
   const badge = statusBadge(event.status);
   return (
@@ -333,21 +335,32 @@ function EventModerationCard({
               ))}
             </div>
           )}
+
+          {event.status === "rejected" && event.rejection_reason ? (
+            <div className="mt-3 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#B91C1C]">
+                Reason for rejection
+              </p>
+              <p className="mt-1 text-sm text-[#7F1D1D] whitespace-pre-wrap">
+                {event.rejection_reason}
+              </p>
+            </div>
+          ) : null}
         </div>
 
         {showActions && (
           <div className="flex shrink-0 flex-col gap-2 md:w-40">
             <Button
               type="button"
-              onClick={() => onDecision(event, "published")}
+              onClick={() => onApprove(event)}
               className="bg-[#10B981] text-white hover:bg-[#059669]"
             >
               Approve
             </Button>
             <Button
               type="button"
-              variant="destructive"
-              onClick={() => onDecision(event, "rejected")}
+              onClick={() => onReject(event)}
+              className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
             >
               Reject
             </Button>
