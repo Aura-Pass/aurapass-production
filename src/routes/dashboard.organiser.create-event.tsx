@@ -43,7 +43,7 @@ const EMPTY_TICKET: TicketRow = { name: "", price: "0", quantity: "1" };
 
 function CreateEventPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [submitting, setSubmitting] = useState(false);
