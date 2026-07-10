@@ -23,6 +23,8 @@ import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attend
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as EventsSlugIndexRouteImport } from './routes/events.$slug.index'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
+import { Route as DashboardAttendeeIndexRouteImport } from './routes/dashboard.attendee.index'
+import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.checkout'
 import { Route as DashboardOrganiserTicketsRouteImport } from './routes/dashboard.organiser.tickets'
 import { Route as DashboardOrganiserSalesRouteImport } from './routes/dashboard.organiser.sales'
@@ -105,6 +107,16 @@ const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   id: '/organiser/',
   path: '/organiser/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAttendeeIndexRoute = DashboardAttendeeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAttendeeRoute,
+} as any)
+const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAdminRoute,
 } as any)
 const EventsSlugCheckoutRoute = EventsSlugCheckoutRouteImport.update({
   id: '/events/$slug/checkout',
@@ -191,6 +203,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
@@ -203,8 +217,6 @@ export interface FileRoutesByTo {
   '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/dashboard/admin': typeof DashboardAdminRouteWithChildren
-  '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
@@ -217,6 +229,8 @@ export interface FileRoutesByTo {
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/dashboard/admin': typeof DashboardAdminIndexRoute
+  '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
   '/events/$slug': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
@@ -245,6 +259,8 @@ export interface FileRoutesById {
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
@@ -274,6 +290,8 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/sales'
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
+    | '/dashboard/admin/'
+    | '/dashboard/attendee/'
     | '/dashboard/organiser/'
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
@@ -286,8 +304,6 @@ export interface FileRouteTypes {
     | '/payment-callback'
     | '/reset-password'
     | '/signup'
-    | '/dashboard/admin'
-    | '/dashboard/attendee'
     | '/order-confirmation/$orderId'
     | '/dashboard'
     | '/events'
@@ -300,6 +316,8 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/sales'
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
+    | '/dashboard/admin'
+    | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/events/$slug'
     | '/dashboard/organiser/edit-event/$eventId'
@@ -327,6 +345,8 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/sales'
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
+    | '/dashboard/admin/'
+    | '/dashboard/attendee/'
     | '/dashboard/organiser/'
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
@@ -447,6 +467,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/attendee/': {
+      id: '/dashboard/attendee/'
+      path: '/'
+      fullPath: '/dashboard/attendee/'
+      preLoaderRoute: typeof DashboardAttendeeIndexRouteImport
+      parentRoute: typeof DashboardAttendeeRoute
+    }
+    '/dashboard/admin/': {
+      id: '/dashboard/admin/'
+      path: '/'
+      fullPath: '/dashboard/admin/'
+      preLoaderRoute: typeof DashboardAdminIndexRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/events/$slug/checkout': {
       id: '/events/$slug/checkout'
       path: '/events/$slug/checkout'
@@ -529,10 +563,12 @@ declare module '@tanstack/react-router' {
 
 interface DashboardAdminRouteChildren {
   DashboardAdminTicketsRoute: typeof DashboardAdminTicketsRoute
+  DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminTicketsRoute: DashboardAdminTicketsRoute,
+  DashboardAdminIndexRoute: DashboardAdminIndexRoute,
 }
 
 const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
@@ -543,12 +579,14 @@ interface DashboardAttendeeRouteChildren {
   DashboardAttendeeSavedRoute: typeof DashboardAttendeeSavedRoute
   DashboardAttendeeSettingsRoute: typeof DashboardAttendeeSettingsRoute
   DashboardAttendeeTicketsRoute: typeof DashboardAttendeeTicketsRoute
+  DashboardAttendeeIndexRoute: typeof DashboardAttendeeIndexRoute
 }
 
 const DashboardAttendeeRouteChildren: DashboardAttendeeRouteChildren = {
   DashboardAttendeeSavedRoute: DashboardAttendeeSavedRoute,
   DashboardAttendeeSettingsRoute: DashboardAttendeeSettingsRoute,
   DashboardAttendeeTicketsRoute: DashboardAttendeeTicketsRoute,
+  DashboardAttendeeIndexRoute: DashboardAttendeeIndexRoute,
 }
 
 const DashboardAttendeeRouteWithChildren =
