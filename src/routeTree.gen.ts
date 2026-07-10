@@ -28,6 +28,7 @@ import { Route as DashboardOrganiserTicketsRouteImport } from './routes/dashboar
 import { Route as DashboardOrganiserSalesRouteImport } from './routes/dashboard.organiser.sales'
 import { Route as DashboardOrganiserEventsRouteImport } from './routes/dashboard.organiser.events'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
+import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard.attendee.tickets'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
 import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
@@ -131,6 +132,12 @@ const DashboardOrganiserCreateEventRoute =
     path: '/organiser/create-event',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardAttendeeTicketsRoute =
+  DashboardAttendeeTicketsRouteImport.update({
+    id: '/tickets',
+    path: '/tickets',
+    getParentRoute: () => DashboardAttendeeRoute,
+  } as any)
 const DashboardAdminTicketsRoute = DashboardAdminTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
@@ -158,11 +165,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
-  '/dashboard/attendee': typeof DashboardAttendeeRoute
+  '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
@@ -181,11 +189,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
-  '/dashboard/attendee': typeof DashboardAttendeeRoute
+  '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
@@ -206,11 +215,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
-  '/dashboard/attendee': typeof DashboardAttendeeRoute
+  '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/tickets'
+    | '/dashboard/attendee/tickets'
     | '/dashboard/organiser/create-event'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/events'
     | '/dashboard/admin/tickets'
+    | '/dashboard/attendee/tickets'
     | '/dashboard/organiser/create-event'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
@@ -284,6 +296,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/tickets'
+    | '/dashboard/attendee/tickets'
     | '/dashboard/organiser/create-event'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
@@ -444,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserCreateEventRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/attendee/tickets': {
+      id: '/dashboard/attendee/tickets'
+      path: '/tickets'
+      fullPath: '/dashboard/attendee/tickets'
+      preLoaderRoute: typeof DashboardAttendeeTicketsRouteImport
+      parentRoute: typeof DashboardAttendeeRoute
+    }
     '/dashboard/admin/tickets': {
       id: '/dashboard/admin/tickets'
       path: '/tickets'
@@ -480,9 +500,20 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
   DashboardAdminRouteChildren,
 )
 
+interface DashboardAttendeeRouteChildren {
+  DashboardAttendeeTicketsRoute: typeof DashboardAttendeeTicketsRoute
+}
+
+const DashboardAttendeeRouteChildren: DashboardAttendeeRouteChildren = {
+  DashboardAttendeeTicketsRoute: DashboardAttendeeTicketsRoute,
+}
+
+const DashboardAttendeeRouteWithChildren =
+  DashboardAttendeeRoute._addFileChildren(DashboardAttendeeRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRouteWithChildren
-  DashboardAttendeeRoute: typeof DashboardAttendeeRoute
+  DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardOrganiserCreateEventRoute: typeof DashboardOrganiserCreateEventRoute
   DashboardOrganiserEventsRoute: typeof DashboardOrganiserEventsRoute
@@ -495,7 +526,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRouteWithChildren,
-  DashboardAttendeeRoute: DashboardAttendeeRoute,
+  DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardOrganiserCreateEventRoute: DashboardOrganiserCreateEventRoute,
   DashboardOrganiserEventsRoute: DashboardOrganiserEventsRoute,
