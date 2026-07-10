@@ -13,6 +13,7 @@ import { ImageUpload } from "@/components/ui/ImageUpload";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
+import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
 import { EVENT_CATEGORIES, CITIES } from "@/constants";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +43,7 @@ const EMPTY_TICKET: TicketRow = { name: "", price: "0", quantity: "1" };
 
 function CreateEventPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [submitting, setSubmitting] = useState(false);
@@ -159,6 +160,22 @@ function CreateEventPage() {
 
       if (ticketErr) {
         throw new Error(ticketErr.message);
+      }
+
+      // Fire admin notification — never block submission on email failure.
+      try {
+        await sendAdminEventSubmissionEmailFn({
+          data: {
+            eventTitle: form.title.trim(),
+            organiserName: profile?.full_name ?? "Unknown organiser",
+            organiserEmail: profile?.email ?? user.email ?? "unknown@aurapassticket.com",
+            eventDate: form.event_date,
+            eventCity: form.city,
+            eventId: String(eventRow.id),
+          },
+        });
+      } catch (emailErr) {
+        console.error("[create-event] admin email failed", emailErr);
       }
 
       toast.success("Event submitted! We'll review it shortly.");

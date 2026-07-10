@@ -168,6 +168,16 @@ function EventRow({ event }: { event: Event }) {
           <p className="mt-1 text-xs font-medium text-[#6B7280]">
             {checkedIn} / {total} checked in
           </p>
+          {event.status === "rejected" && event.rejection_reason ? (
+            <div className="mt-3 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#B91C1C]">
+                Reason for rejection
+              </p>
+              <p className="mt-1 text-sm text-[#7F1D1D] whitespace-pre-wrap">
+                {event.rejection_reason}
+              </p>
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {event.status === "published" ? (
