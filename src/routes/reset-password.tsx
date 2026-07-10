@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Logo } from "@/components/layout/Logo";
 import { Card } from "@/components/ui/card";
