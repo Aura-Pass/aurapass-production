@@ -19,7 +19,7 @@ const search = z.object({
   ticketTypeId: fallback(z.string(), "").default(""),
 });
 
-export const Route = createFileRoute("/events/$id/checkout")({
+export const Route = createFileRoute("/events/$slug/checkout")({
   validateSearch: zodValidator(search),
   head: () => ({ meta: [{ title: "Checkout — AuraPass" }] }),
   errorComponent: () => (
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/events/$id/checkout")({
 });
 
 function CheckoutPage() {
-  const { id } = Route.useParams();
+  const { slug } = Route.useParams();
   const { ticketTypeId } = Route.useSearch();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
@@ -69,8 +69,8 @@ function CheckoutPage() {
       }
       const { data, error } = await (supabase as any)
         .from("events")
-        .select("id, title, event_date, event_time, venue, city, status, ticket_types(*)")
-        .eq("id", id)
+        .select("id, slug, title, event_date, event_time, venue, city, status, ticket_types(*)")
+        .eq("slug", slug)
         .maybeSingle();
       if (!active) return;
       if (error) {
@@ -99,7 +99,7 @@ function CheckoutPage() {
     return () => {
       active = false;
     };
-  }, [id, ticketTypeId]);
+  }, [slug, ticketTypeId]);
 
 
   useEffect(() => {
@@ -132,7 +132,7 @@ function CheckoutPage() {
           )}
           <div className="mt-6">
             <Button asChild variant="primary">
-              <Link to="/events/$id" params={{ id }}>Back to event</Link>
+              <Link to="/events/$slug" params={{ slug }}>Back to event</Link>
             </Button>
           </div>
         </div>
@@ -161,7 +161,7 @@ function CheckoutPage() {
     try {
       const result = await initPay({
         data: {
-          eventId: id,
+          eventId: event.id,
           ticketTypeId,
           quantity,
           buyerName: fullName.trim(),

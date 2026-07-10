@@ -21,8 +21,8 @@ interface EventWithTickets extends Event {
 
 import { getPublishedEventForHead } from "@/lib/events.functions";
 
-export const Route = createFileRoute("/events/$id/")({
-  loader: ({ params }) => getPublishedEventForHead({ data: { id: params.id } }),
+export const Route = createFileRoute("/events/$slug/")({
+  loader: ({ params }) => getPublishedEventForHead({ data: { slug: params.slug } }),
   head: ({ loaderData: event, params }) => ({
     meta: event
       ? [
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/events/$id/")({
           },
           {
             property: "og:url",
-            content: `https://aurapassticket.com/events/${event.id}`,
+            content: `https://aurapassticket.com/events/${event.slug ?? params.slug}`,
           },
           { property: "og:type", content: "website" },
           { property: "og:site_name", content: "AuraPass" },
@@ -49,8 +49,8 @@ export const Route = createFileRoute("/events/$id/")({
         ]
       : [{ title: "Event | AuraPass" }],
     links: event
-      ? [{ rel: "canonical", href: `https://aurapassticket.com/events/${event.id}` }]
-      : [{ rel: "canonical", href: `https://aurapassticket.com/events/${params.id}` }],
+      ? [{ rel: "canonical", href: `https://aurapassticket.com/events/${event.slug ?? params.slug}` }]
+      : [{ rel: "canonical", href: `https://aurapassticket.com/events/${params.slug}` }],
   }),
   notFoundComponent: () => (
     <PageWrapper>
@@ -76,7 +76,7 @@ export const Route = createFileRoute("/events/$id/")({
 });
 
 function EventDetailPage() {
-  const { id } = Route.useParams();
+  const { slug } = Route.useParams();
   const [event, setEvent] = useState<EventWithTickets | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
@@ -86,8 +86,6 @@ function EventDetailPage() {
   async function handleBuyTickets(ticketTypeId: string) {
     if (authLoading) return;
 
-    // Double-check session directly from Supabase client as fallback
-    // in case useAuth state hasn't resolved yet on production
     let isAuthenticated = !!user;
     if (!isAuthenticated) {
       const { supabase } = await import("@/lib/supabase");
@@ -99,7 +97,7 @@ function EventDetailPage() {
       navigate({
         to: "/login",
         search: {
-          redirect: `/events/${id}/checkout`,
+          redirect: `/events/${slug}/checkout`,
           ticketTypeId,
         },
       });
@@ -107,7 +105,8 @@ function EventDetailPage() {
     }
 
     navigate({
-      to: `/events/${id}/checkout`,
+      to: "/events/$slug/checkout",
+      params: { slug },
       search: { ticketTypeId },
     });
   }
@@ -120,7 +119,7 @@ function EventDetailPage() {
       const { data, error } = await (supabase as any)
         .from("events")
         .select(`*, ticket_types (*), profiles!events_organiser_id_fkey ( full_name )`)
-        .eq("id", id)
+        .eq("slug", slug)
         .maybeSingle();
 
       if (!active) return;
@@ -139,9 +138,8 @@ function EventDetailPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [slug]);
 
-  // Dynamic head metadata (title + Open Graph) once the event is loaded.
   useEffect(() => {
     if (!event || typeof document === "undefined") return;
     const title = `${event.title} | AuraPass`;
@@ -209,6 +207,8 @@ function EventDetailPage() {
     : minPrice === maxPrice
     ? formatCurrency(minPrice)
     : `${formatCurrency(minPrice)} – ${formatCurrency(maxPrice)}`;
+
+  
 
   return (
     <PageWrapper>
@@ -311,24 +311,9 @@ function EventDetailPage() {
                   size="lg"
                   className="mt-4 w-full"
                   onClick={() => {
-                    if (authLoading) return;
                     const ttId = selectedTicketId || tiers[0]?.id;
                     if (!ttId) return;
-                    if (!user) {
-                      navigate({
-                        to: "/login",
-                        search: {
-                          redirect: `/events/${event.id}/checkout`,
-                          ticketTypeId: ttId,
-                        },
-                      });
-                      return;
-                    }
-                    navigate({
-                      to: "/events/$id/checkout",
-                      params: { id: event.id },
-                      search: { ticketTypeId: ttId },
-                    });
+                    handleBuyTickets(ttId);
                   }}
                   disabled={tiers.length === 0 || authLoading}
                 >
@@ -416,4 +401,3 @@ function ShareEventButton({ title, description }: { title: string; description: 
     </div>
   );
 }
-

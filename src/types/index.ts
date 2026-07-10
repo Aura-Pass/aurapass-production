@@ -12,6 +12,7 @@ export interface Profile {
 export interface Event {
   id: string;
   organiser_id: string;
+  slug: string | null;
   title: string;
   description: string;
   banner_url: string | null;
