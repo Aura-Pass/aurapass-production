@@ -34,6 +34,9 @@ type Tab = "pending_review" | "published" | "rejected";
 function AdminDashboard() {
   const { events, loading, updateEventStatus } = useAdminEvents();
   const [tab, setTab] = useState<Tab>("pending_review");
+  const [rejectTarget, setRejectTarget] = useState<AdminEvent | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   const counts = useMemo(
     () => ({
@@ -49,18 +52,43 @@ function AdminDashboard() {
     [events, tab],
   );
 
-  async function handleDecision(
-    evt: AdminEvent,
-    status: "published" | "rejected",
-  ) {
-    const { error } = await updateEventStatus(evt.id, status);
+  async function handleApprove(evt: AdminEvent) {
+    const { error } = await updateEventStatus(evt.id, "published");
     if (error) {
       toast.error(`Could not update event: ${error.message}`);
     } else {
-      toast.success(
-        status === "published" ? "Event approved" : "Event rejected",
-      );
+      toast.success("Event approved");
     }
+  }
+
+  function openRejectModal(evt: AdminEvent) {
+    setRejectTarget(evt);
+    setRejectReason("");
+  }
+
+  function closeRejectModal() {
+    if (rejectSubmitting) return;
+    setRejectTarget(null);
+    setRejectReason("");
+  }
+
+  async function confirmReject() {
+    if (!rejectTarget) return;
+    const trimmed = rejectReason.trim();
+    if (trimmed.length < 20) {
+      toast.error("Please provide at least 20 characters explaining the rejection.");
+      return;
+    }
+    setRejectSubmitting(true);
+    const { error } = await updateEventStatus(rejectTarget.id, "rejected", trimmed);
+    setRejectSubmitting(false);
+    if (error) {
+      toast.error(`Could not reject event: ${error.message}`);
+      return;
+    }
+    toast.success("Event rejected");
+    setRejectTarget(null);
+    setRejectReason("");
   }
 
   return (
