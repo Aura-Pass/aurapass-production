@@ -40,7 +40,7 @@ export const Route = createFileRoute("/events/$slug/checkout")({
 });
 
 function CheckoutPage() {
-  const { id } = Route.useParams();
+  const { slug } = Route.useParams();
   const { ticketTypeId } = Route.useSearch();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
