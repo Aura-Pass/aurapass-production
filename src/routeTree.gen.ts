@@ -21,9 +21,9 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
-import { Route as EventsIdIndexRouteImport } from './routes/events.$id.index'
+import { Route as EventsSlugIndexRouteImport } from './routes/events.$slug.index'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
-import { Route as EventsIdCheckoutRouteImport } from './routes/events.$id.checkout'
+import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.checkout'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
 import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
@@ -89,9 +89,9 @@ const DashboardAdminRoute = DashboardAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => DashboardRoute,
 } as any)
-const EventsIdIndexRoute = EventsIdIndexRouteImport.update({
-  id: '/events/$id/',
-  path: '/events/$id/',
+const EventsSlugIndexRoute = EventsSlugIndexRouteImport.update({
+  id: '/events/$slug/',
+  path: '/events/$slug/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
@@ -99,9 +99,9 @@ const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   path: '/organiser/',
   getParentRoute: () => DashboardRoute,
 } as any)
-const EventsIdCheckoutRoute = EventsIdCheckoutRouteImport.update({
-  id: '/events/$id/checkout',
-  path: '/events/$id/checkout',
+const EventsSlugCheckoutRoute = EventsSlugCheckoutRouteImport.update({
+  id: '/events/$slug/checkout',
+  path: '/events/$slug/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardOrganiserCreateEventRoute =
@@ -137,9 +137,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
-  '/events/$id/checkout': typeof EventsIdCheckoutRoute
+  '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
-  '/events/$id/': typeof EventsIdIndexRoute
+  '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
 }
@@ -156,9 +156,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
-  '/events/$id/checkout': typeof EventsIdCheckoutRoute
+  '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
-  '/events/$id': typeof EventsIdIndexRoute
+  '/events/$slug': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
 }
@@ -177,9 +177,9 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
-  '/events/$id/checkout': typeof EventsIdCheckoutRoute
+  '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
-  '/events/$id/': typeof EventsIdIndexRoute
+  '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
 }
@@ -199,9 +199,9 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/events/'
     | '/dashboard/organiser/create-event'
-    | '/events/$id/checkout'
+    | '/events/$slug/checkout'
     | '/dashboard/organiser/'
-    | '/events/$id/'
+    | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/scan/$eventId'
   fileRoutesByTo: FileRoutesByTo
@@ -218,9 +218,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/events'
     | '/dashboard/organiser/create-event'
-    | '/events/$id/checkout'
+    | '/events/$slug/checkout'
     | '/dashboard/organiser'
-    | '/events/$id'
+    | '/events/$slug'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/scan/$eventId'
   id:
@@ -238,9 +238,9 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/events/'
     | '/dashboard/organiser/create-event'
-    | '/events/$id/checkout'
+    | '/events/$slug/checkout'
     | '/dashboard/organiser/'
-    | '/events/$id/'
+    | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/scan/$eventId'
   fileRoutesById: FileRoutesById
@@ -255,8 +255,8 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   EventsIndexRoute: typeof EventsIndexRoute
-  EventsIdCheckoutRoute: typeof EventsIdCheckoutRoute
-  EventsIdIndexRoute: typeof EventsIdIndexRoute
+  EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
+  EventsSlugIndexRoute: typeof EventsSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -345,11 +345,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/events/$id/': {
-      id: '/events/$id/'
-      path: '/events/$id'
-      fullPath: '/events/$id/'
-      preLoaderRoute: typeof EventsIdIndexRouteImport
+    '/events/$slug/': {
+      id: '/events/$slug/'
+      path: '/events/$slug'
+      fullPath: '/events/$slug/'
+      preLoaderRoute: typeof EventsSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/organiser/': {
@@ -359,11 +359,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/events/$id/checkout': {
-      id: '/events/$id/checkout'
-      path: '/events/$id/checkout'
-      fullPath: '/events/$id/checkout'
-      preLoaderRoute: typeof EventsIdCheckoutRouteImport
+    '/events/$slug/checkout': {
+      id: '/events/$slug/checkout'
+      path: '/events/$slug/checkout'
+      fullPath: '/events/$slug/checkout'
+      preLoaderRoute: typeof EventsSlugCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/organiser/create-event': {
@@ -425,8 +425,8 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   EventsIndexRoute: EventsIndexRoute,
-  EventsIdCheckoutRoute: EventsIdCheckoutRoute,
-  EventsIdIndexRoute: EventsIdIndexRoute,
+  EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
+  EventsSlugIndexRoute: EventsSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

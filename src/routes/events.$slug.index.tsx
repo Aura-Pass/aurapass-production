@@ -21,7 +21,7 @@ interface EventWithTickets extends Event {
 
 import { getPublishedEventForHead } from "@/lib/events.functions";
 
-export const Route = createFileRoute("/events/$id/")({
+export const Route = createFileRoute("/events/$slug/")({
   loader: ({ params }) => getPublishedEventForHead({ data: { id: params.id } }),
   head: ({ loaderData: event, params }) => ({
     meta: event

@@ -19,7 +19,7 @@ const search = z.object({
   ticketTypeId: fallback(z.string(), "").default(""),
 });
 
-export const Route = createFileRoute("/events/$id/checkout")({
+export const Route = createFileRoute("/events/$slug/checkout")({
   validateSearch: zodValidator(search),
   head: () => ({ meta: [{ title: "Checkout — AuraPass" }] }),
   errorComponent: () => (
