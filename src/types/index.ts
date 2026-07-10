@@ -23,6 +23,7 @@ export interface Event {
   event_time: string;
   status: "pending_review" | "published" | "rejected" | "draft" | "sold_out" | "ended";
   rejection_reason?: string | null;
+  ticket_types?: TicketType[];
   created_at: string;
   updated_at: string;
 }

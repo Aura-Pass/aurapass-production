@@ -168,6 +168,43 @@ function EventRow({ event }: { event: Event }) {
           <p className="mt-1 text-xs font-medium text-[#6B7280]">
             {checkedIn} / {total} checked in
           </p>
+          {event.ticket_types && event.ticket_types.length > 0 ? (
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+                Ticket Sales
+              </p>
+              <div className="mt-2 space-y-2">
+                {event.ticket_types.map((tt) => {
+                  const pct =
+                    tt.quantity > 0
+                      ? Math.min(
+                          100,
+                          Math.round((tt.quantity_sold / tt.quantity) * 100),
+                        )
+                      : 0;
+                  return (
+                    <div key={tt.id}>
+                      <div className="flex items-center justify-between gap-3 text-xs">
+                        <span className="font-medium text-[#111827]">{tt.name}</span>
+                        <span className="text-[#6B7280]">
+                          {tt.quantity_sold} / {tt.quantity} sold
+                          {tt.price === 0
+                            ? " · Free"
+                            : ` · ₦${Number(tt.price).toLocaleString("en-NG")}`}
+                        </span>
+                      </div>
+                      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[#F3F4F6]">
+                        <div
+                          className="h-full rounded-full bg-[#D946EF]"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
           {event.status === "rejected" && event.rejection_reason ? (
             <div className="mt-3 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#B91C1C]">
