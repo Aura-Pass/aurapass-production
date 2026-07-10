@@ -1,6 +1,6 @@
 export interface MockEvent {
   id: string;
-  slug: string | null;
+  slug?: string | null;
   title: string;
   description: string;
   banner_url: string;
