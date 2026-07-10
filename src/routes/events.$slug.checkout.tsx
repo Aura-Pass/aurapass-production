@@ -161,7 +161,7 @@ function CheckoutPage() {
     try {
       const result = await initPay({
         data: {
-          eventId: id,
+          eventId: event.id,
           ticketTypeId,
           quantity,
           buyerName: fullName.trim(),
