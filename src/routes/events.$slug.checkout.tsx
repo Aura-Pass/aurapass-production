@@ -132,7 +132,7 @@ function CheckoutPage() {
           )}
           <div className="mt-6">
             <Button asChild variant="primary">
-              <Link to="/events/$id" params={{ id }}>Back to event</Link>
+              <Link to="/events/$slug" params={{ slug }}>Back to event</Link>
             </Button>
           </div>
         </div>
