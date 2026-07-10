@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Ticket, Megaphone } from "lucide-react";
+import { Ticket, Megaphone, Eye, EyeOff } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,7 @@ function SignUpPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -159,14 +160,25 @@ function SignUpPage() {
                   onChange={(e) => setPhone(e.target.value)}
                   required
                 />
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="At least 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    label="Password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="At least 8 characters"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 bottom-0 flex h-11 items-center text-[#6B7280] hover:text-[#111827]"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
 
                 <div>
                   <p className="mb-2 text-sm font-medium text-[#111827]">

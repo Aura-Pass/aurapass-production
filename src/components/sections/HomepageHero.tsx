@@ -36,19 +36,19 @@ export function HomepageHero() {
 
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="mt-10 mx-auto flex w-full max-w-2xl items-stretch overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm focus-within:border-[#D946EF] focus-within:ring-2 focus-within:ring-[#D946EF]/20"
+            className="mt-10 mx-auto flex w-full items-stretch overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm focus-within:border-[#D946EF] focus-within:ring-2 focus-within:ring-[#D946EF]/20"
           >
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search events, artists, venues..."
-              className="flex-1 bg-transparent px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none"
+              className="flex-1 min-w-0 bg-transparent px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none"
             />
             <button
               type="submit"
               aria-label="Search"
-              className="flex items-center gap-2 bg-[#D946EF] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#C026D3]"
+              className="flex shrink-0 items-center gap-2 bg-[#D946EF] px-3 sm:px-5 text-sm font-semibold text-white transition-colors hover:bg-[#C026D3]"
             >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Search</span>
