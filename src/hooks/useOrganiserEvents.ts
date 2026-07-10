@@ -21,17 +21,7 @@ export function useOrganiserEvents(organiserId: string | undefined) {
       // until the migration in docs/build-3-migration.sql is applied and types regenerated.
       const { data, error } = await (supabase as any)
         .from("events")
-        .select(
-          `*, rejection_reason,
-           ticket_types (
-             id,
-             name,
-             price,
-             quantity,
-             quantity_sold,
-             is_hidden
-           )`,
-        )
+        .select(`*, rejection_reason`)
         .eq("organiser_id", organiserId as string)
         .order("created_at", { ascending: false });
 
