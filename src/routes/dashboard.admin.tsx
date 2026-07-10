@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { PageWrapper } from "@/components/layout/PageWrapper";
