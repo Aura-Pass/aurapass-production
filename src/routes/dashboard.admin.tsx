@@ -35,6 +35,9 @@ type Tab = "pending_review" | "published" | "rejected";
 
 function AdminDashboard() {
   const { events, loading, updateEventStatus } = useAdminEvents();
+  const { profile, user } = useAuth();
+  const email = profile?.email ?? user?.email;
+  const { tickets } = useMyTickets(email);
   const [tab, setTab] = useState<Tab>("pending_review");
   const [rejectTarget, setRejectTarget] = useState<AdminEvent | null>(null);
   const [rejectReason, setRejectReason] = useState("");
