@@ -69,8 +69,8 @@ function CheckoutPage() {
       }
       const { data, error } = await (supabase as any)
         .from("events")
-        .select("id, title, event_date, event_time, venue, city, status, ticket_types(*)")
-        .eq("id", id)
+        .select("id, slug, title, event_date, event_time, venue, city, status, ticket_types(*)")
+        .eq("slug", slug)
         .maybeSingle();
       if (!active) return;
       if (error) {
