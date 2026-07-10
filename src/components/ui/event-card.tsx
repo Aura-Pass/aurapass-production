@@ -8,8 +8,8 @@ import type { MockEvent } from "@/constants/mockEvents";
 export function EventCard({ event }: { event: MockEvent }) {
   return (
     <Link
-      to="/events/$id"
-      params={{ id: event.id }}
+      to="/events/$slug"
+      params={{ slug: event.slug ?? event.id }}
       className="block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D946EF] rounded-xl"
     >
       <Card className="flex h-full flex-col overflow-hidden group cursor-pointer">
