@@ -371,6 +371,7 @@ function ScanPage() {
           ),
         );
         void runManualSearch();
+        void refetchTickets();
       }
     } catch (err: any) {
       console.error("[scanner] manual admit threw:", err);
