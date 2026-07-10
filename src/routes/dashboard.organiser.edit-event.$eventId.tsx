@@ -48,7 +48,7 @@ type TicketRow = {
 function EditEventPage() {
   const { eventId } = Route.useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
