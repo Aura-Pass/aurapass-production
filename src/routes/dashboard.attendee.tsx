@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Ticket, Heart, Settings } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
-import { BecomeOrganiserCard } from "@/components/attendee/BecomeOrganiserCard";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/attendee")({
   head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
@@ -19,12 +19,45 @@ export const Route = createFileRoute("/dashboard/attendee")({
   ),
 });
 
-const NAV = [
-  { label: "Overview", icon: LayoutDashboard },
-  { label: "My Tickets", icon: Ticket },
-  { label: "Saved Events", icon: Heart },
-  { label: "Settings", icon: Settings },
-];
+const sidebarLinks = [
+  { to: "/dashboard/attendee", label: "Overview", icon: LayoutDashboard, exact: true },
+  { to: "/dashboard/attendee/tickets", label: "My Tickets", icon: Ticket, exact: false },
+  { to: "/dashboard/attendee/saved", label: "Saved Events", icon: Heart, exact: false },
+  { to: "/dashboard/attendee/settings", label: "Settings", icon: Settings, exact: false },
+] as const;
+
+export function AttendeeSidebar() {
+  const { pathname } = useLocation();
+  return (
+    <aside className="md:sticky md:top-20 md:self-start">
+      <Card className="p-2" style={{ borderRadius: 12 }}>
+        <nav className="flex flex-col gap-1">
+          {sidebarLinks.map((link) => {
+            const Icon = link.icon;
+            const active = link.exact
+              ? pathname === link.to
+              : pathname === link.to || pathname.startsWith(link.to + "/");
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  active
+                    ? "bg-[#FDF4FF] text-[#D946EF]"
+                    : "text-[#6B7280] hover:bg-[#FDF4FF] hover:text-[#D946EF]",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </Card>
+    </aside>
+  );
+}
 
 function AttendeeDashboard() {
   const { profile, user } = useAuth();
@@ -45,25 +78,7 @@ function AttendeeDashboard() {
       <div className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="grid gap-6 md:grid-cols-[220px_1fr]">
-            <aside className="md:sticky md:top-20 md:self-start">
-              <Card className="p-2" style={{ borderRadius: 12 }}>
-                <nav className="flex flex-col gap-1">
-                  {NAV.map((n) => {
-                    const Icon = n.icon;
-                    return (
-                      <button
-                        key={n.label}
-                        type="button"
-                        className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#6B7280] transition-colors hover:bg-[#FDF4FF] hover:text-[#D946EF]"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {n.label}
-                      </button>
-                    );
-                  })}
-                </nav>
-              </Card>
-            </aside>
+            <AttendeeSidebar />
 
             <section className="space-y-8">
               <div>
@@ -76,7 +91,19 @@ function AttendeeDashboard() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <Stat label="My Tickets" value={loading ? "—" : String(tickets.length)} />
+                <Link to="/dashboard/attendee/tickets" className="group block">
+                  <Card
+                    className="p-5 border border-[#E5E7EB] transition-all hover:border-[#D946EF] hover:-translate-y-0.5 hover:shadow-md"
+                    style={{ borderRadius: 12 }}
+                  >
+                    <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                      My Tickets
+                    </p>
+                    <p className="mt-2 text-2xl font-bold text-[#111827]">
+                      {loading ? "—" : String(tickets.length)}
+                    </p>
+                  </Card>
+                </Link>
                 <Stat label="Saved Events" value="0" />
                 <Stat label="Upcoming Events" value={loading ? "—" : String(upcomingCount)} />
               </div>
@@ -96,19 +123,6 @@ function AttendeeDashboard() {
                         <Link to="/events">Discover Events</Link>
                       </Button>
                     }
-                  />
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-xl font-bold text-[#111827]">Settings</h2>
-                <p className="mt-1 text-sm text-[#6B7280]">
-                  Manage your account and access.
-                </p>
-                <div className="mt-4">
-                  <BecomeOrganiserCard
-                    fullName={profile?.full_name ?? ""}
-                    email={email ?? ""}
                   />
                 </div>
               </div>
