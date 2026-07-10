@@ -7,6 +7,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { formatCurrency, formatDate } from "@/lib/utils";
