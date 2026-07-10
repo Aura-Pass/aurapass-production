@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
-import { MyTicketsList } from "@/components/tickets/MyTicketsList";
+
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/attendee")({
@@ -108,24 +108,6 @@ function AttendeeDashboard() {
                 <Stat label="Upcoming Events" value={loading ? "—" : String(upcomingCount)} />
               </div>
 
-              <div>
-                <h2 className="text-xl font-bold text-[#111827]">My Tickets</h2>
-                <p className="mt-1 text-sm text-[#6B7280]">
-                  Tap an event to reveal your QR codes.
-                </p>
-
-                <div className="mt-4">
-                  <MyTicketsList
-                    tickets={tickets}
-                    loading={loading}
-                    emptyCta={
-                      <Button asChild variant="primary">
-                        <Link to="/events">Discover Events</Link>
-                      </Button>
-                    }
-                  />
-                </div>
-              </div>
             </section>
           </div>
         </div>
