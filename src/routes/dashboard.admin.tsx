@@ -141,13 +141,90 @@ function AdminDashboard() {
                   key={e.id}
                   event={e}
                   showActions={tab === "pending_review"}
-                  onDecision={handleDecision}
+                  onApprove={handleApprove}
+                  onReject={openRejectModal}
                 />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      <Dialog
+        open={rejectTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) closeRejectModal();
+        }}
+      >
+        <DialogContent
+          className="bg-white sm:max-w-lg"
+          style={{ borderRadius: 12 }}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-[#111827]">Reject this event</DialogTitle>
+            <DialogDescription className="text-[#6B7280]">
+              Provide feedback so the organiser understands why their event was rejected.
+              The reason will be shown on their dashboard.
+            </DialogDescription>
+          </DialogHeader>
+
+          {rejectTarget ? (
+            <div className="rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
+                Event
+              </p>
+              <p className="mt-1 text-sm font-medium text-[#111827]">
+                {rejectTarget.title}
+              </p>
+            </div>
+          ) : null}
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="rejection-reason"
+              className="block text-sm font-medium text-[#111827]"
+            >
+              Reason for rejection
+            </label>
+            <Textarea
+              id="rejection-reason"
+              rows={5}
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="e.g. Event details are incomplete, banner image is inappropriate, description is misleading..."
+              className="min-h-[120px]"
+            />
+            <p className="text-xs text-[#6B7280]">
+              {rejectReason.trim().length} / 20 characters minimum
+            </p>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeRejectModal}
+              disabled={rejectSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={confirmReject}
+              disabled={rejectSubmitting || rejectReason.trim().length < 20}
+              className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+            >
+              {rejectSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Spinner className="h-4 w-4" /> Rejecting…
+                </span>
+              ) : (
+                "Confirm Rejection"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageWrapper>
   );
 }
