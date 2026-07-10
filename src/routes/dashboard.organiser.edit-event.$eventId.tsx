@@ -170,6 +170,7 @@ function EditEventPage() {
         newDescription !== originalReviewFields.description ||
         newBanner !== originalBanner;
       const shouldResetToReview = originalStatus === "published" && reviewFieldChanged;
+      const isResubmission = originalStatus === "rejected";
 
       const updatePayload: Record<string, unknown> = {
         title: newTitle,
@@ -182,6 +183,10 @@ function EditEventPage() {
         banner_url: newBanner,
       };
       if (shouldResetToReview) updatePayload.status = "pending_review";
+      if (isResubmission) {
+        updatePayload.status = "pending_review";
+        updatePayload.rejection_reason = null;
+      }
 
       const { error: updErr } = await (supabase as any)
         .from("events")
@@ -213,10 +218,30 @@ function EditEventPage() {
         }
       }
 
+      if (isResubmission) {
+        // Fire admin notification on resubmission — never block save on email failure.
+        try {
+          await sendAdminEventSubmissionEmailFn({
+            data: {
+              eventTitle: newTitle,
+              organiserName: profile?.full_name ?? "Unknown organiser",
+              organiserEmail: profile?.email ?? user.email ?? "unknown@aurapassticket.com",
+              eventDate: form.event_date,
+              eventCity: form.city,
+              eventId: String(eventId),
+            },
+          });
+        } catch (emailErr) {
+          console.error("[edit-event] admin resubmission email failed", emailErr);
+        }
+      }
+
       toast.success(
-        shouldResetToReview
-          ? "Event updated — sent back for review because key details changed"
-          : "Event updated",
+        isResubmission
+          ? "Your event has been resubmitted for review. We'll notify you once it's approved."
+          : shouldResetToReview
+            ? "Event updated — sent back for review because key details changed"
+            : "Event updated",
       );
       navigate({ to: "/dashboard/organiser" });
     } catch (err) {
