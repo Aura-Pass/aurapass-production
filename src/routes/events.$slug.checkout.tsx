@@ -99,7 +99,7 @@ function CheckoutPage() {
     return () => {
       active = false;
     };
-  }, [id, ticketTypeId]);
+  }, [slug, ticketTypeId]);
 
 
   useEffect(() => {
