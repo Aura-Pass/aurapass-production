@@ -21,6 +21,7 @@ export interface Event {
   event_date: string;
   event_time: string;
   status: "pending_review" | "published" | "rejected" | "draft" | "sold_out" | "ended";
+  rejection_reason?: string | null;
   created_at: string;
   updated_at: string;
 }
