@@ -40,15 +40,27 @@ export function useAdminEvents() {
   async function updateEventStatus(
     eventId: string,
     status: "published" | "rejected",
+    rejectionReason?: string,
   ) {
+    const patch: Record<string, unknown> = { status };
+    if (status === "rejected") {
+      patch.rejection_reason = rejectionReason ?? null;
+    } else {
+      patch.rejection_reason = null;
+    }
+
     const { error } = await (supabase as any)
       .from("events")
-      .update({ status })
+      .update(patch)
       .eq("id", eventId);
 
     if (!error) {
       setEvents((prev) =>
-        prev.map((e) => (e.id === eventId ? { ...e, status } : e)),
+        prev.map((e) =>
+          e.id === eventId
+            ? { ...e, status, rejection_reason: patch.rejection_reason as string | null }
+            : e,
+        ),
       );
     }
     return { error };
