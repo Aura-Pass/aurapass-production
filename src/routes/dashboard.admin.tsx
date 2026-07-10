@@ -102,10 +102,24 @@ function AdminDashboard() {
             Review organiser submissions and moderate events.
           </p>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Stat label="Pending review" value={counts.pending_review} accent="amber" />
             <Stat label="Published" value={counts.published} accent="green" />
             <Stat label="Rejected" value={counts.rejected} accent="red" />
+            <Link
+              to="/dashboard/admin/tickets"
+              className="group block"
+            >
+              <Card
+                className="p-5 border border-[#E5E7EB] transition-all hover:border-[#D946EF] hover:-translate-y-0.5 hover:shadow-md"
+                style={{ borderRadius: 12 }}
+              >
+                <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                  My Tickets
+                </p>
+                <p className="mt-2 text-2xl font-bold text-[#111827]">View →</p>
+              </Card>
+            </Link>
           </div>
 
           <div className="mt-8 flex gap-2 border-b border-[#E5E7EB]">
