@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
+import { useAuth } from "@/hooks/useAuth";
+import { useMyTickets } from "@/hooks/useMyTickets";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/admin")({
@@ -33,6 +35,9 @@ type Tab = "pending_review" | "published" | "rejected";
 
 function AdminDashboard() {
   const { events, loading, updateEventStatus } = useAdminEvents();
+  const { profile, user } = useAuth();
+  const email = profile?.email ?? user?.email;
+  const { tickets } = useMyTickets(email);
   const [tab, setTab] = useState<Tab>("pending_review");
   const [rejectTarget, setRejectTarget] = useState<AdminEvent | null>(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -117,7 +122,7 @@ function AdminDashboard() {
                 <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
                   My Tickets
                 </p>
-                <p className="mt-2 text-2xl font-bold text-[#111827]">View →</p>
+                <p className="mt-2 text-2xl font-bold text-[#111827]">{tickets.length}</p>
               </Card>
             </Link>
           </div>
