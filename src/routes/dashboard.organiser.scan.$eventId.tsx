@@ -37,6 +37,15 @@ function ScanPage() {
   const [admittingTicketId, setAdmittingTicketId] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [optimisticCheckedIn, setOptimisticCheckedIn] = useState<number | null>(null);
+  const [ticketSearch, setTicketSearch] = useState("");
+  const { tickets, refetch: refetchTickets } = useEventTickets(eventId);
+
+  const filteredTickets = tickets.filter(
+    (t) =>
+      ticketSearch === "" ||
+      t.qr_code.toLowerCase().includes(ticketSearch.toLowerCase()) ||
+      (t.order?.buyer_name ?? "").toLowerCase().includes(ticketSearch.toLowerCase()),
+  );
 
   const scannerRef = useRef<Html5QrcodeType | null>(null);
   const isProcessingRef = useRef(false);
