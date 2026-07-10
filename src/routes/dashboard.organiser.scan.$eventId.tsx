@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { supabase } from "@/lib/supabase";
 import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
+import { useEventTickets } from "@/hooks/useEventTickets";
 
 export const Route = createFileRoute("/dashboard/organiser/scan/$eventId")({
   head: () => ({ meta: [{ title: "Ticket Scanner | AuraPass" }] }),
