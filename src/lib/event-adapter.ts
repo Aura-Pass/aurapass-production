@@ -12,6 +12,7 @@ export function toEventCardData(e: PublishedEvent): MockEvent {
 
   return {
     id: e.id,
+    slug: e.slug ?? null,
     title: e.title,
     description: e.description,
     banner_url: e.banner_url ?? "",
