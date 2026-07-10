@@ -199,3 +199,91 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
 
   return { success: true as const, qrCount: ticketList.length };
 }
+
+export interface AdminEventSubmissionInput {
+  eventTitle: string;
+  organiserName: string;
+  organiserEmail: string;
+  eventDate: string;
+  eventCity: string;
+  eventId: string;
+}
+
+export async function sendAdminEventSubmissionEmail(data: AdminEventSubmissionInput) {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (!resendApiKey) {
+    console.error("[admin-email] RESEND_API_KEY not set");
+    return;
+  }
+
+  const adminUrl = `https://aurapassticket.com/dashboard/admin`;
+  let formattedDate = data.eventDate;
+  try {
+    formattedDate = new Date(data.eventDate).toLocaleDateString("en-NG", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    // keep raw
+  }
+
+  const row2 = (label: string, value: string) => `<tr>
+    <td style="padding:10px 16px;font-size:13px;color:#6B7280;border-bottom:1px solid #F3F4F6;">${escapeHtml(label)}</td>
+    <td style="padding:10px 16px;font-size:13px;color:#111827;text-align:right;font-weight:500;border-bottom:1px solid #F3F4F6;">${escapeHtml(value)}</td>
+  </tr>`;
+
+  const html = `<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>New event pending review</title></head>
+  <body style="margin:0;padding:0;background:#F9FAFB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9FAFB;padding:32px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
+          <tr><td style="padding:20px 32px;background:#111827;color:#FFFFFF;">
+            <div style="font-size:18px;font-weight:700;letter-spacing:-0.02em;">AuraPass</div>
+          </td></tr>
+          <tr><td style="padding:28px 32px 8px;">
+            <h1 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#111827;">New event pending review</h1>
+            <p style="margin:0 0 20px;font-size:14px;color:#6B7280;">An organiser has submitted an event for approval.</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;">
+              ${row2("Event", data.eventTitle)}
+              ${row2("Organiser", data.organiserName)}
+              ${row2("Email", data.organiserEmail)}
+              ${row2("Date", formattedDate)}
+              ${row2("City", data.eventCity)}
+            </table>
+          </td></tr>
+          <tr><td style="padding:24px 32px 32px;text-align:center;">
+            <a href="${adminUrl}" style="display:inline-block;background:#D946EF;color:#FFFFFF;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:600;font-size:14px;">Review Event</a>
+          </td></tr>
+        </table>
+        <div style="margin-top:16px;font-size:12px;color:#9CA3AF;text-align:center;">© 2026 AuraPass · aurapassticket.com</div>
+      </td></tr>
+    </table>
+  </body>
+</html>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "AuraPass <noreply@aurapassticket.com>",
+      to: ["support@aurapassticket.com"],
+      subject: `New event for review: ${data.eventTitle}`,
+      html,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error("[admin-email] Failed to send:", err);
+  } else {
+    console.log("[admin-email] Sent for event:", data.eventTitle);
+  }
+}
+
