@@ -275,31 +275,33 @@ function ByType({ sales }: { sales: SaleRecord[] }) {
 
   return (
     <Card className="mt-6 overflow-hidden" style={{ borderRadius: 12 }}>
-      <table className="w-full text-sm">
-        <thead className="bg-[#F9FAFB]">
-          <tr className="text-left text-xs uppercase tracking-wide text-[#6B7280]">
-            <th className="p-4">Type</th>
-            <th className="p-4">Events</th>
-            <th className="p-4 text-right">Sold</th>
-            <th className="p-4 text-right">Revenue</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.name} className="border-t border-[#E5E7EB]">
-              <td className="p-4 font-semibold text-[#111827]">{r.name}</td>
-              <td className="p-4 text-[#6B7280]">
-                {Array.from(r.events).slice(0, 3).join(", ")}
-                {r.events.size > 3 ? ` +${r.events.size - 3}` : ""}
-              </td>
-              <td className="p-4 text-right text-[#111827]">{r.sold}</td>
-              <td className="p-4 text-right font-semibold text-[#111827]">
-                {naira(r.revenue)}
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[500px] text-sm">
+          <thead className="bg-[#F9FAFB]">
+            <tr className="text-left text-xs uppercase tracking-wide text-[#6B7280]">
+              <th className="p-4">Type</th>
+              <th className="p-4">Events</th>
+              <th className="p-4 text-right">Sold</th>
+              <th className="p-4 text-right">Revenue</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.name} className="border-t border-[#E5E7EB]">
+                <td className="p-4 font-semibold text-[#111827]">{r.name}</td>
+                <td className="p-4 text-[#6B7280]">
+                  {Array.from(r.events).slice(0, 3).join(", ")}
+                  {r.events.size > 3 ? ` +${r.events.size - 3}` : ""}
+                </td>
+                <td className="p-4 text-right text-[#111827]">{r.sold}</td>
+                <td className="p-4 text-right font-semibold text-[#111827]">
+                  {naira(r.revenue)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </Card>
   );
 }
