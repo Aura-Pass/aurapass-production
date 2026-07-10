@@ -91,7 +91,7 @@ function ScanPage() {
       try {
         await scanner.start(
           { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 250 } },
+          { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
           (decodedText: string) => {
             // eslint-disable-next-line no-console
             console.log("[scanner] decoded:", decodedText);
