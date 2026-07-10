@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Event } from "@/types";
 
-export interface AdminEvent extends Event {
+export interface AdminEvent extends Omit<Event, "ticket_types"> {
   organiser_name: string;
   ticket_types: { id: string; name: string; price: number; quantity: number }[];
 }
