@@ -162,6 +162,22 @@ function CreateEventPage() {
         throw new Error(ticketErr.message);
       }
 
+      // Fire admin notification — never block submission on email failure.
+      try {
+        await sendAdminEventSubmissionEmailFn({
+          data: {
+            eventTitle: form.title.trim(),
+            organiserName: profile?.full_name ?? "Unknown organiser",
+            organiserEmail: profile?.email ?? user.email ?? "unknown@aurapassticket.com",
+            eventDate: form.event_date,
+            eventCity: form.city,
+            eventId: String(eventRow.id),
+          },
+        });
+      } catch (emailErr) {
+        console.error("[create-event] admin email failed", emailErr);
+      }
+
       toast.success("Event submitted! We'll review it shortly.");
       navigate({ to: "/dashboard/organiser" });
     } catch (err) {
