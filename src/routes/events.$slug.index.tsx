@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 interface EventWithTickets extends Event {
   ticket_types: TicketType[];
