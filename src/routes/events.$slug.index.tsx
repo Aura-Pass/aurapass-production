@@ -81,6 +81,7 @@ function EventDetailPage() {
   const [event, setEvent] = useState<EventWithTickets | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
