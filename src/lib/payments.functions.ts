@@ -325,6 +325,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
       await new Promise<void>((resolve) => setTimeout(resolve, 1500));
 
       await sendConfirmationEmailSafely(sb, order.id);
+      await sendOrganiserSaleEmailSafely(sb, order.id);
     }
 
 
