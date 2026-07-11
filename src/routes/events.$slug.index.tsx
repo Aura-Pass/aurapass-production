@@ -355,6 +355,13 @@ function EventDetailPage() {
           </div>
         </div>
       </div>
+      {lightboxOpen && event.banner_url && (
+        <ImageLightbox
+          src={event.banner_url}
+          alt={event.title}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </PageWrapper>
   );
 }
