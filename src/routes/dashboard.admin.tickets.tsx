@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,33 +20,29 @@ function AdminTicketsPage() {
   const { tickets, loading } = useMyTickets(email);
 
   return (
-    <PageWrapper>
-      <div className="bg-[#F9FAFB] min-h-screen">
-        <div className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-10">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Tickets</h1>
-              <p className="mt-1 text-sm text-[#6B7280]">
-                Tickets you've purchased as an attendee.
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <Link to="/dashboard/admin">Back</Link>
-            </Button>
-          </div>
-          <div className="mt-6">
-            <MyTicketsList
-              tickets={tickets}
-              loading={loading}
-              emptyCta={
-                <Button asChild variant="primary">
-                  <Link to="/events">Discover Events</Link>
-                </Button>
-              }
-            />
-          </div>
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Tickets</h1>
+          <p className="mt-1 text-sm text-[#6B7280]">
+            Tickets you've purchased as an attendee.
+          </p>
         </div>
+        <Button asChild variant="outline">
+          <Link to="/dashboard/admin">Back</Link>
+        </Button>
       </div>
-    </PageWrapper>
+      <div className="mt-6">
+        <MyTicketsList
+          tickets={tickets}
+          loading={loading}
+          emptyCta={
+            <Button asChild variant="primary">
+              <Link to="/events">Discover Events</Link>
+            </Button>
+          }
+        />
+      </div>
+    </div>
   );
 }
