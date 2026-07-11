@@ -287,3 +287,95 @@ export async function sendAdminEventSubmissionEmail(data: AdminEventSubmissionIn
   }
 }
 
+export interface OrganiserTicketSaleInput {
+  organiserEmail: string;
+  organiserName: string;
+  eventTitle: string;
+  eventDate: string;
+  buyerName: string;
+  ticketTypeName: string;
+  quantity: number;
+  revenue: number;
+  totalTicketsSold: number;
+  totalCapacity: number;
+}
+
+export async function sendOrganiserTicketSaleEmail(data: OrganiserTicketSaleInput) {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (!resendApiKey) {
+    console.error("[organiser-email] RESEND_API_KEY not set");
+    return;
+  }
+
+  let formattedDate = data.eventDate;
+  try {
+    formattedDate = new Date(data.eventDate).toLocaleDateString("en-NG", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    // keep raw
+  }
+
+  const dashboardUrl = "https://aurapassticket.com/dashboard/organiser/sales";
+  const revenueDisplay = `₦${Number(data.revenue).toLocaleString("en-NG")}`;
+
+  const html = `<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>New ticket sold</title></head>
+  <body style="margin:0;padding:0;background:#F9FAFB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9FAFB;padding:32px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid #E5E7EB;">
+          <tr><td style="padding:24px 32px;background:#111827;color:#FFFFFF;text-align:center;">
+            <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;">AuraPass</div>
+          </td></tr>
+          <tr><td style="padding:32px;text-align:center;">
+            <div style="font-size:40px;line-height:1;">🎉</div>
+            <h1 style="margin:16px 0 4px;font-size:22px;font-weight:700;color:#111827;">New ticket sold!</h1>
+            <p style="margin:0;color:#6B7280;font-size:14px;">Hi ${escapeHtml(data.organiserName)}, someone just bought a ticket to your event.</p>
+          </td></tr>
+          <tr><td style="padding:0 32px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;">
+              ${row("Event", data.eventTitle)}
+              ${row("Date", formattedDate)}
+              ${row("Buyer", data.buyerName)}
+              ${row("Ticket Type", `${data.ticketTypeName} × ${data.quantity}`)}
+              ${row("Revenue", revenueDisplay, true)}
+              ${row("Progress", `${data.totalTicketsSold} / ${data.totalCapacity} tickets sold`)}
+            </table>
+          </td></tr>
+          <tr><td style="padding:24px 32px 32px;text-align:center;">
+            <a href="${dashboardUrl}" style="display:inline-block;background:#111827;color:#FFFFFF;text-decoration:none;padding:14px 24px;border-radius:10px;font-weight:600;font-size:15px;">View Sales Dashboard</a>
+          </td></tr>
+        </table>
+        <div style="margin-top:16px;font-size:12px;color:#9CA3AF;text-align:center;">© 2026 AuraPass · aurapassticket.com</div>
+      </td></tr>
+    </table>
+  </body>
+</html>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "AuraPass <noreply@aurapassticket.com>",
+      to: [data.organiserEmail],
+      subject: `🎟️ New ticket sale — ${data.eventTitle}`,
+      html,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error("[organiser-email] Failed to send:", err);
+  } else {
+    console.log("[organiser-email] Sent to:", data.organiserEmail);
+  }
+}
+
