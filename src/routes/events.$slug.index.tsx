@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 interface EventWithTickets extends Event {
   ticket_types: TicketType[];
@@ -80,6 +81,7 @@ function EventDetailPage() {
   const [event, setEvent] = useState<EventWithTickets | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
@@ -216,7 +218,12 @@ function EventDetailPage() {
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#F3F4F6] md:aspect-[16/9]">
             {event.banner_url ? (
-              <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" />
+              <img
+                src={event.banner_url}
+                alt={event.title}
+                onClick={() => setLightboxOpen(true)}
+                className="h-full w-full cursor-zoom-in object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
                 <ImageIcon className="h-14 w-14 text-[#9CA3AF]" />
@@ -348,6 +355,13 @@ function EventDetailPage() {
           </div>
         </div>
       </div>
+      {lightboxOpen && event.banner_url && (
+        <ImageLightbox
+          src={event.banner_url}
+          alt={event.title}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </PageWrapper>
   );
 }

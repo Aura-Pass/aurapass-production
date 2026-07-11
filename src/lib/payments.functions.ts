@@ -48,6 +48,49 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
   }
 }
 
+async function sendOrganiserSaleEmailSafely(sb: any, orderId: string) {
+  try {
+    const { data: order } = await sb
+      .from("orders")
+      .select("id, event_id, ticket_type_id, buyer_name, quantity, ticket_price")
+      .eq("id", orderId)
+      .single();
+    if (!order) return;
+
+    const { data: eventWithOrg } = await sb
+      .from("events")
+      .select("title, event_date, organiser_id, profiles!inner(full_name, email)")
+      .eq("id", order.event_id)
+      .single();
+
+    const { data: tt } = await sb
+      .from("ticket_types")
+      .select("name, quantity, quantity_sold")
+      .eq("id", order.ticket_type_id)
+      .single();
+
+    if (!eventWithOrg || !tt) return;
+    const org = (eventWithOrg as any).profiles;
+    if (!org?.email) return;
+
+    const { sendOrganiserTicketSaleEmail } = await import("@/lib/email.server");
+    await sendOrganiserTicketSaleEmail({
+      organiserEmail: org.email,
+      organiserName: org.full_name ?? "Organiser",
+      eventTitle: eventWithOrg.title,
+      eventDate: eventWithOrg.event_date,
+      buyerName: order.buyer_name,
+      ticketTypeName: tt.name,
+      quantity: order.quantity,
+      revenue: Number(order.ticket_price) * Number(order.quantity),
+      totalTicketsSold: tt.quantity_sold,
+      totalCapacity: tt.quantity,
+    });
+  } catch (orgEmailErr) {
+    console.error("[organiser-email] Non-blocking error:", orgEmailErr);
+  }
+}
+
 async function generateTicketsForOrder(
   sb: any,
   order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
@@ -173,6 +216,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       });
 
       await sendConfirmationEmailSafely(sb, order.id);
+      await sendOrganiserSaleEmailSafely(sb, order.id);
 
       return { free: true as const, orderId: order.id as string };
     }
@@ -281,6 +325,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
       await new Promise<void>((resolve) => setTimeout(resolve, 1500));
 
       await sendConfirmationEmailSafely(sb, order.id);
+      await sendOrganiserSaleEmailSafely(sb, order.id);
     }
 
 
