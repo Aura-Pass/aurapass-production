@@ -216,6 +216,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       });
 
       await sendConfirmationEmailSafely(sb, order.id);
+      await sendOrganiserSaleEmailSafely(sb, order.id);
 
       return { free: true as const, orderId: order.id as string };
     }
