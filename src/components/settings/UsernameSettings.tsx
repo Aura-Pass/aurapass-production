@@ -47,6 +47,11 @@ export function UsernameSettings() {
       <p className="mt-1 text-sm text-[#6B7280]">
         Letters, numbers, and underscores only. This is how others will see you.
       </p>
+      {!profile?.username && (
+        <p className="mt-4 text-sm text-[#6B7280] bg-[#FDF4FF] border border-[#D946EF]/20 rounded-lg px-4 py-3">
+          You haven't set a username yet. Choose one below to personalise your AuraPass profile.
+        </p>
+      )}
       <div className="relative mt-4">
         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF]">
           @
