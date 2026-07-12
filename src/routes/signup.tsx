@@ -51,18 +51,20 @@ function SignUpPage() {
 
     setSubmitting(true);
 
-    // Check if username is already taken
-    const { data: existingUser } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("username", username.trim())
-      .maybeSingle();
+    // Check if username is already taken (via SECURITY DEFINER RPC — bypasses RLS)
+    const { data: isTaken, error: checkError } = await supabase
+      .rpc("is_username_taken", { check_username: username.trim() });
 
-    if (existingUser) {
+    if (checkError) {
+      console.error("Username check error:", checkError);
+      // If check fails, proceed anyway — the trigger will enforce uniqueness
+    } else if (isTaken) {
       setError("That username is already taken. Please choose a different one.");
       setSubmitting(false);
       return;
     }
+
+
 
 
 
