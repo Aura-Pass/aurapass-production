@@ -52,8 +52,10 @@ function SignUpPage() {
     setSubmitting(true);
 
     // Check if username is already taken (via SECURITY DEFINER RPC — bypasses RLS)
-    const { data: isTaken, error: checkError } = await supabase
-      .rpc("is_username_taken", { check_username: username.trim() });
+    const { data: isTaken, error: checkError } = await (supabase as unknown as {
+      rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: boolean | null; error: unknown }>;
+    }).rpc("is_username_taken", { check_username: username.trim() });
+
 
     if (checkError) {
       console.error("Username check error:", checkError);
