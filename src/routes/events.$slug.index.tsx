@@ -122,7 +122,7 @@ function EventDetailPage() {
     (async () => {
       const { data, error } = await (supabase as any)
         .from("events")
-        .select(`*, ticket_types (*), profiles!events_organiser_id_fkey ( full_name )`)
+        .select(`*, ticket_types (*), profiles!events_organiser_id_fkey ( full_name, username, avatar_url )`)
         .eq("slug", slug)
         .maybeSingle();
 
@@ -134,6 +134,8 @@ function EventDetailPage() {
           ...(data as any),
           ticket_types: (data as any).ticket_types ?? [],
           organiser_name: (data as any).profiles?.full_name ?? "Organiser",
+          organiser_username: (data as any).profiles?.username ?? null,
+          organiser_avatar_url: (data as any).profiles?.avatar_url ?? null,
         });
       }
       setLoading(false);
