@@ -18,6 +18,8 @@ import { ImageLightbox } from "@/components/ui/ImageLightbox";
 interface EventWithTickets extends Event {
   ticket_types: TicketType[];
   organiser_name: string;
+  organiser_username: string | null;
+  organiser_avatar_url: string | null;
 }
 
 import { getPublishedEventForHead } from "@/lib/events.functions";
