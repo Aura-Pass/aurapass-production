@@ -28,3 +28,18 @@ begin
   return new;
 end;
 $$ language plpgsql security definer;
+
+-- Username availability check RPC (bypasses RLS via SECURITY DEFINER)
+create or replace function public.is_username_taken(check_username text)
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select exists (
+    select 1 from public.profiles
+    where username = lower(trim(check_username))
+  );
+$$;
+
+grant execute on function public.is_username_taken(text) to anon, authenticated;
