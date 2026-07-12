@@ -11,10 +11,17 @@ const LINKS = [
   { label: "For Organisers", to: "/" as const },
 ];
 
-function initialsOf(name: string | undefined | null) {
+function initialsOf(profile: { username?: string | null; full_name?: string | null } | null | undefined) {
+  if (profile?.username) return profile.username.slice(0, 2).toUpperCase();
+  const name = profile?.full_name;
   if (!name) return "U";
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "U";
+}
+
+function displayNameOf(profile: { username?: string | null; full_name?: string | null } | null | undefined, fallback?: string | null) {
+  if (profile?.username) return `@${profile.username}`;
+  return profile?.full_name || fallback || "Account";
 }
 
 function dashboardPathFor(role: string | undefined) {
@@ -79,10 +86,10 @@ export function Navbar() {
                 aria-label="Account menu"
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
-                  {initialsOf(profile?.full_name)}
+                  {initialsOf(profile)}
                 </span>
                 <span className="text-sm font-medium text-[#111827]">
-                  {profile?.full_name || user.email}
+                  {displayNameOf(profile, user.email)}
                 </span>
               </button>
               {menuOpen ? (
@@ -152,10 +159,10 @@ export function Navbar() {
                 <>
                   <div className="flex items-center gap-2 px-3 py-2">
                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
-                      {initialsOf(profile?.full_name)}
+                      {initialsOf(profile)}
                     </span>
                     <span className="text-sm font-medium text-[#111827]">
-                      {profile?.full_name || user.email}
+                      {displayNameOf(profile, user.email)}
                     </span>
                   </div>
                   <Button asChild variant="outline" size="md">

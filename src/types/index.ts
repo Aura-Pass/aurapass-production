@@ -5,6 +5,7 @@ export interface Profile {
   phone: string;
   role: "attendee" | "organiser" | "admin";
   is_approved: boolean;
+  username: string | null;
   created_at: string;
   updated_at: string;
 }

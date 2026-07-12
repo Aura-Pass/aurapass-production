@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { BecomeOrganiserCard } from "@/components/attendee/BecomeOrganiserCard";
+import { UsernameSettings } from "@/components/settings/UsernameSettings";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/dashboard/attendee/settings")({
@@ -26,6 +27,7 @@ function AttendeeSettingsPage() {
           Manage your account and access.
         </p>
       </div>
+      <UsernameSettings />
       <BecomeOrganiserCard
         fullName={profile?.full_name ?? ""}
         email={email ?? ""}
