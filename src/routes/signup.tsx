@@ -51,6 +51,21 @@ function SignUpPage() {
 
     setSubmitting(true);
 
+    // Check if username is already taken
+    const { data: existingUser } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username.trim())
+      .maybeSingle();
+
+    if (existingUser) {
+      setError("That username is already taken. Please choose a different one.");
+      setSubmitting(false);
+      return;
+    }
+
+
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: email.trim(),
       password,
