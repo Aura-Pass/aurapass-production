@@ -2,7 +2,6 @@ import { useEffect, useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -252,17 +251,17 @@ function EditEventPage() {
 
   if (loading) {
     return (
-      <PageWrapper>
+      <>
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner className="h-8 w-8" />
         </div>
-      </PageWrapper>
+      </>
     );
   }
 
   if (notFound) {
     return (
-      <PageWrapper>
+      <>
         <div className="mx-auto max-w-2xl px-4 py-24 text-center">
           <h1 className="text-2xl font-bold text-[#111827]">Event not found</h1>
           <p className="mt-2 text-sm text-[#6B7280]">
@@ -274,12 +273,12 @@ function EditEventPage() {
             </Button>
           </div>
         </div>
-      </PageWrapper>
+      </>
     );
   }
 
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
           <div className="mb-6">
@@ -463,7 +462,7 @@ function EditEventPage() {
           </Card>
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }
 

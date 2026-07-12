@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { UsernameSettings } from "@/components/settings/UsernameSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -18,7 +17,7 @@ export const Route = createFileRoute("/dashboard/organiser/settings")({
 
 function OrganiserSettingsPage() {
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10 space-y-6">
           <div>
@@ -33,7 +32,7 @@ function OrganiserSettingsPage() {
           <UsernameSettings />
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }
 

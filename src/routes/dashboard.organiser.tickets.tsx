@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,7 +20,7 @@ function OrganiserTicketsPage() {
   const { tickets, loading } = useMyTickets(email);
 
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB] min-h-screen">
         <div className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex items-center justify-between gap-3">
@@ -48,6 +47,6 @@ function OrganiserTicketsPage() {
           </div>
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }

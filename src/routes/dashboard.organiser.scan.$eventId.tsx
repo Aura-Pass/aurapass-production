@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import type { Html5Qrcode as Html5QrcodeType } from "html5-qrcode";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -386,7 +385,7 @@ function ScanPage() {
   const showOverlay = isSuccess || isError;
 
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB] min-h-screen">
         <div className="mx-auto max-w-3xl px-4 py-6 md:py-10">
           <div className="flex items-center justify-between gap-3">
@@ -561,6 +560,6 @@ function ScanPage() {
           </Card>
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }
