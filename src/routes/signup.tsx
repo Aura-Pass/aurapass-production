@@ -150,6 +150,32 @@ function SignUpPage() {
                   onChange={(e) => setFullName(e.target.value)}
                   required
                 />
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-[#111827]">
+                    Username
+                  </label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF]">
+                      @
+                    </span>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) =>
+                        setUsername(
+                          e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+                        )
+                      }
+                      placeholder="yourname"
+                      maxLength={30}
+                      className="w-full rounded-lg border border-[#E5E7EB] px-4 py-3 pl-8 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+                      required
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-[#6B7280]">
+                    Letters, numbers, and underscores only. This is how others will see you.
+                  </p>
+                </div>
                 <Input
                   label="Email"
                   type="email"
