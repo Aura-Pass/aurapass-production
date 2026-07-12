@@ -343,17 +343,45 @@ function EventDetailPage() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
                   Organiser
                 </p>
-                <div className="mt-3 flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
-                      {event.organiser_name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
-                    <p className="text-xs text-[#6B7280]">Verified organiser</p>
+                {event.organiser_username ? (
+                  <Link
+                    to="/organisers/$username"
+                    params={{ username: event.organiser_username }}
+                    className="mt-3 flex items-center gap-3 rounded-lg -mx-2 px-2 py-2 hover:bg-[#F9FAFB] transition"
+                  >
+                    <Avatar>
+                      {event.organiser_avatar_url ? (
+                        <img
+                          src={event.organiser_avatar_url}
+                          alt={event.organiser_name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
+                          {event.organiser_name.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
+                      <p className="text-xs text-[#A21CAF]">
+                        @{event.organiser_username} · View profile →
+                      </p>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="mt-3 flex items-center gap-3">
+                    <Avatar>
+                      <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
+                        {event.organiser_name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
+                      <p className="text-xs text-[#6B7280]">Verified organiser</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </Card>
             </aside>
           </div>
