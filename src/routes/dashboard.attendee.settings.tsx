@@ -27,6 +27,7 @@ function AttendeeSettingsPage() {
           Manage your account and access.
         </p>
       </div>
+      <UsernameSettings />
       <BecomeOrganiserCard
         fullName={profile?.full_name ?? ""}
         email={email ?? ""}
