@@ -27,7 +27,7 @@ function AttendeeOverview() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
-          Welcome back, {profile?.full_name?.split(" ")[0] ?? "there"}
+          Welcome back, {profile?.username ? `@${profile.username}` : (profile?.full_name?.split(" ")[0] ?? "there")}
         </h1>
         <p className="mt-1 text-sm text-[#6B7280]">
           Here's a snapshot of your activity on AuraPass.

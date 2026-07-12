@@ -40,7 +40,7 @@ function OrganiserDashboard() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
-                Welcome back, {profile?.full_name || "Organiser"}
+                Welcome back, {profile?.username ? `@${profile.username}` : (profile?.full_name || "Organiser")}
               </h1>
               <p className="mt-1 text-sm text-[#6B7280]">
                 Manage your events and track your ticket sales.
