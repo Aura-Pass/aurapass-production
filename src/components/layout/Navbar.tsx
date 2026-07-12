@@ -86,10 +86,10 @@ export function Navbar() {
                 aria-label="Account menu"
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
-                  {initialsOf(profile?.full_name)}
+                  {initialsOf(profile)}
                 </span>
                 <span className="text-sm font-medium text-[#111827]">
-                  {profile?.full_name || user.email}
+                  {displayNameOf(profile, user.email)}
                 </span>
               </button>
               {menuOpen ? (
