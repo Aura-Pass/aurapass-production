@@ -18,6 +18,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
@@ -82,6 +83,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const OrganisersUsernameRoute = OrganisersUsernameRouteImport.update({
+  id: '/organisers/$username',
+  path: '/organisers/$username',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OrderConfirmationOrderIdRoute =
   OrderConfirmationOrderIdRouteImport.update({
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
+  '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
+  '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
+  '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/order-confirmation/$orderId'
+    | '/organisers/$username'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/tickets'
@@ -316,6 +326,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/order-confirmation/$orderId'
+    | '/organisers/$username'
     | '/dashboard'
     | '/events'
     | '/dashboard/admin/tickets'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/order-confirmation/$orderId'
+    | '/organisers/$username'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/tickets'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
+  OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   EventsIndexRoute: typeof EventsIndexRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
   EventsSlugIndexRoute: typeof EventsSlugIndexRoute
@@ -444,6 +457,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/organisers/$username': {
+      id: '/organisers/$username'
+      path: '/organisers/$username'
+      fullPath: '/organisers/$username'
+      preLoaderRoute: typeof OrganisersUsernameRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/order-confirmation/$orderId': {
       id: '/order-confirmation/$orderId'
@@ -654,6 +674,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
+  OrganisersUsernameRoute: OrganisersUsernameRoute,
   EventsIndexRoute: EventsIndexRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
   EventsSlugIndexRoute: EventsSlugIndexRoute,
