@@ -75,7 +75,7 @@ function OrganiserProfileSettings() {
         <h2 className="text-lg font-semibold text-[#111827]">Public Profile</h2>
         <p className="mt-1 text-sm text-[#6B7280]">
           This information appears on your public profile at{" "}
-          <span className="font-medium text-[#A21CAF]">
+          <span className="font-medium text-[#A21CAF] break-all">
             aurapassticket.com/organisers/@{profile?.username ?? "yourname"}
           </span>
         </p>
