@@ -6,6 +6,11 @@ export interface Profile {
   role: "attendee" | "organiser" | "admin";
   is_approved: boolean;
   username: string | null;
+  bio: string | null;
+  website_url: string | null;
+  instagram_url: string | null;
+  twitter_url: string | null;
+  avatar_url: string | null;
   created_at: string;
   updated_at: string;
 }
