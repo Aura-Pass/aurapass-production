@@ -11,10 +11,17 @@ const LINKS = [
   { label: "For Organisers", to: "/" as const },
 ];
 
-function initialsOf(name: string | undefined | null) {
+function initialsOf(profile: { username?: string | null; full_name?: string | null } | null | undefined) {
+  if (profile?.username) return profile.username.slice(0, 2).toUpperCase();
+  const name = profile?.full_name;
   if (!name) return "U";
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "U";
+}
+
+function displayNameOf(profile: { username?: string | null; full_name?: string | null } | null | undefined, fallback?: string | null) {
+  if (profile?.username) return `@${profile.username}`;
+  return profile?.full_name || fallback || "Account";
 }
 
 function dashboardPathFor(role: string | undefined) {
