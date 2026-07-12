@@ -23,6 +23,7 @@ function SignUpPage() {
   const { redirect: redirectTo } = Route.useSearch();
   const [role, setRole] = useState<Role>("attendee");
   const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +38,10 @@ function SignUpPage() {
     setError(null);
 
     if (!fullName.trim()) { setError("Please enter your full name."); return; }
+
+    if (!username.trim()) { setError("Please choose a username."); return; }
+    if (username.length < 3) { setError("Username must be at least 3 characters."); return; }
+    if (!/^[a-z0-9_]+$/.test(username)) { setError("Username can only contain letters, numbers, and underscores."); return; }
 
     if (!email.trim()) { setError("Please enter your email address."); return; }
 
@@ -54,6 +59,7 @@ function SignUpPage() {
           full_name: fullName.trim(),
           phone: phone.trim(),
           role,
+          username: username.trim(),
         },
         emailRedirectTo: `${window.location.origin}/login`,
       },
