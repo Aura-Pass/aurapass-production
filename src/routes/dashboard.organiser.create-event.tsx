@@ -2,7 +2,6 @@ import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -188,7 +187,7 @@ function CreateEventPage() {
   }
 
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
           <div className="mb-6 flex items-center justify-between">
@@ -252,7 +251,7 @@ function CreateEventPage() {
           </Card>
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }
 

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -36,7 +35,7 @@ function SalesPage() {
   }, [sales]);
 
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB] min-h-screen">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -94,7 +93,7 @@ function SalesPage() {
           )}
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }
 

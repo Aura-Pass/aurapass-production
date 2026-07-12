@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -34,7 +33,7 @@ function OrganiserDashboard() {
     `₦${n.toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
   return (
-    <PageWrapper>
+    <>
       <div className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -81,7 +80,7 @@ function OrganiserDashboard() {
           </div>
         </div>
       </div>
-    </PageWrapper>
+    </>
   );
 }
 
