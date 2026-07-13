@@ -1,3 +1,8 @@
+/**
+ * useAuth — global authentication hook
+ * Returns: user (Supabase Auth user), profile (AuraPass profiles table row), loading, signOut
+ * Usage: const { user, profile, loading, signOut } = useAuth();
+ */
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
