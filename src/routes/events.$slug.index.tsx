@@ -122,7 +122,7 @@ function EventDetailPage() {
     (async () => {
       const { data, error } = await (supabase as any)
         .from("events")
-        .select(`*, ticket_types (*), profiles!events_organiser_id_fkey ( full_name, username, avatar_url )`)
+        .select(`*, ticket_types (*)`)
         .eq("slug", slug)
         .maybeSingle();
 
@@ -130,12 +130,19 @@ function EventDetailPage() {
       if (error || !data) {
         setEvent(null);
       } else {
+        const { data: organiserProfile } = await (supabase as any)
+          .from("profiles")
+          .select("id, full_name, username, avatar_url, bio")
+          .eq("id", (data as any).organiser_id)
+          .maybeSingle();
+
+        if (!active) return;
         setEvent({
           ...(data as any),
           ticket_types: (data as any).ticket_types ?? [],
-          organiser_name: (data as any).profiles?.full_name ?? "Organiser",
-          organiser_username: (data as any).profiles?.username ?? null,
-          organiser_avatar_url: (data as any).profiles?.avatar_url ?? null,
+          organiser_name: organiserProfile?.full_name ?? "Organiser",
+          organiser_username: organiserProfile?.username ?? null,
+          organiser_avatar_url: organiserProfile?.avatar_url ?? null,
         });
       }
       setLoading(false);
