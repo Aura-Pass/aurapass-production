@@ -1,3 +1,15 @@
+/**
+ * payments.functions.ts
+ *
+ * TanStack server functions for Paystack payment processing.
+ * Runs on Cloudflare Workers (server-side only — not exposed to browser).
+ *
+ * Exports:
+ * - initializePayment: Creates an order and returns Paystack auth URL (or confirms free tickets directly)
+ * - verifyPayment: Verifies a Paystack reference after callback, confirms order, generates tickets, sends emails
+ *
+ * Dependencies: supabaseAdmin (service role), Resend (via email.server.ts), Paystack REST API
+ */
 import { createServerFn } from "@tanstack/react-start";
 import { generateTicketCode } from "@/lib/generateTicketCode";
 
