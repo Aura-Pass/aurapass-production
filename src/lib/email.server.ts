@@ -1,3 +1,16 @@
+/**
+ * email.server.ts
+ *
+ * All transactional email sending for AuraPass via Resend.
+ * Server-side only — never import this in client components.
+ *
+ * Functions:
+ * - sendTicketConfirmationEmail: Sends QR ticket email to buyer after purchase
+ * - sendAdminEventSubmissionEmail: Notifies admin when organiser submits/resubmits an event
+ * - sendOrganiserTicketSaleEmail: Notifies organiser when a ticket is purchased for their event
+ *
+ * Sender: AuraPass <noreply@aurapassticket.com>
+ */
 import QRCode from "qrcode";
 
 export interface TicketConfirmationInput {
