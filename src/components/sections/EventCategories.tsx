@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { EVENT_CATEGORIES } from "@/constants";
 
 export function EventCategories() {
@@ -13,19 +14,28 @@ export function EventCategories() {
           </p>
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {EVENT_CATEGORIES.map((c) => (
-            <button
+            <Link
               key={c.slug}
-              type="button"
-              className="group flex shrink-0 items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-4 py-4 text-left transition-all duration-200 hover:border-[#D946EF] hover:bg-[#FDF4FF] md:w-auto"
-              style={{ minWidth: "160px" }}
+              to="/events"
+              className="group relative block overflow-hidden rounded-xl"
             >
-              <span className="text-2xl">{c.icon}</span>
-              <span className="text-sm font-semibold text-[#111827] group-hover:text-[#D946EF]">
-                {c.label}
-              </span>
-            </button>
+              <div className="relative aspect-square w-full">
+                <img
+                  src={c.image}
+                  alt={c.label}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-colors duration-300 group-hover:from-[#D946EF]/80 group-hover:via-[#D946EF]/20" />
+                <div className="absolute inset-x-0 bottom-0 p-3">
+                  <span className="text-sm font-semibold text-white md:text-base">
+                    {c.label}
+                  </span>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
