@@ -69,14 +69,14 @@ function EventsPage() {
               <CategoryPill
                 label="All"
                 active={activeCategory === "all"}
-                onClick={() => setActiveCategory("all")}
+                onClick={() => handleCategoryChange("all")}
               />
               {EVENT_CATEGORIES.map((c) => (
                 <CategoryPill
                   key={c.slug}
                   label={c.label}
                   active={activeCategory === c.slug}
-                  onClick={() => setActiveCategory(c.slug)}
+                  onClick={() => handleCategoryChange(c.slug)}
                 />
               ))}
             </div>
