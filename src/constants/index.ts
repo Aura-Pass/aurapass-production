@@ -42,7 +42,7 @@ export const EVENT_CATEGORIES = [
     slug: "arts",
     label: "Arts & Culture",
     icon: "🎨",
-    image: "https://qryqcsnbcftcasjovtdj.supabase.co/storage/v1/object/public/assets/categories/%20arts-culture.jpg",
+    image: "https://qryqcsnbcftcasjovtdj.supabase.co/storage/v1/object/public/assets/categories/arts-culture.jpg",
   },
   {
     slug: "comedy",
