@@ -19,6 +19,7 @@ export function EventCategories() {
             <Link
               key={c.slug}
               to="/events"
+              search={{ category: c.slug }}
               className="group relative block overflow-hidden rounded-xl"
             >
               <div className="relative aspect-square w-full">
