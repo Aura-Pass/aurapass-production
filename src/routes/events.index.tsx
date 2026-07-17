@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { EventCard } from "@/components/ui/event-card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,9 @@ import { usePublishedEvents } from "@/hooks/usePublishedEvents";
 import { toEventCardData } from "@/lib/event-adapter";
 
 export const Route = createFileRoute("/events/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Discover Events | AuraPass" },
@@ -20,11 +23,22 @@ export const Route = createFileRoute("/events/")({
 });
 
 function EventsPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const search = Route.useSearch();
+  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState<string>(search.category ?? "all");
   const [paidFilter, setPaidFilter] = useState<"all" | "free" | "paid">("all");
   const [city, setCity] = useState<string>("all");
 
   const { events, loading } = usePublishedEvents();
+
+  function handleCategoryChange(slug: string) {
+    setActiveCategory(slug);
+    navigate({
+      to: "/events",
+      search: slug === "all" ? {} : { category: slug },
+      replace: true,
+    });
+  }
 
   const items = useMemo(() => {
     return events.map(toEventCardData).filter((e) => {
@@ -55,14 +69,14 @@ function EventsPage() {
               <CategoryPill
                 label="All"
                 active={activeCategory === "all"}
-                onClick={() => setActiveCategory("all")}
+                onClick={() => handleCategoryChange("all")}
               />
               {EVENT_CATEGORIES.map((c) => (
                 <CategoryPill
                   key={c.slug}
                   label={c.label}
                   active={activeCategory === c.slug}
-                  onClick={() => setActiveCategory(c.slug)}
+                  onClick={() => handleCategoryChange(c.slug)}
                 />
               ))}
             </div>
