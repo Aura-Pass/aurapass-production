@@ -28,8 +28,10 @@ function EventsPage() {
   const [activeCategory, setActiveCategory] = useState<string>(search.category ?? "all");
   const [paidFilter, setPaidFilter] = useState<"all" | "free" | "paid">("all");
   const [city, setCity] = useState<string>("all");
+  const [showPast, setShowPast] = useState(false);
 
-  const { events, loading } = usePublishedEvents();
+  const { events, loading } = usePublishedEvents(undefined, showPast);
+
 
   function handleCategoryChange(slug: string) {
     setActiveCategory(slug);
