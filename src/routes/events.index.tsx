@@ -114,9 +114,20 @@ function EventsPage() {
               </div>
               <Button variant="outline">More filters</Button>
             </div>
+
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => setShowPast((v) => !v)}
+                className="text-xs text-[#6B7280] hover:text-[#D946EF] underline transition-colors"
+              >
+                {showPast ? "Hide past events" : "Show past events"}
+              </button>
+            </div>
           </div>
         </div>
       </section>
+
 
       <section className="bg-[#F9FAFB] py-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
