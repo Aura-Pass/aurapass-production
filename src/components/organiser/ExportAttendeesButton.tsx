@@ -34,7 +34,7 @@ export function ExportAttendeesButton({ eventId, eventTitle }: Props) {
         .select(
           `id, buyer_name, buyer_email, buyer_phone, quantity, total_amount, created_at, status,
            ticket_types ( name ),
-           tickets ( checked_in, checked_in_at )`,
+           tickets ( status, checked_in_at )`,
         )
         .eq("event_id", eventId)
         .eq("status", "confirmed")
@@ -45,7 +45,7 @@ export function ExportAttendeesButton({ eventId, eventTitle }: Props) {
       const rows = (orders ?? []).map((o: any) => {
         const tickets = Array.isArray(o.tickets) ? o.tickets : [];
         const totalTickets = tickets.length || o.quantity || 0;
-        const checkedIn = tickets.filter((t: any) => t.checked_in).length;
+        const checkedIn = tickets.filter((t: any) => !!t.checked_in_at).length;
         const lastCheckin = tickets
           .map((t: any) => t.checked_in_at)
           .filter(Boolean)
@@ -68,6 +68,7 @@ export function ExportAttendeesButton({ eventId, eventTitle }: Props) {
           status,
           lastCheckin ? new Date(lastCheckin).toISOString() : "",
         ];
+
       });
 
       const header = [
