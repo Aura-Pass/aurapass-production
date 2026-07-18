@@ -7,36 +7,37 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     title: "Platform",
     links: [
       { label: "Discover Events", to: "/events" },
-      { label: "How It Works", to: "/" },
-      { label: "Pricing", to: "/" },
+      { label: "How It Works", to: "/how-it-works" },
+      { label: "Pricing", to: "/pricing" },
     ],
   },
   {
     title: "Organisers",
     links: [
-      { label: "Create Event", to: "/dashboard" },
-      { label: "Organiser Dashboard", to: "/dashboard" },
-      { label: "Resources", to: "/" },
+      { label: "Create Event", to: "/signup" },
+      { label: "Organiser Dashboard", to: "/dashboard/organiser" },
+      { label: "Resources", to: "/how-it-works" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", to: "/" },
-      { label: "Blog", to: "/" },
-      { label: "Careers", to: "/" },
+      { label: "About", to: "/about" },
+      { label: "Blog", to: "/blog" },
+      { label: "Careers", to: "/careers" },
     ],
   },
   {
     title: "Support",
     links: [
-      { label: "Help Centre", to: "/" },
-      { label: "Contact Us", to: "/" },
-      { label: "Terms of Service", to: "/" },
-      { label: "Privacy Policy", to: "/" },
+      { label: "Help Centre", to: "/help" },
+      { label: "Contact Us", to: "/contact" },
+      { label: "Terms of Service", to: "/terms" },
+      { label: "Privacy Policy", to: "/privacy" },
     ],
   },
 ];
+
 
 export function Footer() {
   return (

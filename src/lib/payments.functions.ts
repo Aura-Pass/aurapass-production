@@ -158,7 +158,7 @@ export const initializePayment = createServerFn({ method: "POST" })
 
     const { data: ticketType, error: ticketError } = await sb
       .from("ticket_types")
-      .select("*, events(title, status)")
+      .select("*, events(title, status, event_date, event_time)")
       .eq("id", data.ticketTypeId)
       .single();
 
@@ -174,6 +174,20 @@ export const initializePayment = createServerFn({ method: "POST" })
       return { error: "This event is not currently available for purchase." as const };
     }
 
+    // Sales close 12 hours after the event starts.
+    const evDate = ticketType.events?.event_date;
+    const evTime = ticketType.events?.event_time;
+    if (evDate) {
+      const eventStart = new Date(`${evDate}T${evTime ?? "00:00:00"}`);
+      const salesCutoff = new Date(eventStart.getTime() + 12 * 60 * 60 * 1000);
+      if (new Date() > salesCutoff) {
+        return {
+          error:
+            "Ticket sales for this event have closed. Sales ended 12 hours after the event started." as const,
+        };
+      }
+    }
+
     const now = Date.now();
     if (ticketType.sale_start && now < new Date(ticketType.sale_start).getTime()) {
       return { error: "Ticket sales are not currently open for this ticket type." as const };
@@ -181,6 +195,7 @@ export const initializePayment = createServerFn({ method: "POST" })
     if (ticketType.sale_end && now > new Date(ticketType.sale_end).getTime()) {
       return { error: "Ticket sales are not currently open for this ticket type." as const };
     }
+
 
     if (ticketType.quantity - ticketType.quantity_sold < data.quantity) {
       return { error: "Not enough tickets available" as const };

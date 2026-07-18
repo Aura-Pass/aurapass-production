@@ -90,7 +90,16 @@ function ScanPage() {
       try {
         await scanner.start(
           { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+          {
+            fps: 10,
+            qrbox: { width: 220, height: 220 },
+            aspectRatio: 1.0,
+            videoConstraints: {
+              facingMode: "environment",
+              aspectRatio: 1.0,
+            },
+          } as any,
+
           (decodedText: string) => {
             // eslint-disable-next-line no-console
             console.log("[scanner] decoded:", decodedText);
@@ -409,10 +418,15 @@ function ScanPage() {
 
           <Card className="mt-4 overflow-hidden relative" style={{ borderRadius: 12 }}>
             <div
-              id={containerId}
-              className="aspect-square w-full bg-black"
-              style={{ minHeight: 280 }}
-            />
+              className="relative w-full bg-black"
+              style={{ paddingBottom: "100%" }}
+            >
+              <div
+                id={containerId}
+                className="absolute inset-0 h-full w-full overflow-hidden bg-black"
+              />
+            </div>
+
 
             {/* Full-card overlay for scan results — impossible to miss */}
             {showOverlay && (
