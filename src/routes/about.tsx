@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Instagram } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 
 export const Route = createFileRoute("/about")({
