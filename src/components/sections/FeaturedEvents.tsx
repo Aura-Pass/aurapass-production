@@ -11,9 +11,12 @@ export function FeaturedEvents() {
   return (
     <section className="bg-white py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="mb-8 flex items-end justify-between gap-4">
+        <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-[#111827] md:text-3xl">
+            <h2
+              className="text-2xl font-bold tracking-tight text-[#111827] md:text-3xl"
+              style={{ fontFamily: '"Playfair Display", serif' }}
+            >
               Featured Events
             </h2>
             <p className="mt-1 text-sm text-[#6B7280]">
@@ -22,7 +25,7 @@ export function FeaturedEvents() {
           </div>
           <Link
             to="/events"
-            className="hidden text-sm font-semibold text-[#D946EF] hover:underline sm:inline"
+            className="text-sm font-semibold text-[#D946EF] hover:underline flex items-center gap-1 shrink-0"
           >
             View all →
           </Link>
