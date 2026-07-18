@@ -73,7 +73,7 @@ export function Footer() {
             <a aria-label="Twitter" href="#" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
               <Twitter className="h-4 w-4" />
             </a>
-            <a aria-label="Instagram" href="#" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
+            <a aria-label="Instagram" href="https://www.instagram.com/aurapassticket/" target="_blank" rel="noopener noreferrer" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
               <Instagram className="h-4 w-4" />
             </a>
             <a aria-label="LinkedIn" href="#" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
