@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Instagram } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 
 export const Route = createFileRoute("/about")({
@@ -40,7 +41,7 @@ function AboutPage() {
 
           <h2 className="mt-8 text-xl font-semibold text-[#111827]">Founded</h2>
           <p className="mt-2 text-sm leading-relaxed text-[#374151]">
-            AuraPass was founded in 2026 and is headquartered in Lagos, Nigeria.
+            AuraPass was founded in 2026 and is headquartered in Ilorin, Kwara State, Nigeria.
           </p>
 
           <h2 className="mt-8 text-xl font-semibold text-[#111827]">Contact</h2>
@@ -50,6 +51,17 @@ function AboutPage() {
               support@aurapassticket.com
             </a>
             .
+          </p>
+          <p className="mt-4">
+            <a
+              href="https://www.instagram.com/aurapassticket/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-[#D946EF] hover:underline font-medium"
+            >
+              <Instagram className="h-4 w-4" />
+              @aurapassticket on Instagram
+            </a>
           </p>
         </div>
       </div>
