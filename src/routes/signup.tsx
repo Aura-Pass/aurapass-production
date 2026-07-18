@@ -262,6 +262,19 @@ function SignUpPage() {
                   </p>
                 ) : null}
 
+                <p className="text-xs leading-relaxed text-[#6B7280]">
+                  By continuing, you acknowledge that you have read and agree to
+                  AuraPass's{" "}
+                  <Link to="/terms" className="text-[#D946EF] hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-[#D946EF] hover:underline">
+                    Privacy Policy
+                  </Link>
+                  . Tickets are non-refundable except where an event is cancelled.
+                </p>
+
                 <Button
                   type="submit"
                   variant="primary"
@@ -271,6 +284,7 @@ function SignUpPage() {
                 >
                   Create Account
                 </Button>
+
               </form>
 
               <p className="mt-6 text-center text-sm text-[#6B7280]">
