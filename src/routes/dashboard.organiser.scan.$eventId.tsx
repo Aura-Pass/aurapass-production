@@ -92,11 +92,12 @@ function ScanPage() {
           { facingMode: "environment" },
           {
             fps: 10,
-            qrbox: { width: 220, height: 220 },
+            qrbox: { width: 200, height: 200 },
             aspectRatio: 1.0,
             videoConstraints: {
               facingMode: "environment",
-              aspectRatio: 1.0,
+              width: { ideal: 1280 },
+              height: { ideal: 1280 },
             },
           } as any,
 
@@ -121,6 +122,35 @@ function ScanPage() {
           },
         );
         console.log("[scanner] started");
+
+        // Force the html5-qrcode video element to fully cover the square container on iOS Safari.
+        const styleId = "qr-scanner-override";
+        if (!document.getElementById(styleId)) {
+          const style = document.createElement("style");
+          style.id = styleId;
+          style.textContent = `
+            #qr-reader video {
+              width: 100% !important;
+              height: 100% !important;
+              object-fit: cover !important;
+              position: absolute !important;
+              inset: 0 !important;
+            }
+            #qr-reader {
+              border: none !important;
+              padding: 0 !important;
+            }
+            #qr-reader__scan_region {
+              width: 100% !important;
+              height: 100% !important;
+            }
+            #qr-reader__dashboard {
+              display: none !important;
+            }
+          `;
+          document.head.appendChild(style);
+        }
+
       } catch (err: any) {
         console.error("[scanner] start failed", err);
         setCameraError(err?.message ?? "Allow camera access and reload.");
