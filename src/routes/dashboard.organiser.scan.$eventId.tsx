@@ -448,14 +448,23 @@ function ScanPage() {
 
           <Card className="mt-4 overflow-hidden relative" style={{ borderRadius: 12 }}>
             <div
-              className="relative w-full bg-black"
-              style={{ paddingBottom: "100%" }}
+              className="relative w-full overflow-hidden bg-black"
+              style={{
+                height: "min(calc(100vw - 32px), 400px)",
+                width: "100%",
+              }}
             >
               <div
                 id={containerId}
-                className="absolute inset-0 h-full w-full overflow-hidden bg-black"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
               />
             </div>
+
 
 
             {/* Full-card overlay for scan results — impossible to miss */}
