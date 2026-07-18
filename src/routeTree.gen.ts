@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PaymentCallbackRouteImport } from './routes/payment-callback'
@@ -40,6 +41,11 @@ import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.ad
 import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -269,6 +277,7 @@ export interface FileRoutesById {
   '/payment-callback': typeof PaymentCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/payment-callback'
     | '/reset-password'
     | '/signup'
+    | '/terms'
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/payment-callback'
     | '/reset-password'
     | '/signup'
+    | '/terms'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/dashboard'
@@ -363,6 +374,7 @@ export interface FileRouteTypes {
     | '/payment-callback'
     | '/reset-password'
     | '/signup'
+    | '/terms'
     | '/dashboard/admin'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
@@ -396,6 +408,7 @@ export interface RootRouteChildren {
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  TermsRoute: typeof TermsRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   EventsIndexRoute: typeof EventsIndexRoute
@@ -405,6 +418,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -701,6 +721,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentCallbackRoute: PaymentCallbackRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  TermsRoute: TermsRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   EventsIndexRoute: EventsIndexRoute,
@@ -710,13 +731,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
