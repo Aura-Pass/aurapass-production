@@ -21,21 +21,21 @@ export function usePublishedEvents(limit?: number, includePast = false) {
     let active = true;
 
     async function fetchEvents() {
-      // Pre-filter server-side by date >= yesterday to cut down payload,
-      // then apply exact 12h-past-start cutoff on the client.
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0];
-
       let query = (supabase as any)
         .from("events")
         .select(`*, ticket_types (*)`)
         .eq("status", "published")
-        .gte("event_date", yesterday)
-        .order("event_date", { ascending: true });
+        .order("event_date", { ascending: includePast ? false : true });
 
-      // Fetch a few extra so client-side cutoff doesn't leave us short.
-      if (limit) query = query.limit(limit * 2);
+      if (!includePast) {
+        // Pre-filter server-side by date >= yesterday, exact 12h cutoff below.
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0];
+        query = query.gte("event_date", yesterday);
+      }
+
+      if (limit) query = query.limit(includePast ? limit : limit * 2);
 
       const { data, error } = await query;
 
@@ -47,14 +47,17 @@ export function usePublishedEvents(limit?: number, includePast = false) {
         return;
       }
 
-      const cutoffTime = new Date(Date.now() - 12 * 60 * 60 * 1000);
-      const activeEvents = ((data as PublishedEvent[]) ?? []).filter((e) => {
-        if (!e.event_date) return false;
-        const eventStart = new Date(`${e.event_date}T${e.event_time ?? "00:00:00"}`);
-        return eventStart > cutoffTime;
-      });
+      let result = (data as PublishedEvent[]) ?? [];
+      if (!includePast) {
+        const cutoffTime = new Date(Date.now() - 12 * 60 * 60 * 1000);
+        result = result.filter((e) => {
+          if (!e.event_date) return false;
+          const eventStart = new Date(`${e.event_date}T${e.event_time ?? "00:00:00"}`);
+          return eventStart > cutoffTime;
+        });
+      }
 
-      setEvents(limit ? activeEvents.slice(0, limit) : activeEvents);
+      setEvents(limit ? result.slice(0, limit) : result);
       setLoading(false);
     }
 
@@ -62,7 +65,8 @@ export function usePublishedEvents(limit?: number, includePast = false) {
     return () => {
       active = false;
     };
-  }, [limit]);
+  }, [limit, includePast]);
+
 
   return { events, loading };
 }
