@@ -12,9 +12,10 @@ export interface PublishedEvent extends Event {
  * client-side because Supabase can't easily combine `event_date` and
  * `event_time` in a server filter.
  */
-export function usePublishedEvents(limit?: number) {
+export function usePublishedEvents(limit?: number, includePast = false) {
   const [events, setEvents] = useState<PublishedEvent[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     let active = true;
