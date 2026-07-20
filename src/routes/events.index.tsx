@@ -27,14 +27,22 @@ export const Route = createFileRoute("/events/")({
 });
 
 function applyDateFilter(events: PublishedEvent[], filter: DateFilter) {
+  if (filter === "any") return events;
+
   const now = new Date();
+
+  function parseLocalDate(dateStr: string) {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 
   const dayOfWeek = now.getDay();
   const daysUntilSaturday = dayOfWeek === 6 ? 7 : 6 - dayOfWeek;
   const nextSaturday = new Date(today.getTime() + daysUntilSaturday * 24 * 60 * 60 * 1000);
-  const nextSunday = new Date(nextSaturday.getTime() + 24 * 60 * 60 * 1000);
+  const nextMonday = new Date(nextSaturday.getTime() + 2 * 24 * 60 * 60 * 1000);
 
   const endOfWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -42,28 +50,29 @@ function applyDateFilter(events: PublishedEvent[], filter: DateFilter) {
   switch (filter) {
     case "today":
       return events.filter((e) => {
-        const d = new Date(e.event_date);
+        const d = parseLocalDate(e.event_date);
         return d >= today && d < tomorrow;
       });
     case "weekend":
       return events.filter((e) => {
-        const d = new Date(e.event_date);
-        return d >= nextSaturday && d <= nextSunday;
+        const d = parseLocalDate(e.event_date);
+        return d >= nextSaturday && d < nextMonday;
       });
     case "week":
       return events.filter((e) => {
-        const d = new Date(e.event_date);
+        const d = parseLocalDate(e.event_date);
         return d >= today && d <= endOfWeek;
       });
     case "month":
       return events.filter((e) => {
-        const d = new Date(e.event_date);
+        const d = parseLocalDate(e.event_date);
         return d >= today && d <= endOfMonth;
       });
     default:
       return events;
   }
 }
+
 
 function applyPriceFilter(events: PublishedEvent[], filter: PriceFilter) {
   switch (filter) {
