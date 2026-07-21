@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
+import { FollowButton } from "@/components/ui/FollowButton";
 
 interface EventWithTickets extends Event {
   ticket_types: TicketType[];
