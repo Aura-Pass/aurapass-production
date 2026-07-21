@@ -1,11 +1,35 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export function HomepageHero() {
   const [query, setQuery] = useState<string>("");
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
 
+  function handleCreateEvent() {
+    if (!user) {
+      navigate({ to: "/signup" });
+      return;
+    }
+    if (profile?.role === "organiser" || profile?.role === "admin") {
+      navigate({ to: "/dashboard/organiser/create-event" });
+    } else {
+      navigate({ to: "/dashboard/attendee/settings" });
+    }
+  }
+
+  function handleSearch(e: FormEvent) {
+    e.preventDefault();
+    const q = query.trim();
+    if (!q) {
+      navigate({ to: "/events" });
+      return;
+    }
+    navigate({ to: "/events", search: { q } });
+  }
 
   return (
     <section className="relative overflow-hidden bg-white">
@@ -29,13 +53,13 @@ export function HomepageHero() {
             <Button asChild size="lg" variant="primary">
               <Link to="/events">Explore Events</Link>
             </Button>
-            <Button asChild size="lg" variant="secondary">
-              <Link to="/dashboard">Create an Event</Link>
+            <Button size="lg" variant="secondary" onClick={handleCreateEvent}>
+              Create an Event
             </Button>
           </div>
 
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSearch}
             className="mt-10 mx-auto flex w-full items-stretch overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm focus-within:border-[#D946EF] focus-within:ring-2 focus-within:ring-[#D946EF]/20"
           >
             <input
