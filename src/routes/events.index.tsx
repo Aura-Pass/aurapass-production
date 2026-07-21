@@ -16,6 +16,7 @@ export const Route = createFileRoute("/events/")({
     city: typeof search.city === "string" ? search.city : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     price: typeof search.price === "string" ? search.price : undefined,
+    q: typeof search.q === "string" ? search.q : undefined,
   }),
   head: () => ({
     meta: [
