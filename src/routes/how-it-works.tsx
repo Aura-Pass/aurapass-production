@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
