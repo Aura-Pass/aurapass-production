@@ -7,6 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Globe, Instagram, Twitter, Calendar, MapPin } from "lucide-react";
 import type { Profile, Event } from "@/types";
+import { FollowButton } from "@/components/ui/FollowButton";
+import { useAuth } from "@/hooks/useAuth";
+import { useFollow } from "@/hooks/useFollow";
 
 export const Route = createFileRoute("/organisers/$username")({
   head: ({ params }) => ({
@@ -23,6 +26,7 @@ export const Route = createFileRoute("/organisers/$username")({
 
 function OrganiserProfilePage() {
   const { username } = Route.useParams();
+  const { profile: currentUser } = useAuth();
   const [organiser, setOrganiser] = useState<Profile | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
