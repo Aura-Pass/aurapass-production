@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
@@ -24,6 +25,21 @@ function Step({ n, title, desc }: { n: number; title: string; desc: string }) {
 }
 
 function HowItWorksPage() {
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
+
+  function handleCreateEvent() {
+    if (!user) {
+      navigate({ to: "/signup" });
+      return;
+    }
+    if (profile?.role === "organiser" || profile?.role === "admin") {
+      navigate({ to: "/dashboard/organiser/create-event" });
+    } else {
+      navigate({ to: "/dashboard/attendee/settings" });
+    }
+  }
+
   return (
     <PageWrapper>
       <div className="bg-white">
@@ -51,12 +67,13 @@ function HowItWorksPage() {
           </div>
 
           <div className="mt-12 flex flex-wrap gap-3">
-            <Link
-              to="/signup"
+            <button
+              type="button"
+              onClick={handleCreateEvent}
               className="rounded-lg bg-[#D946EF] px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
             >
               Create an event
-            </Link>
+            </button>
             <Link
               to="/events"
               className="rounded-lg border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-semibold text-[#111827] hover:border-[#D946EF]"
