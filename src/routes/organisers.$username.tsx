@@ -7,6 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Globe, Instagram, Twitter, Calendar, MapPin } from "lucide-react";
 import type { Profile, Event } from "@/types";
+import { FollowButton } from "@/components/ui/FollowButton";
+import { useAuth } from "@/hooks/useAuth";
+import { useFollow } from "@/hooks/useFollow";
 
 export const Route = createFileRoute("/organisers/$username")({
   head: ({ params }) => ({
@@ -23,6 +26,7 @@ export const Route = createFileRoute("/organisers/$username")({
 
 function OrganiserProfilePage() {
   const { username } = Route.useParams();
+  const { profile: currentUser } = useAuth();
   const [organiser, setOrganiser] = useState<Profile | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,14 +127,21 @@ function OrganiserProfilePage() {
               </div>
 
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
-                  {organiser.full_name}
-                </h1>
-                {organiser.username && (
-                  <p className="mt-1 text-sm font-medium text-[#A21CAF]">
-                    @{organiser.username}
-                  </p>
-                )}
+                <div className="flex flex-col items-center gap-3 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
+                      {organiser.full_name}
+                    </h1>
+                    {organiser.username && (
+                      <p className="mt-1 text-sm font-medium text-[#A21CAF]">
+                        @{organiser.username}
+                      </p>
+                    )}
+                  </div>
+                  {currentUser?.id !== organiser.id && (
+                    <FollowButton organiserId={organiser.id} />
+                  )}
+                </div>
                 {organiser.bio && (
                   <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">
                     {organiser.bio}
@@ -174,6 +185,7 @@ function OrganiserProfilePage() {
                   {upcomingEvents.length} upcoming event
                   {upcomingEvents.length !== 1 ? "s" : ""} · {events.length} total
                   event{events.length !== 1 ? "s" : ""}
+                  <FollowerCountInline organiserId={organiser.id} />
                 </p>
               </div>
             </div>
@@ -264,5 +276,15 @@ function EventCard({ event, past = false }: { event: Event; past?: boolean }) {
         </div>
       </div>
     </Link>
+  );
+}
+
+function FollowerCountInline({ organiserId }: { organiserId: string }) {
+  const { followerCount } = useFollow(organiserId);
+  return (
+    <>
+      {" · "}
+      {followerCount} follower{followerCount !== 1 ? "s" : ""}
+    </>
   );
 }

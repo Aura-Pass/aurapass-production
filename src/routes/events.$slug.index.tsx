@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
+import { FollowButton } from "@/components/ui/FollowButton";
 
 interface EventWithTickets extends Event {
   ticket_types: TicketType[];
@@ -369,7 +370,7 @@ function EventDetailPage() {
                         </AvatarFallback>
                       )}
                     </Avatar>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
                       <p className="text-xs text-[#A21CAF]">
                         @{event.organiser_username} · View profile →
@@ -387,6 +388,11 @@ function EventDetailPage() {
                       <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
                       <p className="text-xs text-[#6B7280]">Verified organiser</p>
                     </div>
+                  </div>
+                )}
+                {event.organiser_id && user?.id !== event.organiser_id && (
+                  <div className="mt-4">
+                    <FollowButton organiserId={event.organiser_id} size="sm" />
                   </div>
                 )}
               </Card>

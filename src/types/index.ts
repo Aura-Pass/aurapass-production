@@ -96,3 +96,10 @@ export interface Payment {
   created_at: string;
 }
 
+export interface Follow {
+  id: string;
+  follower_id: string;
+  organiser_id: string;
+  created_at: string;
+}
+
