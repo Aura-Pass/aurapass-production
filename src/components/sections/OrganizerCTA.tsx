@@ -1,6 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const FEATURES = [
   "No setup fees for free events",
@@ -10,6 +11,21 @@ const FEATURES = [
 ];
 
 export function OrganizerCTA() {
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
+
+  function handleStartSelling() {
+    if (!user) {
+      navigate({ to: "/signup" });
+      return;
+    }
+    if (profile?.role === "organiser" || profile?.role === "admin") {
+      navigate({ to: "/dashboard/organiser/create-event" });
+    } else {
+      navigate({ to: "/dashboard/attendee/settings" });
+    }
+  }
+
   return (
     <section className="bg-white py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
@@ -25,8 +41,8 @@ export function OrganizerCTA() {
               Sell tickets, manage your events, and get paid — all in one place.
             </p>
             <div className="mt-6">
-              <Button asChild variant="primary" size="lg">
-                <Link to="/signup">Start Selling Tickets</Link>
+              <Button variant="primary" size="lg" onClick={handleStartSelling}>
+                Start Selling Tickets
               </Button>
             </div>
           </div>

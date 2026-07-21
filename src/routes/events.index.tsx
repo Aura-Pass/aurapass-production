@@ -16,6 +16,7 @@ export const Route = createFileRoute("/events/")({
     city: typeof search.city === "string" ? search.city : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     price: typeof search.price === "string" ? search.price : undefined,
+    q: typeof search.q === "string" ? search.q : undefined,
   }),
   head: () => ({
     meta: [
@@ -123,6 +124,7 @@ function EventsPage() {
   const [activeCity, setActiveCity] = useState<string>(search.city ?? "all");
   const [dateFilter, setDateFilter] = useState<DateFilter>((search.date as DateFilter) ?? "any");
   const [priceFilter, setPriceFilter] = useState<PriceFilter>((search.price as PriceFilter) ?? "any");
+  const [searchQuery, setSearchQuery] = useState<string>(search.q ?? "");
   const [showPast, setShowPast] = useState(false);
 
   const { events, loading } = usePublishedEvents(undefined, showPast);
@@ -132,11 +134,13 @@ function EventsPage() {
     city?: string;
     date?: DateFilter;
     price?: PriceFilter;
+    q?: string;
   }) {
     const cat = next.category ?? activeCategory;
     const cty = next.city ?? activeCity;
     const dt = next.date ?? dateFilter;
     const pr = next.price ?? priceFilter;
+    const q = next.q ?? searchQuery;
     navigate({
       to: "/events",
       search: {
@@ -144,6 +148,7 @@ function EventsPage() {
         city: cty !== "all" ? cty : undefined,
         date: dt !== "any" ? dt : undefined,
         price: pr !== "any" ? pr : undefined,
+        q: q.trim() ? q.trim() : undefined,
       },
       replace: true,
     });
@@ -165,6 +170,10 @@ function EventsPage() {
     setPriceFilter(p);
     updateSearch({ price: p });
   }
+  function handleSearchQueryChange(q: string) {
+    setSearchQuery(q);
+    updateSearch({ q });
+  }
 
   const filteredEvents = useMemo(() => {
     let result = events;
@@ -177,6 +186,17 @@ function EventsPage() {
           e.category.toLowerCase() === activeCategory.toLowerCase()
         );
       });
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (e) =>
+          e.title.toLowerCase().includes(q) ||
+          e.venue.toLowerCase().includes(q) ||
+          e.city.toLowerCase().includes(q) ||
+          e.description?.toLowerCase().includes(q),
+      );
     }
 
     if (activeCity && activeCity !== "all") {
@@ -196,7 +216,7 @@ function EventsPage() {
     }
 
     return result;
-  }, [events, activeCategory, activeCity, dateFilter, priceFilter, showPast]);
+  }, [events, activeCategory, activeCity, dateFilter, priceFilter, searchQuery, showPast]);
 
   const items = useMemo(() => filteredEvents.map(toEventCardData), [filteredEvents]);
 
@@ -205,6 +225,7 @@ function EventsPage() {
     activeCity !== "all",
     dateFilter !== "any",
     priceFilter !== "any",
+    searchQuery.trim().length > 0,
   ].filter(Boolean).length;
 
   function clearAllFilters() {
@@ -212,6 +233,7 @@ function EventsPage() {
     setActiveCity("all");
     setDateFilter("any");
     setPriceFilter("any");
+    setSearchQuery("");
     navigate({ to: "/events", search: {}, replace: true });
   }
 
@@ -225,6 +247,26 @@ function EventsPage() {
           <p className="mt-2 text-sm text-[#6B7280] md:text-base">
             Browse what's happening across Nigeria this season.
           </p>
+
+          <div className="mt-6 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchQueryChange(e.target.value)}
+              placeholder="Search events, artists, venues..."
+              className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 pr-10 text-sm focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => handleSearchQueryChange("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827]"
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
           <div className="mt-8 space-y-4">
             <div className="flex flex-wrap gap-2">

@@ -7,8 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 const LINKS = [
   { label: "Discover", to: "/events" as const },
-  { label: "How It Works", to: "/" as const },
-  { label: "For Organisers", to: "/" as const },
+  { label: "How It Works", to: "/how-it-works" as const },
+  { label: "For Organisers", to: "/for-organisers" as const },
 ];
 
 function initialsOf(profile: { username?: string | null; full_name?: string | null } | null | undefined) {
