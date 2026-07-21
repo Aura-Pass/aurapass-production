@@ -185,6 +185,7 @@ function OrganiserProfilePage() {
                   {upcomingEvents.length} upcoming event
                   {upcomingEvents.length !== 1 ? "s" : ""} · {events.length} total
                   event{events.length !== 1 ? "s" : ""}
+                  <FollowerCountInline organiserId={organiser.id} />
                 </p>
               </div>
             </div>
