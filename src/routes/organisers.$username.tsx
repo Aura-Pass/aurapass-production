@@ -127,14 +127,21 @@ function OrganiserProfilePage() {
               </div>
 
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
-                  {organiser.full_name}
-                </h1>
-                {organiser.username && (
-                  <p className="mt-1 text-sm font-medium text-[#A21CAF]">
-                    @{organiser.username}
-                  </p>
-                )}
+                <div className="flex flex-col items-center gap-3 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
+                      {organiser.full_name}
+                    </h1>
+                    {organiser.username && (
+                      <p className="mt-1 text-sm font-medium text-[#A21CAF]">
+                        @{organiser.username}
+                      </p>
+                    )}
+                  </div>
+                  {currentUser?.id !== organiser.id && (
+                    <FollowButton organiserId={organiser.id} />
+                  )}
+                </div>
                 {organiser.bio && (
                   <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">
                     {organiser.bio}
