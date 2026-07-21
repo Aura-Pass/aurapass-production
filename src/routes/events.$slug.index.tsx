@@ -395,18 +395,6 @@ function EventDetailPage() {
                     <FollowButton organiserId={event.organiser_id} size="sm" />
                   </div>
                 )}
-                  <div className="mt-3 flex items-center gap-3">
-                    <Avatar>
-                      <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
-                        {event.organiser_name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
-                      <p className="text-xs text-[#6B7280]">Verified organiser</p>
-                    </div>
-                  </div>
-                )}
               </Card>
             </aside>
           </div>
