@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
+import { useFollowedOrganisers } from "@/hooks/useFollowedOrganisers";
 
 export const Route = createFileRoute("/dashboard/attendee/")({
   head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
@@ -13,6 +14,7 @@ function AttendeeOverview() {
   const { profile, user } = useAuth();
   const email = profile?.email ?? user?.email;
   const { tickets, loading } = useMyTickets(email);
+  const { organisers, loading: followLoading } = useFollowedOrganisers();
 
   const upcomingCount = useMemo(() => {
     const today = new Date();
@@ -48,9 +50,51 @@ function AttendeeOverview() {
             </p>
           </Card>
         </Link>
-        <Stat label="Saved Events" value="0" />
+        <Stat label="Following" value={followLoading ? "—" : String(organisers.length)} />
         <Stat label="Upcoming Events" value={loading ? "—" : String(upcomingCount)} />
       </div>
+
+      {organisers.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-[#111827] mb-4">
+            Organisers You Follow
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {organisers.map((org) => (
+              <Link
+                key={org.id}
+                to="/organisers/$username"
+                params={{ username: org.username ?? org.id }}
+                className="flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white p-4 transition hover:border-[#D946EF] hover:shadow-md"
+              >
+                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-[#FDF4FF]">
+                  {org.avatar_url ? (
+                    <img
+                      src={org.avatar_url}
+                      alt={org.full_name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm font-bold text-[#A21CAF]">
+                      {(org.username ?? org.full_name).slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="truncate font-semibold text-[#111827]">
+                    {org.username ? `@${org.username}` : org.full_name}
+                  </p>
+                  {org.upcomingEventCount > 0 && (
+                    <p className="text-xs text-[#A21CAF]">
+                      {org.upcomingEventCount} upcoming
+                    </p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
