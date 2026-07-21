@@ -25,6 +25,21 @@ function Step({ n, title, desc }: { n: number; title: string; desc: string }) {
 }
 
 function HowItWorksPage() {
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
+
+  function handleCreateEvent() {
+    if (!user) {
+      navigate({ to: "/signup" });
+      return;
+    }
+    if (profile?.role === "organiser" || profile?.role === "admin") {
+      navigate({ to: "/dashboard/organiser/create-event" });
+    } else {
+      navigate({ to: "/dashboard/attendee/settings" });
+    }
+  }
+
   return (
     <PageWrapper>
       <div className="bg-white">
