@@ -188,6 +188,17 @@ function EventsPage() {
       });
     }
 
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (e) =>
+          e.title.toLowerCase().includes(q) ||
+          e.venue.toLowerCase().includes(q) ||
+          e.city.toLowerCase().includes(q) ||
+          e.description?.toLowerCase().includes(q),
+      );
+    }
+
     if (activeCity && activeCity !== "all") {
       result = result.filter((e) => e.city.toLowerCase() === activeCity.toLowerCase());
     }
@@ -205,7 +216,7 @@ function EventsPage() {
     }
 
     return result;
-  }, [events, activeCategory, activeCity, dateFilter, priceFilter, showPast]);
+  }, [events, activeCategory, activeCity, dateFilter, priceFilter, searchQuery, showPast]);
 
   const items = useMemo(() => filteredEvents.map(toEventCardData), [filteredEvents]);
 
