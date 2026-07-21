@@ -124,6 +124,7 @@ function EventsPage() {
   const [activeCity, setActiveCity] = useState<string>(search.city ?? "all");
   const [dateFilter, setDateFilter] = useState<DateFilter>((search.date as DateFilter) ?? "any");
   const [priceFilter, setPriceFilter] = useState<PriceFilter>((search.price as PriceFilter) ?? "any");
+  const [searchQuery, setSearchQuery] = useState<string>(search.q ?? "");
   const [showPast, setShowPast] = useState(false);
 
   const { events, loading } = usePublishedEvents(undefined, showPast);
@@ -133,11 +134,13 @@ function EventsPage() {
     city?: string;
     date?: DateFilter;
     price?: PriceFilter;
+    q?: string;
   }) {
     const cat = next.category ?? activeCategory;
     const cty = next.city ?? activeCity;
     const dt = next.date ?? dateFilter;
     const pr = next.price ?? priceFilter;
+    const q = next.q ?? searchQuery;
     navigate({
       to: "/events",
       search: {
@@ -145,6 +148,7 @@ function EventsPage() {
         city: cty !== "all" ? cty : undefined,
         date: dt !== "any" ? dt : undefined,
         price: pr !== "any" ? pr : undefined,
+        q: q.trim() ? q.trim() : undefined,
       },
       replace: true,
     });
@@ -165,6 +169,10 @@ function EventsPage() {
   function handlePriceChange(p: PriceFilter) {
     setPriceFilter(p);
     updateSearch({ price: p });
+  }
+  function handleSearchQueryChange(q: string) {
+    setSearchQuery(q);
+    updateSearch({ q });
   }
 
   const filteredEvents = useMemo(() => {
