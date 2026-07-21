@@ -225,6 +225,7 @@ function EventsPage() {
     activeCity !== "all",
     dateFilter !== "any",
     priceFilter !== "any",
+    searchQuery.trim().length > 0,
   ].filter(Boolean).length;
 
   function clearAllFilters() {
@@ -232,6 +233,7 @@ function EventsPage() {
     setActiveCity("all");
     setDateFilter("any");
     setPriceFilter("any");
+    setSearchQuery("");
     navigate({ to: "/events", search: {}, replace: true });
   }
 
