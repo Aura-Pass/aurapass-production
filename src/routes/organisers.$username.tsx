@@ -278,3 +278,13 @@ function EventCard({ event, past = false }: { event: Event; past?: boolean }) {
     </Link>
   );
 }
+
+function FollowerCountInline({ organiserId }: { organiserId: string }) {
+  const { followerCount } = useFollow(organiserId);
+  return (
+    <>
+      {" · "}
+      {followerCount} follower{followerCount !== 1 ? "s" : ""}
+    </>
+  );
+}
