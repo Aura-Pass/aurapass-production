@@ -248,6 +248,26 @@ function EventsPage() {
             Browse what's happening across Nigeria this season.
           </p>
 
+          <div className="mt-6 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchQueryChange(e.target.value)}
+              placeholder="Search events, artists, venues..."
+              className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 pr-10 text-sm focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => handleSearchQueryChange("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827]"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           <div className="mt-8 space-y-4">
             <div className="flex flex-wrap gap-2">
               <CategoryPill
