@@ -247,7 +247,7 @@ function MyEventsPage() {
 }
 
 
-function EventCard({ event }: { event: Event }) {
+function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) {
   const s = statusVariant(event.status);
   const isPublished = event.status === "published";
   return (
@@ -272,6 +272,15 @@ function EventCard({ event }: { event: Event }) {
           <p className="text-sm text-[#6B7280]">
             {formatDate(event.event_date)} · {event.city}
           </p>
+          {isPublished && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="text-xs font-medium text-[#EF4444] hover:underline"
+            >
+              Cancel Event
+            </button>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2 md:flex-col md:items-stretch md:w-40">
           {isPublished ? (
@@ -308,3 +317,4 @@ function EventCard({ event }: { event: Event }) {
     </Card>
   );
 }
+
