@@ -18,6 +18,7 @@ import {
 import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
+import { ExportEventSalesButton } from "@/components/admin/ExportEventSalesButton";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/admin/")({
