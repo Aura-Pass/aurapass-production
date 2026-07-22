@@ -103,6 +103,50 @@ function AdminDashboard() {
     setRejectReason("");
   }
 
+  function openCancelAction(event: AdminEvent, action: "approve" | "decline") {
+    setCancelAction({ event, action });
+    setCancelRemark("");
+  }
+
+  function closeCancelAction() {
+    if (cancelSubmitting) return;
+    setCancelAction(null);
+    setCancelRemark("");
+  }
+
+  async function confirmCancelAction() {
+    if (!cancelAction) return;
+    const remark = cancelRemark.trim();
+    if (remark.length < 10) {
+      toast.error("Please provide at least 10 characters.");
+      return;
+    }
+    setCancelSubmitting(true);
+    try {
+      if (cancelAction.action === "approve") {
+        const res = await approveEventCancellation({
+          data: { eventId: cancelAction.event.id, adminRemark: remark },
+        });
+        toast.success(
+          `Cancellation approved. ${res.results.refunded} refund${
+            res.results.refunded !== 1 ? "s" : ""
+          } processed${res.results.failed > 0 ? `, ${res.results.failed} failed` : ""}.`,
+        );
+      } else {
+        await declineEventCancellation({
+          data: { eventId: cancelAction.event.id, adminRemark: remark },
+        });
+        toast.success("Cancellation request declined.");
+      }
+      setCancelAction(null);
+      setCancelRemark("");
+      refetch();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Action failed");
+    }
+    setCancelSubmitting(false);
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Admin Panel</h1>
@@ -127,7 +171,7 @@ function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="mt-8 flex gap-2 border-b border-[#E5E7EB]">
+      <div className="mt-8 flex flex-wrap gap-2 border-b border-[#E5E7EB]">
         <TabButton active={tab === "pending_review"} onClick={() => setTab("pending_review")}>
           Pending ({counts.pending_review})
         </TabButton>
@@ -136,6 +180,12 @@ function AdminDashboard() {
         </TabButton>
         <TabButton active={tab === "rejected"} onClick={() => setTab("rejected")}>
           Rejected ({counts.rejected})
+        </TabButton>
+        <TabButton
+          active={tab === "cancellation_requests"}
+          onClick={() => setTab("cancellation_requests")}
+        >
+          Cancellation Requests ({counts.cancellation_requests})
         </TabButton>
       </div>
 
@@ -150,9 +200,22 @@ function AdminDashboard() {
               ? "No events waiting for review. You're all caught up."
               : tab === "published"
               ? "No published events yet."
-              : "No rejected events."}
+              : tab === "rejected"
+              ? "No rejected events."
+              : "No pending cancellation requests."}
           </p>
         </Card>
+      ) : tab === "cancellation_requests" ? (
+        <div className="mt-6 grid gap-4">
+          {filtered.map((e) => (
+            <CancellationRequestCard
+              key={e.id}
+              event={e}
+              onApprove={() => openCancelAction(e, "approve")}
+              onDecline={() => openCancelAction(e, "decline")}
+            />
+          ))}
+        </div>
       ) : (
         <div className="mt-6 grid gap-4">
           {filtered.map((e) => (
