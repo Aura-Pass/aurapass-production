@@ -259,15 +259,33 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
           <p className="text-sm text-[#6B7280]">
             {formatDate(event.event_date)} · {event.city}
           </p>
-          {isPublished && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="text-xs font-medium text-[#EF4444] hover:underline"
-            >
-              Cancel Event
-            </button>
+          {event.cancellation_status === "requested" && (
+            <div className="mt-1 rounded-md border border-[#FDE68A] bg-[#FFFBEB] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#B45309]">
+                Cancellation pending admin review
+              </p>
+            </div>
           )}
+          {event.cancellation_status === "declined" && event.cancellation_admin_remark && (
+            <div className="mt-1 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#B91C1C]">
+                Cancellation declined
+              </p>
+              <p className="mt-1 text-sm text-[#7F1D1D] whitespace-pre-wrap">
+                {event.cancellation_admin_remark}
+              </p>
+            </div>
+          )}
+          {isPublished &&
+            !["requested", "approved"].includes(event.cancellation_status ?? "") && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="text-xs font-medium text-[#EF4444] hover:underline"
+              >
+                Cancel Event
+              </button>
+            )}
         </div>
         <div className="flex flex-wrap items-center gap-2 md:flex-col md:items-stretch md:w-40">
           {isPublished ? (
