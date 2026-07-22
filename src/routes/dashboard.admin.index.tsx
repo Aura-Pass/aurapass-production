@@ -300,7 +300,170 @@ function AdminDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={cancelAction !== null}
+        onOpenChange={(open) => {
+          if (!open) closeCancelAction();
+        }}
+      >
+        <DialogContent className="bg-white sm:max-w-lg" style={{ borderRadius: 12 }}>
+          <DialogHeader>
+            <DialogTitle className="text-[#111827]">
+              {cancelAction?.action === "approve"
+                ? "Approve cancellation"
+                : "Decline cancellation"}
+            </DialogTitle>
+            <DialogDescription className="text-[#6B7280]">
+              {cancelAction?.action === "approve"
+                ? "This will mark the event as ended, issue Paystack refunds for every confirmed paid order, and email each buyer."
+                : "The organiser will see your remark on their dashboard and the event will remain published."}
+            </DialogDescription>
+          </DialogHeader>
+
+          {cancelAction ? (
+            <div className="rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
+                Event
+              </p>
+              <p className="mt-1 text-sm font-medium text-[#111827]">
+                {cancelAction.event.title}
+              </p>
+              {cancelAction.event.cancellation_request_reason ? (
+                <>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+                    Organiser reason
+                  </p>
+                  <p className="mt-1 text-sm text-[#374151] whitespace-pre-wrap">
+                    {cancelAction.event.cancellation_request_reason}
+                  </p>
+                </>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-[#111827]">
+              Admin remark
+            </label>
+            <Textarea
+              rows={4}
+              value={cancelRemark}
+              onChange={(e) => setCancelRemark(e.target.value)}
+              placeholder={
+                cancelAction?.action === "approve"
+                  ? "Notes for internal records (visible to organiser)"
+                  : "Explain why the cancellation is declined"
+              }
+              className="min-h-[100px]"
+            />
+            <p className="text-xs text-[#6B7280]">
+              {cancelRemark.trim().length} / 10 characters minimum
+            </p>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeCancelAction}
+              disabled={cancelSubmitting}
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              onClick={confirmCancelAction}
+              disabled={cancelSubmitting || cancelRemark.trim().length < 10}
+              className={
+                cancelAction?.action === "approve"
+                  ? "bg-[#EF4444] text-white hover:bg-[#DC2626]"
+                  : "bg-[#111827] text-white hover:bg-[#374151]"
+              }
+            >
+              {cancelSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Spinner className="h-4 w-4" /> Working…
+                </span>
+              ) : cancelAction?.action === "approve" ? (
+                "Approve & Refund"
+              ) : (
+                "Decline Request"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+function CancellationRequestCard({
+  event,
+  onApprove,
+  onDecline,
+}: {
+  event: AdminEvent;
+  onApprove: () => void;
+  onDecline: () => void;
+}) {
+  return (
+    <Card className="overflow-hidden" style={{ borderRadius: 12 }}>
+      <div className="flex flex-col gap-4 p-5 md:flex-row">
+        <div className="flex h-32 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#F3F4F6] md:h-28 md:w-44">
+          {event.banner_url ? (
+            <img
+              src={event.banner_url}
+              alt={event.title}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-base font-semibold text-[#111827]">{event.title}</h3>
+            <Badge className="bg-[#FFFBEB] text-[#B45309]">Cancellation requested</Badge>
+          </div>
+          <p className="text-sm text-[#6B7280]">
+            by <span className="font-medium text-[#111827]">{event.organiser_name}</span>
+            {event.organiser_email ? ` · ${event.organiser_email}` : ""}
+          </p>
+          <p className="text-sm text-[#6B7280]">
+            {formatDate(event.event_date)} · {event.venue}, {event.city}
+          </p>
+          {event.cancellation_request_reason ? (
+            <div className="mt-2 rounded-md border border-[#FDE68A] bg-[#FFFBEB] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#B45309]">
+                Organiser reason
+              </p>
+              <p className="mt-1 text-sm text-[#78350F] whitespace-pre-wrap">
+                {event.cancellation_request_reason}
+              </p>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="flex shrink-0 flex-col gap-2 md:w-40">
+          <Button
+            type="button"
+            onClick={onApprove}
+            className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+          >
+            Approve & Refund
+          </Button>
+          <Button
+            type="button"
+            onClick={onDecline}
+            variant="outline"
+          >
+            Decline
+          </Button>
+        </div>
+      </div>
+    </Card>
   );
 }
 
