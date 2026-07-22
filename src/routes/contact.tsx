@@ -40,7 +40,7 @@ function ContactPage() {
             </a>
 
             <a
-              href="https://wa.me/2348131100235"
+              href="https://wa.me/2348131100239"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-4 rounded-xl border border-[#E5E7EB] bg-white p-5 transition-colors hover:border-[#25D366]"
