@@ -31,6 +31,10 @@ export interface Event {
   rejection_reason?: string | null;
   cancelled_at: string | null;
   cancellation_reason: string | null;
+  cancellation_requested_at?: string | null;
+  cancellation_request_reason?: string | null;
+  cancellation_status?: "requested" | "approved" | "declined" | null;
+  cancellation_admin_remark?: string | null;
   ticket_types?: TicketType[];
   created_at: string;
   updated_at: string;

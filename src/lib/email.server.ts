@@ -392,3 +392,67 @@ export async function sendOrganiserTicketSaleEmail(data: OrganiserTicketSaleInpu
   }
 }
 
+export async function sendAdminCancellationRequestEmail({
+  eventTitle,
+  reason,
+}: {
+  eventTitle: string;
+  reason: string;
+}) {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) {
+    console.error("[cancel-request-email] RESEND_API_KEY not set");
+    return;
+  }
+
+  const adminUrl = "https://aurapassticket.com/dashboard/admin";
+  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#F9FAFB;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#111827">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9FAFB;padding:32px 16px">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB">
+          <tr><td style="padding:20px 32px;background:#111827;color:#FFFFFF;font-size:20px;font-weight:700">
+            <span>aura</span><span style="color:#D946EF">pass</span>
+          </td></tr>
+          <tr><td style="padding:28px 32px 8px">
+            <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">⚠️ Event Cancellation Request</h1>
+            <p style="margin:0 0 20px;font-size:14px;color:#6B7280">An organiser has requested to cancel a published event.</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px">
+              <tr>
+                <td style="padding:12px 16px;font-size:13px;color:#6B7280;border-bottom:1px solid #F3F4F6">Event</td>
+                <td style="padding:12px 16px;font-size:13px;color:#111827;text-align:right;font-weight:600;border-bottom:1px solid #F3F4F6">${escapeHtml(eventTitle)}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;font-size:13px;color:#6B7280;vertical-align:top">Reason</td>
+                <td style="padding:12px 16px;font-size:13px;color:#111827;text-align:right;white-space:pre-wrap">${escapeHtml(reason)}</td>
+              </tr>
+            </table>
+          </td></tr>
+          <tr><td style="padding:24px 32px 32px;text-align:center">
+            <a href="${adminUrl}" style="display:inline-block;background:#EF4444;color:#FFFFFF;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:600;font-size:14px">Review Request</a>
+          </td></tr>
+        </table>
+        <div style="margin-top:16px;font-size:12px;color:#9CA3AF;text-align:center">© 2026 AuraPass · aurapassticket.com</div>
+      </td></tr>
+    </table>
+  </body></html>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "AuraPass <noreply@aurapassticket.com>",
+      to: ["support@aurapassticket.com"],
+      subject: `⚠️ Cancellation request — ${eventTitle}`,
+      html,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error("[cancel-request-email] Failed:", err);
+  }
+}
+

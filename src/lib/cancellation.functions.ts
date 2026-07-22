@@ -1,15 +1,17 @@
 /**
  * cancellation.functions.ts
  *
- * Organiser event cancellation: marks event ended, issues Paystack refunds
- * for each confirmed paid order, and emails buyers a refund confirmation.
+ * Two-step cancellation workflow:
+ * - Organisers REQUEST cancellation (admin gets notified)
+ * - Admin APPROVES (refunds fire, buyers emailed) or DECLINES (with remark)
  */
 import { createServerFn } from "@tanstack/react-start";
 
-type CancelInput = { eventId: string; organiserId: string; reason: string };
+type RequestInput = { eventId: string; organiserId: string; reason: string };
+type AdminActionInput = { eventId: string; adminRemark: string };
 
-export const cancelEvent = createServerFn({ method: "POST" })
-  .inputValidator((data: CancelInput) => {
+export const requestEventCancellation = createServerFn({ method: "POST" })
+  .inputValidator((data: RequestInput) => {
     if (
       !data ||
       typeof data.eventId !== "string" ||
@@ -23,24 +25,76 @@ export const cancelEvent = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
 
-    const { data: event, error: eventError } = await (supabaseAdmin as any)
+    const { data: event, error } = await (supabaseAdmin as any)
       .from("events")
-      .select("id, title, organiser_id, status, cancelled_at")
+      .select("id, title, organiser_id, status, cancelled_at, cancellation_status")
       .eq("id", data.eventId)
       .single();
 
-    if (eventError || !event) throw new Error("Event not found");
+    if (error || !event) throw new Error("Event not found");
     if (event.organiser_id !== data.organiserId) throw new Error("Unauthorised");
     if (event.cancelled_at) throw new Error("Event already cancelled");
+    if (event.cancellation_status === "requested")
+      throw new Error("Cancellation already requested");
+
+    await (supabaseAdmin as any)
+      .from("events")
+      .update({
+        cancellation_requested_at: new Date().toISOString(),
+        cancellation_request_reason: data.reason,
+        cancellation_status: "requested",
+        cancellation_admin_remark: null,
+      })
+      .eq("id", data.eventId);
+
+    try {
+      const { sendAdminCancellationRequestEmail } = await import("@/lib/email.server");
+      await sendAdminCancellationRequestEmail({
+        eventTitle: String(event.title),
+        reason: data.reason,
+      });
+    } catch (e) {
+      console.error("[cancellation request email]", e);
+    }
+
+    return { success: true };
+  });
+
+export const approveEventCancellation = createServerFn({ method: "POST" })
+  .inputValidator((data: AdminActionInput) => {
+    if (
+      !data ||
+      typeof data.eventId !== "string" ||
+      typeof data.adminRemark !== "string" ||
+      data.adminRemark.trim().length < 10
+    ) {
+      throw new Error("Invalid input");
+    }
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+
+    const { data: event, error } = await (supabaseAdmin as any)
+      .from("events")
+      .select("id, title, organiser_id, cancellation_request_reason")
+      .eq("id", data.eventId)
+      .single();
+
+    if (error || !event) throw new Error("Event not found");
+
+    const reason = event.cancellation_request_reason ?? "Event cancelled";
 
     await (supabaseAdmin as any)
       .from("events")
       .update({
         status: "ended",
         cancelled_at: new Date().toISOString(),
-        cancellation_reason: data.reason,
+        cancellation_reason: reason,
+        cancellation_status: "approved",
+        cancellation_admin_remark: data.adminRemark.trim(),
       })
       .eq("id", data.eventId);
 
@@ -89,7 +143,7 @@ export const cancelEvent = createServerFn({ method: "POST" })
             buyerName: String(order.buyer_name ?? "Guest"),
             eventTitle: String(event.title),
             amount: Number(order.total_amount),
-            reason: data.reason,
+            reason,
           }).catch((e) => console.error("[refund email]", e));
 
           results.refunded++;
@@ -104,6 +158,34 @@ export const cancelEvent = createServerFn({ method: "POST" })
     }
 
     return { success: true, results };
+  });
+
+export const declineEventCancellation = createServerFn({ method: "POST" })
+  .inputValidator((data: AdminActionInput) => {
+    if (
+      !data ||
+      typeof data.eventId !== "string" ||
+      typeof data.adminRemark !== "string" ||
+      data.adminRemark.trim().length < 10
+    ) {
+      throw new Error("Invalid input");
+    }
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    await (supabaseAdmin as any)
+      .from("events")
+      .update({
+        cancellation_status: "declined",
+        cancellation_admin_remark: data.adminRemark.trim(),
+        cancellation_requested_at: null,
+        cancellation_request_reason: null,
+      })
+      .eq("id", data.eventId);
+
+    return { success: true };
   });
 
 async function sendRefundEmail(args: {
@@ -158,7 +240,7 @@ async function sendRefundEmail(args: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "AuraPass <no-reply@aurapassticket.com>",
+      from: "AuraPass <noreply@aurapassticket.com>",
       to: [to],
       subject: `Refund processed — ${eventTitle} has been cancelled`,
       html,
