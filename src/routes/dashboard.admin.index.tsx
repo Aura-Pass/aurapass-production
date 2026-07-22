@@ -19,6 +19,10 @@ import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { ExportEventSalesButton } from "@/components/admin/ExportEventSalesButton";
+import {
+  approveEventCancellation,
+  declineEventCancellation,
+} from "@/lib/cancellation.functions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/admin/")({
@@ -26,10 +30,10 @@ export const Route = createFileRoute("/dashboard/admin/")({
   component: AdminDashboard,
 });
 
-type Tab = "pending_review" | "published" | "rejected";
+type Tab = "pending_review" | "published" | "rejected" | "cancellation_requests";
 
 function AdminDashboard() {
-  const { events, loading, updateEventStatus } = useAdminEvents();
+  const { events, loading, updateEventStatus, refetch } = useAdminEvents();
   const { profile, user } = useAuth();
   const email = profile?.email ?? user?.email;
   const { tickets } = useMyTickets(email);
@@ -38,19 +42,30 @@ function AdminDashboard() {
   const [rejectReason, setRejectReason] = useState("");
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
+  const [cancelAction, setCancelAction] = useState<
+    { event: AdminEvent; action: "approve" | "decline" } | null
+  >(null);
+  const [cancelRemark, setCancelRemark] = useState("");
+  const [cancelSubmitting, setCancelSubmitting] = useState(false);
+
   const counts = useMemo(
     () => ({
       pending_review: events.filter((e) => e.status === "pending_review").length,
       published: events.filter((e) => e.status === "published").length,
       rejected: events.filter((e) => e.status === "rejected").length,
+      cancellation_requests: events.filter(
+        (e) => e.cancellation_status === "requested",
+      ).length,
     }),
     [events],
   );
 
-  const filtered = useMemo(
-    () => events.filter((e) => e.status === tab),
-    [events, tab],
-  );
+  const filtered = useMemo(() => {
+    if (tab === "cancellation_requests") {
+      return events.filter((e) => e.cancellation_status === "requested");
+    }
+    return events.filter((e) => e.status === tab);
+  }, [events, tab]);
 
   async function handleApprove(evt: AdminEvent) {
     const { error } = await updateEventStatus(evt.id, "published");
