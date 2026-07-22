@@ -29,6 +29,8 @@ export interface Event {
   event_time: string;
   status: "pending_review" | "published" | "rejected" | "draft" | "sold_out" | "ended";
   rejection_reason?: string | null;
+  cancelled_at: string | null;
+  cancellation_reason: string | null;
   ticket_types?: TicketType[];
   created_at: string;
   updated_at: string;
@@ -70,6 +72,8 @@ export interface Order {
   status: "pending" | "confirmed" | "failed" | "cancelled" | "refunded";
   paystack_reference: string | null;
   user_id: string | null;
+  refunded_at: string | null;
+  refund_reference: string | null;
   created_at: string;
   updated_at: string;
 }

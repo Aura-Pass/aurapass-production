@@ -18,6 +18,7 @@ import {
 import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
+import { ExportEventSalesButton } from "@/components/admin/ExportEventSalesButton";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/admin/")({
@@ -342,7 +343,14 @@ function EventModerationCard({
               </p>
             </div>
           ) : null}
+
+          {event.status === "published" && (
+            <div className="pt-1">
+              <ExportEventSalesButton eventId={event.id} eventTitle={event.title} />
+            </div>
+          )}
         </div>
+
 
         {showActions && (
           <div className="flex shrink-0 flex-col gap-2 md:w-40">
