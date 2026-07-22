@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
 import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
 import { formatDate } from "@/lib/utils";
-import { cancelEvent } from "@/lib/cancellation.functions";
+import { requestEventCancellation } from "@/lib/cancellation.functions";
 import type { Event } from "@/types";
 
 type FilterKey = "all" | "published" | "pending_review" | "rejected" | "draft";
@@ -64,9 +64,6 @@ function MyEventsPage() {
   const [cancellingEvent, setCancellingEvent] = useState<Event | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
-  const [cancelResult, setCancelResult] = useState<
-    { refunded: number; failed: number } | null
-  >(null);
 
   const filtered = useMemo(
     () => (tab === "all" ? events : events.filter((e) => e.status === tab)),
@@ -77,7 +74,6 @@ function MyEventsPage() {
     if (cancelling) return;
     setCancellingEvent(null);
     setCancelReason("");
-    setCancelResult(null);
   }
 
   async function confirmCancel() {
@@ -85,21 +81,22 @@ function MyEventsPage() {
     if (cancelReason.trim().length < 20) return;
     setCancelling(true);
     try {
-      const result = await cancelEvent({
+      await requestEventCancellation({
         data: {
           eventId: cancellingEvent.id,
           organiserId: user.id,
           reason: cancelReason.trim(),
         },
       });
-      setCancelResult(result.results);
       toast.success(
-        `Event cancelled. ${result.results.refunded} refund${result.results.refunded !== 1 ? "s" : ""} processed.`,
+        "Cancellation request submitted. Admin will review within 24 hours.",
       );
+      setCancellingEvent(null);
+      setCancelReason("");
       refresh();
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Could not cancel event");
+      toast.error(err instanceof Error ? err.message : "Could not submit request");
     }
     setCancelling(false);
   }
