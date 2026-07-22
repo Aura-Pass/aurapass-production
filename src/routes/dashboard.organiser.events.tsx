@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon } from "lucide-react";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
 import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
 import { formatDate } from "@/lib/utils";
+import { cancelEvent } from "@/lib/cancellation.functions";
 import type { Event } from "@/types";
 
 type FilterKey = "all" | "published" | "pending_review" | "rejected" | "draft";
