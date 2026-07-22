@@ -71,7 +71,37 @@ export function ExportEventSalesButton({
       ];
     });
 
-    const csv = [headers, ...rows]
+    const confirmed = (data as any[]).filter((o) => o.status === "confirmed");
+    const totalQty = confirmed.reduce((s, o) => s + Number(o.quantity ?? 0), 0);
+    const totalTicketRevenue = confirmed.reduce(
+      (s, o) => s + Number(o.ticket_price ?? 0) * Number(o.quantity ?? 0),
+      0,
+    );
+    const totalFees = confirmed.reduce((s, o) => s + Number(o.platform_fee ?? 0), 0);
+    const totalPaid = confirmed.reduce((s, o) => s + Number(o.total_amount ?? 0), 0);
+    const totalCheckedIn = confirmed.reduce(
+      (s, o) =>
+        s + (o.tickets ?? []).filter((t: any) => t.status === "used").length,
+      0,
+    );
+
+    const totalsRow = [
+      "TOTALS (confirmed only)",
+      "",
+      "",
+      "",
+      "",
+      totalQty,
+      totalTicketRevenue,
+      totalFees,
+      totalPaid,
+      "",
+      "",
+      `${totalCheckedIn}/${totalQty}`,
+      "",
+    ];
+
+    const csv = [headers, ...rows, totalsRow]
       .map((r) =>
         r.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","),
       )
