@@ -57,14 +57,52 @@ function statusVariant(status: Event["status"]) {
 
 function MyEventsPage() {
   const { user } = useAuth();
-  const { events, loading } = useOrganiserEvents(user?.id);
+  const { events, loading, refresh } = useOrganiserEvents(user?.id);
   const search = Route.useSearch();
   const [tab, setTab] = useState<FilterKey>(search.filter ?? "all");
+
+  const [cancellingEvent, setCancellingEvent] = useState<Event | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelResult, setCancelResult] = useState<
+    { refunded: number; failed: number } | null
+  >(null);
 
   const filtered = useMemo(
     () => (tab === "all" ? events : events.filter((e) => e.status === tab)),
     [events, tab],
   );
+
+  function closeCancel() {
+    if (cancelling) return;
+    setCancellingEvent(null);
+    setCancelReason("");
+    setCancelResult(null);
+  }
+
+  async function confirmCancel() {
+    if (!cancellingEvent || !user?.id) return;
+    if (cancelReason.trim().length < 20) return;
+    setCancelling(true);
+    try {
+      const result = await cancelEvent({
+        data: {
+          eventId: cancellingEvent.id,
+          organiserId: user.id,
+          reason: cancelReason.trim(),
+        },
+      });
+      setCancelResult(result.results);
+      toast.success(
+        `Event cancelled. ${result.results.refunded} refund${result.results.refunded !== 1 ? "s" : ""} processed.`,
+      );
+      refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : "Could not cancel event");
+    }
+    setCancelling(false);
+  }
 
   return (
     <>
@@ -121,15 +159,93 @@ function MyEventsPage() {
           ) : (
             <div className="mt-6 grid gap-4">
               {filtered.map((evt) => (
-                <EventCard key={evt.id} event={evt} />
+                <EventCard
+                  key={evt.id}
+                  event={evt}
+                  onCancel={() => setCancellingEvent(evt)}
+                />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {cancellingEvent && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={closeCancel}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold text-[#111827]">Cancel this event?</h3>
+            <p className="mt-1 text-sm text-[#6B7280]">
+              This action cannot be undone. All confirmed paid ticket buyers will be
+              automatically refunded via Paystack and notified by email.
+            </p>
+            <div className="mt-4 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
+                Event
+              </p>
+              <p className="mt-1 text-sm font-medium text-[#111827]">
+                {cancellingEvent.title}
+              </p>
+            </div>
+
+            <div className="mt-4">
+              <label className="mb-1 block text-sm font-medium text-[#111827]">
+                Reason for cancellation (required)
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="e.g. Venue unavailability, weather conditions..."
+                rows={3}
+                minLength={20}
+                className="w-full resize-none rounded-lg border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#D946EF] focus:outline-none"
+              />
+              <p className="mt-1 text-xs text-[#9CA3AF]">
+                {cancelReason.trim().length}/20 minimum
+              </p>
+            </div>
+
+            {cancelResult && (
+              <div className="mt-4 rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] p-3">
+                <p className="text-sm font-medium text-[#166534]">
+                  Event cancelled. {cancelResult.refunded} refund
+                  {cancelResult.refunded !== 1 ? "s" : ""} processed.
+                  {cancelResult.failed > 0 &&
+                    ` ${cancelResult.failed} failed — contact support.`}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={closeCancel}
+                disabled={cancelling}
+                className="flex-1 rounded-lg border border-[#E5E7EB] px-4 py-2.5 text-sm font-medium text-[#6B7280] hover:bg-[#F9FAFB] disabled:opacity-60"
+              >
+                Keep Event
+              </button>
+              <button
+                type="button"
+                disabled={cancelReason.trim().length < 20 || cancelling}
+                onClick={confirmCancel}
+                className="flex-1 rounded-lg bg-[#EF4444] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#DC2626] disabled:opacity-50"
+              >
+                {cancelling ? "Cancelling..." : "Confirm Cancellation"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
 
 function EventCard({ event }: { event: Event }) {
   const s = statusVariant(event.status);
