@@ -176,10 +176,11 @@ function MyEventsPage() {
             className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-[#111827]">Cancel this event?</h3>
+            <h3 className="text-lg font-bold text-[#111827]">Request cancellation?</h3>
             <p className="mt-1 text-sm text-[#6B7280]">
-              This action cannot be undone. All confirmed paid ticket buyers will be
-              automatically refunded via Paystack and notified by email.
+              Your request will be reviewed by the AuraPass admin team within 24 hours.
+              If approved, all confirmed paid buyers will be refunded automatically via
+              Paystack and notified by email.
             </p>
             <div className="mt-4 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
@@ -207,17 +208,6 @@ function MyEventsPage() {
               </p>
             </div>
 
-            {cancelResult && (
-              <div className="mt-4 rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] p-3">
-                <p className="text-sm font-medium text-[#166534]">
-                  Event cancelled. {cancelResult.refunded} refund
-                  {cancelResult.refunded !== 1 ? "s" : ""} processed.
-                  {cancelResult.failed > 0 &&
-                    ` ${cancelResult.failed} failed — contact support.`}
-                </p>
-              </div>
-            )}
-
             <div className="mt-5 flex gap-3">
               <button
                 type="button"
@@ -233,7 +223,7 @@ function MyEventsPage() {
                 onClick={confirmCancel}
                 className="flex-1 rounded-lg bg-[#EF4444] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#DC2626] disabled:opacity-50"
               >
-                {cancelling ? "Cancelling..." : "Confirm Cancellation"}
+                {cancelling ? "Submitting..." : "Submit Request"}
               </button>
             </div>
           </div>
