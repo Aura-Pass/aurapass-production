@@ -111,3 +111,23 @@ export interface Follow {
   created_at: string;
 }
 
+export interface LeaderboardEntry {
+  id: string;
+  full_name: string;
+  username: string | null;
+  avatar_url: string | null;
+  rank: number;
+}
+
+export interface PartyMonsterEntry extends LeaderboardEntry {
+  events_this_month: number;
+  total_tickets_this_month: number;
+}
+
+export interface CrowdControlEntry extends LeaderboardEntry {
+  group_orders_count: number;
+  total_group_tickets: number;
+  events_with_group_tickets: number;
+}
+
+
