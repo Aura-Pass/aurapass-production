@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { useFollowedOrganisers } from "@/hooks/useFollowedOrganisers";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 
 export const Route = createFileRoute("/dashboard/attendee/")({
   head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
@@ -15,6 +16,9 @@ function AttendeeOverview() {
   const email = profile?.email ?? user?.email;
   const { tickets, loading } = useMyTickets(email);
   const { organisers, loading: followLoading } = useFollowedOrganisers();
+  const { partyMonster, crowdControl } = useLeaderboard();
+  const myPMRank = partyMonster.find((e) => e.id === profile?.id);
+  const myCCRank = crowdControl.find((e) => e.id === profile?.id);
 
   const upcomingCount = useMemo(() => {
     const today = new Date();
@@ -53,6 +57,31 @@ function AttendeeOverview() {
         <Stat label="Following" value={followLoading ? "—" : String(organisers.length)} />
         <Stat label="Upcoming Events" value={loading ? "—" : String(upcomingCount)} />
       </div>
+
+      {(myPMRank || myCCRank) && (
+        <section className="rounded-2xl border border-[#F5D0FE] bg-gradient-to-br from-[#FDF4FF] to-white p-5">
+          <h2 className="text-sm font-bold text-[#111827]">🏆 Your Tier List Rankings This Month</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {myPMRank && (
+              <div className="rounded-xl border border-[#E5E7EB] bg-white p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">🎉 Party Monster</p>
+                <p className="mt-1 text-2xl font-bold text-[#D946EF]">#{myPMRank.rank}</p>
+                <p className="text-xs text-[#6B7280]">{myPMRank.events_this_month} events</p>
+              </div>
+            )}
+            {myCCRank && (
+              <div className="rounded-xl border border-[#E5E7EB] bg-white p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">👥 Crowd Control</p>
+                <p className="mt-1 text-2xl font-bold text-[#D946EF]">#{myCCRank.rank}</p>
+                <p className="text-xs text-[#6B7280]">{myCCRank.group_orders_count} group orders</p>
+              </div>
+            )}
+          </div>
+          <Link to="/leaderboard" className="mt-3 inline-block text-sm font-semibold text-[#A21CAF] hover:underline">
+            View full leaderboard →
+          </Link>
+        </section>
+      )}
 
       {organisers.length > 0 && (
         <section>

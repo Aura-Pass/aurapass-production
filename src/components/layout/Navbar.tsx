@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const LINKS = [
   { label: "Discover", to: "/events" as const },
+  { label: "Tier List", to: "/leaderboard" as const },
   { label: "How It Works", to: "/how-it-works" as const },
   { label: "For Organisers", to: "/for-organisers" as const },
 ];
