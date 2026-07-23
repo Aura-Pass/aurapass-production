@@ -16,6 +16,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PaymentCallbackRouteImport } from './routes/payment-callback'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -83,6 +84,11 @@ const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
@@ -271,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/payment-callback': typeof PaymentCallbackRoute
   '/pricing': typeof PricingRoute
@@ -312,6 +319,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/payment-callback': typeof PaymentCallbackRoute
   '/pricing': typeof PricingRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/payment-callback': typeof PaymentCallbackRoute
   '/pricing': typeof PricingRoute
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/help'
     | '/how-it-works'
+    | '/leaderboard'
     | '/login'
     | '/payment-callback'
     | '/pricing'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/help'
     | '/how-it-works'
+    | '/leaderboard'
     | '/login'
     | '/payment-callback'
     | '/pricing'
@@ -476,6 +487,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/help'
     | '/how-it-works'
+    | '/leaderboard'
     | '/login'
     | '/payment-callback'
     | '/pricing'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HelpRoute: typeof HelpRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   PricingRoute: typeof PricingRoute
@@ -582,6 +595,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/how-it-works': {
@@ -904,6 +924,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   HelpRoute: HelpRoute,
   HowItWorksRoute: HowItWorksRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   PricingRoute: PricingRoute,
