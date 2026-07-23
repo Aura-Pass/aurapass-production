@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { useFollowedOrganisers } from "@/hooks/useFollowedOrganisers";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 
 export const Route = createFileRoute("/dashboard/attendee/")({
   head: () => ({ meta: [{ title: "My Dashboard | AuraPass" }] }),
@@ -15,6 +16,9 @@ function AttendeeOverview() {
   const email = profile?.email ?? user?.email;
   const { tickets, loading } = useMyTickets(email);
   const { organisers, loading: followLoading } = useFollowedOrganisers();
+  const { partyMonster, crowdControl } = useLeaderboard();
+  const myPMRank = partyMonster.find((e) => e.id === profile?.id);
+  const myCCRank = crowdControl.find((e) => e.id === profile?.id);
 
   const upcomingCount = useMemo(() => {
     const today = new Date();
