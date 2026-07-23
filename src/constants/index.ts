@@ -3,6 +3,7 @@ export const TAGLINE = "Access The Moment";
 
 export const NAV_LINKS = [
   { label: "Discover", to: "/events" },
+  { label: "Tier List", to: "/leaderboard" },
   { label: "How It Works", to: "/how-it-works" },
   { label: "For Organisers", to: "/for-organisers" },
 ] as const;
