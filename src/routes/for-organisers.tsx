@@ -7,18 +7,22 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/for-organisers")({
   head: () => ({
     meta: [
-      { title: "For Organisers | AuraPass" },
+      { title: "For Organisers | Sell Tickets on AuraPass" },
       {
         name: "description",
         content:
-          "Sell tickets to your events in minutes. Create an event, set prices, and get paid — no setup fees.",
+          "Sell tickets to your events in minutes on AuraPass. Create an event, set prices, scan tickets at the gate, and get paid — no setup fees.",
       },
-      { property: "og:title", content: "For Organisers | AuraPass" },
+      { property: "og:title", content: "Sell Tickets on AuraPass" },
       {
         property: "og:description",
-        content: "Sell tickets to your events in minutes with AuraPass.",
+        content:
+          "Sell tickets to your events in minutes with AuraPass — no monthly or setup fees.",
       },
+      { property: "og:url", content: "https://aurapassticket.com/for-organisers" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/for-organisers" }],
   }),
   component: ForOrganisersPage,
 });

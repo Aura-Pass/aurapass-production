@@ -5,8 +5,20 @@ export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
       { title: "Terms of Service | AuraPass" },
-      { name: "description", content: "AuraPass Terms of Service." },
+      {
+        name: "description",
+        content:
+          "The AuraPass Terms of Service that govern your use of the platform as an attendee or organiser, including tickets, refunds, and payouts.",
+      },
+      { property: "og:title", content: "Terms of Service | AuraPass" },
+      {
+        property: "og:description",
+        content: "Terms governing your use of AuraPass as an attendee or organiser.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/terms" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/terms" }],
   }),
   component: TermsPage,
 });

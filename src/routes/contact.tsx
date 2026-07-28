@@ -5,9 +5,21 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact | AuraPass" },
-      { name: "description", content: "Get in touch with the AuraPass team." },
+      { title: "Contact AuraPass | Support for Attendees & Organisers" },
+      {
+        name: "description",
+        content:
+          "Get in touch with the AuraPass team by email, WhatsApp, or Instagram. Support for attendees, organisers, and press enquiries.",
+      },
+      { property: "og:title", content: "Contact AuraPass" },
+      {
+        property: "og:description",
+        content: "Email, WhatsApp, or Instagram — reach the AuraPass team.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/contact" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/contact" }],
   }),
   component: ContactPage,
 });

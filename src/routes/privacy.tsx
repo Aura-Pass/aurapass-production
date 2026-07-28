@@ -5,8 +5,21 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy | AuraPass" },
-      { name: "description", content: "AuraPass Privacy Policy." },
+      {
+        name: "description",
+        content:
+          "How AuraPass collects, uses, stores, and protects your personal information when you buy tickets or organise events on the platform.",
+      },
+      { property: "og:title", content: "Privacy Policy | AuraPass" },
+      {
+        property: "og:description",
+        content:
+          "How AuraPass collects, uses, and protects your personal information when using the platform.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/privacy" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/privacy" }],
   }),
   component: PrivacyPage,
 });
