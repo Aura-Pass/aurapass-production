@@ -12,15 +12,43 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFollow } from "@/hooks/useFollow";
 
 export const Route = createFileRoute("/organisers/$username")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `@${params.username.replace(/^@/, "")} | AuraPass` },
-      {
-        name: "description",
-        content: `View events and profile for @${params.username.replace(/^@/, "")} on AuraPass.`,
-      },
-    ],
-  }),
+  head: ({ params }) => {
+    const clean = params.username.replace(/^@/, "");
+    const url = `https://aurapassticket.com/organisers/${clean}`;
+    return {
+      meta: [
+        { title: `@${clean} — Organiser Profile | AuraPass` },
+        {
+          name: "description",
+          content: `View upcoming events, bio, and social links for @${clean} on AuraPass — Nigeria's modern event ticketing platform.`,
+        },
+        { property: "og:title", content: `@${clean} on AuraPass` },
+        {
+          property: "og:description",
+          content: `Upcoming events and profile for @${clean} on AuraPass.`,
+        },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "profile" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            url,
+            mainEntity: {
+              "@type": "Person",
+              name: `@${clean}`,
+              alternateName: clean,
+              url,
+            },
+          }),
+        },
+      ],
+    };
+  },
   component: OrganiserProfilePage,
 });
 
