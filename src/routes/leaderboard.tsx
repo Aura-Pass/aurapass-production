@@ -7,13 +7,23 @@ import type { PartyMonsterEntry, CrowdControlEntry } from "@/types";
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
-      { title: "Tier List | AuraPass" },
-      { name: "description", content: "Monthly rankings of AuraPass's top event-goers and group organisers." },
+      { title: "Tier List | AuraPass Monthly Rankings" },
+      {
+        name: "description",
+        content:
+          "Monthly AuraPass rankings — see this month's top event-goers on Party Monster and top group organisers on Crowd Control.",
+      },
       { property: "og:title", content: "AuraPass Tier List — Monthly Rankings" },
-      { property: "og:description", content: "See who's topping the Party Monster and Crowd Control leaderboards this month." },
+      {
+        property: "og:description",
+        content:
+          "See who's topping the Party Monster and Crowd Control leaderboards this month on AuraPass.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/leaderboard" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/leaderboard" }],
   }),
   component: LeaderboardPage,
 });

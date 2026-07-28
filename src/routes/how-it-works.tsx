@@ -5,9 +5,21 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
     meta: [
-      { title: "How It Works | AuraPass" },
-      { name: "description", content: "How AuraPass works for attendees and organisers." },
+      { title: "How AuraPass Works | For Attendees & Organisers" },
+      {
+        name: "description",
+        content:
+          "See how AuraPass works — from discovering events and buying tickets in seconds to creating your own event and getting paid as an organiser.",
+      },
+      { property: "og:title", content: "How AuraPass Works" },
+      {
+        property: "og:description",
+        content: "Discover events, buy tickets in seconds, or start selling your own on AuraPass.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/how-it-works" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/how-it-works" }],
   }),
   component: HowItWorksPage,
 });

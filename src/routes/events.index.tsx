@@ -20,9 +20,22 @@ export const Route = createFileRoute("/events/")({
   }),
   head: () => ({
     meta: [
-      { title: "Discover Events | AuraPass" },
-      { name: "description", content: "Browse events happening across Nigeria on AuraPass." },
+      { title: "Discover Events in Nigeria | AuraPass" },
+      {
+        name: "description",
+        content:
+          "Browse concerts, festivals, conferences, and parties happening across Nigeria. Filter by city, category, and date on AuraPass.",
+      },
+      { property: "og:title", content: "Discover Events in Nigeria | AuraPass" },
+      {
+        property: "og:description",
+        content:
+          "Browse concerts, festivals, conferences, and parties happening across Nigeria on AuraPass.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/events" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/events" }],
   }),
   component: EventsPage,
 });

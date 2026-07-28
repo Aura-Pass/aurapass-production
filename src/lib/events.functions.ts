@@ -10,7 +10,7 @@ export const getPublishedEventForHead = createServerFn({ method: "GET" })
     const sb = supabaseAdmin as any;
     const { data: event } = await sb
       .from("events")
-      .select("id, slug, title, description, banner_url, status")
+      .select("id, slug, title, description, banner_url, status, event_date, location, venue, city")
       .eq("slug", data.slug)
       .eq("status", "published")
       .maybeSingle();
@@ -21,5 +21,9 @@ export const getPublishedEventForHead = createServerFn({ method: "GET" })
       title: event.title as string,
       description: (event.description ?? "") as string,
       banner_url: (event.banner_url ?? null) as string | null,
+      event_date: (event.event_date ?? null) as string | null,
+      location: (event.location ?? null) as string | null,
+      venue: (event.venue ?? null) as string | null,
+      city: (event.city ?? null) as string | null,
     };
   });

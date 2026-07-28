@@ -5,8 +5,21 @@ export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
       { title: "Blog | AuraPass" },
-      { name: "description", content: "The AuraPass blog — coming soon." },
+      {
+        name: "description",
+        content:
+          "Stories, guides, and behind-the-scenes coverage of Nigeria's concerts, festivals, and live culture from the AuraPass team.",
+      },
+      { property: "og:title", content: "AuraPass Blog — Nigerian Live Culture" },
+      {
+        property: "og:description",
+        content:
+          "Stories, guides, and behind-the-scenes coverage of Nigeria's concerts, festivals, and live culture from the AuraPass team.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/blog" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/blog" }],
   }),
   component: BlogPage,
 });

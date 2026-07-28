@@ -5,8 +5,21 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing | AuraPass" },
-      { name: "description", content: "Simple, transparent pricing. No monthly fees." },
+      {
+        name: "description",
+        content:
+          "Simple, transparent AuraPass pricing for event organisers. No monthly fees or setup costs — you only pay a small service fee when a ticket sells.",
+      },
+      { property: "og:title", content: "Pricing | AuraPass" },
+      {
+        property: "og:description",
+        content:
+          "No monthly fees, no setup costs. AuraPass only charges a small service fee when a ticket sells.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/pricing" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/pricing" }],
   }),
   component: PricingPage,
 });

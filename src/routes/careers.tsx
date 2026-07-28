@@ -5,8 +5,20 @@ export const Route = createFileRoute("/careers")({
   head: () => ({
     meta: [
       { title: "Careers | AuraPass" },
-      { name: "description", content: "Careers at AuraPass — coming soon." },
+      {
+        name: "description",
+        content:
+          "Careers at AuraPass. We're not actively hiring yet, but we'd love to hear from talented people who care about Nigerian live culture.",
+      },
+      { property: "og:title", content: "Careers at AuraPass" },
+      {
+        property: "og:description",
+        content: "Join the team building Nigeria's modern event ticketing platform.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/careers" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/careers" }],
   }),
   component: CareersPage,
 });

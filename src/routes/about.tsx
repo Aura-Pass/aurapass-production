@@ -5,9 +5,22 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About | AuraPass" },
-      { name: "description", content: "About AuraPass — Nigeria's modern event ticketing platform." },
+      { title: "About AuraPass | Nigerian Event Ticketing" },
+      {
+        name: "description",
+        content:
+          "AuraPass is Nigeria's modern event discovery and ticketing platform, connecting fans to concerts, festivals, and conferences nationwide.",
+      },
+      { property: "og:title", content: "About AuraPass" },
+      {
+        property: "og:description",
+        content:
+          "Nigeria's modern event discovery and ticketing platform, based in Ilorin and built for the culture.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/about" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/about" }],
   }),
   component: AboutPage,
 });
