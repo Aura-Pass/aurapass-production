@@ -27,35 +27,58 @@ import { getPublishedEventForHead } from "@/lib/events.functions";
 
 export const Route = createFileRoute("/events/$slug/")({
   loader: ({ params }) => getPublishedEventForHead({ data: { slug: params.slug } }),
-  head: ({ loaderData: event, params }) => ({
-    meta: event
-      ? [
-          { title: `${event.title} | AuraPass` },
-          { name: "description", content: (event.description ?? "").slice(0, 160) },
-          { property: "og:title", content: event.title },
-          { property: "og:description", content: (event.description ?? "").slice(0, 160) },
-          {
-            property: "og:image",
-            content: event.banner_url ?? "https://aurapassticket.com/og-default.png",
-          },
-          {
-            property: "og:url",
-            content: `https://aurapassticket.com/events/${event.slug ?? params.slug}`,
-          },
-          { property: "og:type", content: "website" },
-          { property: "og:site_name", content: "AuraPass" },
-          { name: "twitter:card", content: "summary_large_image" },
-          { name: "twitter:title", content: event.title },
-          {
-            name: "twitter:image",
-            content: event.banner_url ?? "https://aurapassticket.com/og-default.png",
-          },
-        ]
-      : [{ title: "Event | AuraPass" }],
-    links: event
-      ? [{ rel: "canonical", href: `https://aurapassticket.com/events/${event.slug ?? params.slug}` }]
-      : [{ rel: "canonical", href: `https://aurapassticket.com/events/${params.slug}` }],
-  }),
+  head: ({ loaderData: event, params }) => {
+    const canonicalUrl = event
+      ? `https://aurapassticket.com/events/${event.slug ?? params.slug}`
+      : `https://aurapassticket.com/events/${params.slug}`;
+    const image = event?.banner_url ?? "https://aurapassticket.com/og-default.png";
+    return {
+      meta: event
+        ? [
+            { title: `${event.title} | AuraPass` },
+            { name: "description", content: (event.description ?? "").slice(0, 160) },
+            { property: "og:title", content: event.title },
+            { property: "og:description", content: (event.description ?? "").slice(0, 160) },
+            { property: "og:image", content: image },
+            { property: "og:url", content: canonicalUrl },
+            { property: "og:type", content: "article" },
+            { property: "og:site_name", content: "AuraPass" },
+            { name: "twitter:card", content: "summary_large_image" },
+            { name: "twitter:title", content: event.title },
+            { name: "twitter:image", content: image },
+          ]
+        : [{ title: "Event | AuraPass" }],
+      links: [{ rel: "canonical", href: canonicalUrl }],
+      scripts: event
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Event",
+                name: event.title,
+                description: (event.description ?? "").slice(0, 500),
+                startDate: event.event_date ?? undefined,
+                image: event.banner_url ? [event.banner_url] : undefined,
+                url: canonicalUrl,
+                eventStatus: "https://schema.org/EventScheduled",
+                eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+                location: {
+                  "@type": "Place",
+                  name: (event as any).venue ?? (event as any).location ?? "Nigeria",
+                  address: (event as any).location ?? (event as any).city ?? "Nigeria",
+                },
+                organizer: {
+                  "@type": "Organization",
+                  name: "AuraPass",
+                  url: "https://aurapassticket.com",
+                },
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
@@ -174,7 +197,7 @@ function EventDetailPage() {
     setMeta("property", "og:title", event.title);
     setMeta("property", "og:description", desc);
     setMeta("property", "og:url", url);
-    setMeta("property", "og:type", "event");
+    setMeta("property", "og:type", "article");
     if (event.banner_url) {
       setMeta("property", "og:image", event.banner_url);
       setMeta("name", "twitter:image", event.banner_url);

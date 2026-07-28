@@ -1,11 +1,61 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: "How do I get my ticket?",
+    a: "After purchase, your QR ticket is emailed to the address you provided at checkout. Check your inbox (and spam folder). You can also view all your tickets by logging in and going to My Tickets.",
+  },
+  {
+    q: "I can't find my QR code — what do I do?",
+    a: "Log in to your account and open My Tickets. Every ticket you've purchased is stored there with a scannable QR code.",
+  },
+  {
+    q: "How do I get a refund?",
+    a: "Tickets are non-refundable except when the event is officially cancelled by the organiser. If an event is cancelled, refunds are processed within 7–14 business days to the original payment method.",
+  },
+  {
+    q: "How do I create an event?",
+    a: "Sign up for an organiser account, then go to your dashboard and click Create Event. Events are reviewed by our team before going live.",
+  },
+  {
+    q: "When do I get paid as an organiser?",
+    a: "Payouts are processed after your event concludes. You receive the full ticket price — the buyer covers the service fee.",
+  },
+];
+
 export const Route = createFileRoute("/help")({
   head: () => ({
     meta: [
-      { title: "Help Centre | AuraPass" },
-      { name: "description", content: "Answers to common questions about AuraPass." },
+      { title: "Help Centre | AuraPass Support & FAQs" },
+      {
+        name: "description",
+        content:
+          "Answers to the most common AuraPass questions — tickets, QR codes, refunds, creating events, and organiser payouts.",
+      },
+      { property: "og:title", content: "AuraPass Help Centre" },
+      {
+        property: "og:description",
+        content:
+          "Common questions about tickets, refunds, and creating events on AuraPass.",
+      },
+      { property: "og:url", content: "https://aurapassticket.com/help" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://aurapassticket.com/help" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQS.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
     ],
   }),
   component: HelpPage,
