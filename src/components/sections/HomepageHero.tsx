@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 export function HomepageHero() {
   const [query, setQuery] = useState<string>("");
   const navigate = useNavigate();
-  const { user, profile, activeRoles } = useAuth();
+  const { user, activeRoles } = useAuth();
 
   function handleCreateEvent() {
     if (!user) {

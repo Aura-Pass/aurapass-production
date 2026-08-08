@@ -12,7 +12,7 @@ const FEATURES = [
 
 export function OrganizerCTA() {
   const navigate = useNavigate();
-  const { user, profile, activeRoles } = useAuth();
+  const { user, activeRoles } = useAuth();
 
   function handleStartSelling() {
     if (!user) {

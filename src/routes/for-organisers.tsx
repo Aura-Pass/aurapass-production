@@ -47,7 +47,7 @@ const FEATURES = [
 
 function ForOrganisersPage() {
   const navigate = useNavigate();
-  const { user, profile, activeRoles } = useAuth();
+  const { user, activeRoles } = useAuth();
 
   function handleStartSelling() {
     if (!user) {

@@ -38,7 +38,7 @@ function Step({ n, title, desc }: { n: number; title: string; desc: string }) {
 
 function HowItWorksPage() {
   const navigate = useNavigate();
-  const { user, profile, activeRoles } = useAuth();
+  const { user, activeRoles } = useAuth();
 
   function handleCreateEvent() {
     if (!user) {
