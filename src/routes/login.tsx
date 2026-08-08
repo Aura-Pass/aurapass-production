@@ -47,11 +47,16 @@ function LoginPage() {
       return;
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .maybeSingle();
+    // Roles come from the user_roles table (source of truth), not profiles.role.
+    const { data: rolesData } = await (supabase as unknown as {
+      rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    }).rpc("get_user_roles", { user_id: data.user.id });
+
+    const roles = Array.isArray(rolesData)
+      ? (rolesData as unknown[])
+          .map((r) => (typeof r === "string" ? r : (r as { role?: string })?.role))
+          .filter((r): r is string => typeof r === "string")
+      : [];
 
     setSubmitting(false);
 
@@ -62,9 +67,8 @@ function LoginPage() {
       });
       return;
     }
-    const role = (profile?.role as "attendee" | "organiser" | "admin" | undefined) ?? "attendee";
-    if (role === "organiser") navigate({ to: "/dashboard/organiser" });
-    else if (role === "admin") navigate({ to: "/dashboard/admin" });
+    if (roles.includes("admin")) navigate({ to: "/dashboard/admin" });
+    else if (roles.includes("organiser")) navigate({ to: "/dashboard/organiser" });
     else navigate({ to: "/" });
   }
 
