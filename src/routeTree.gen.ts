@@ -49,6 +49,7 @@ import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
 import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.attendee.saved'
 import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboard.attendee.following'
+import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
 import { Route as DashboardOrganiserScanIndexRouteImport } from './routes/dashboard.organiser.scan.index'
@@ -263,6 +264,11 @@ const DashboardAttendeeFollowingRoute =
     path: '/following',
     getParentRoute: () => DashboardAttendeeRoute,
   } as any)
+const DashboardAdminUsersRoute = DashboardAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
 const DashboardAdminTicketsRoute = DashboardAdminTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
@@ -321,6 +327,7 @@ export interface FileRoutesByFullPath {
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -364,6 +371,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -412,6 +420,7 @@ export interface FileRoutesById {
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -461,6 +470,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
+    | '/dashboard/admin/users'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -504,6 +514,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
+    | '/dashboard/admin/users'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
+    | '/dashboard/admin/users'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -879,6 +891,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAttendeeFollowingRouteImport
       parentRoute: typeof DashboardAttendeeRoute
     }
+    '/dashboard/admin/users': {
+      id: '/dashboard/admin/users'
+      path: '/users'
+      fullPath: '/dashboard/admin/users'
+      preLoaderRoute: typeof DashboardAdminUsersRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/tickets': {
       id: '/dashboard/admin/tickets'
       path: '/tickets'
@@ -920,12 +939,14 @@ declare module '@tanstack/react-router' {
 interface DashboardAdminRouteChildren {
   DashboardAdminAnalyticsRoute: typeof DashboardAdminAnalyticsRoute
   DashboardAdminTicketsRoute: typeof DashboardAdminTicketsRoute
+  DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute
   DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminAnalyticsRoute: DashboardAdminAnalyticsRoute,
   DashboardAdminTicketsRoute: DashboardAdminTicketsRoute,
+  DashboardAdminUsersRoute: DashboardAdminUsersRoute,
   DashboardAdminIndexRoute: DashboardAdminIndexRoute,
 }
 

@@ -131,7 +131,7 @@ function UserManagement() {
                 <p className="truncate text-xs text-[#6B7280]">{u.email}</p>
                 <div className="mt-2 flex flex-wrap gap-1">
                   {u.roles.map((r) => (
-                    <Badge key={r} variant="secondary">
+                    <Badge key={r} variant="outline">
                       {r}
                     </Badge>
                   ))}
