@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/dashboard/admin/users")({
   head: () => ({ meta: [{ title: "User Management | AuraPass" }] }),
-  component: UserManagement;
+  component: UserManagement,
 });
 
 interface Row {
