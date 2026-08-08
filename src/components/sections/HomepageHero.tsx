@@ -7,14 +7,14 @@ import { useAuth } from "@/hooks/useAuth";
 export function HomepageHero() {
   const [query, setQuery] = useState<string>("");
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, profile, activeRoles } = useAuth();
 
   function handleCreateEvent() {
     if (!user) {
       navigate({ to: "/signup" });
       return;
     }
-    if (profile?.role === "organiser" || profile?.role === "admin") {
+    if (activeRoles.includes("organiser") || activeRoles.includes("admin")) {
       navigate({ to: "/dashboard/organiser/create-event" });
     } else {
       navigate({ to: "/dashboard/attendee/settings" });
