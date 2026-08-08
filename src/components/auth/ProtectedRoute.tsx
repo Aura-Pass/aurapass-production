@@ -5,11 +5,12 @@ import { Spinner } from "@/components/ui/spinner";
 
 interface Props {
   children: ReactNode;
-  allowedRoles?: Array<"attendee" | "organiser" | "admin">;
+  /** Any one of these roles (from the user_roles table) grants access. */
+  allowedRoles?: string[];
 }
 
 export function ProtectedRoute({ children, allowedRoles }: Props) {
-  const { user, profile, loading } = useAuth();
+  const { user, activeRoles, loading } = useAuth();
 
   if (loading) {
     return (
@@ -19,10 +20,13 @@ export function ProtectedRoute({ children, allowedRoles }: Props) {
     );
   }
 
-  if (!user) return <Navigate to="/login" />;
+  if (!user) {
+    return <Navigate to="/login" search={{ redirect: undefined, ticketTypeId: undefined }} />;
+  }
 
-  if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
-    return <Navigate to="/" />;
+  if (allowedRoles && allowedRoles.length > 0) {
+    const permitted = allowedRoles.some((r) => activeRoles.includes(r));
+    if (!permitted) return <Navigate to="/dashboard" />;
   }
 
   return <>{children}</>;

@@ -25,9 +25,10 @@ function displayNameOf(profile: { username?: string | null; full_name?: string |
   return profile?.full_name || fallback || "Account";
 }
 
-function dashboardPathFor(role: string | undefined) {
-  if (role === "organiser") return "/dashboard/organiser" as const;
-  if (role === "admin") return "/dashboard/admin" as const;
+function dashboardPathFor(roles: string[]) {
+  // Multi-role: land on the richest surface the user has access to.
+  if (roles.includes("admin")) return "/dashboard/admin" as const;
+  if (roles.includes("organiser")) return "/dashboard/organiser" as const;
   return "/dashboard/attendee" as const;
 }
 
@@ -35,7 +36,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, activeRoles, signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", onClickAway);
   }, []);
 
-  const dashPath = dashboardPathFor(profile?.role);
+  const dashPath = dashboardPathFor(activeRoles);
 
   async function handleSignOut() {
     setMenuOpen(false);

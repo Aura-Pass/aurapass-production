@@ -48,7 +48,11 @@ import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dash
 import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard.attendee.tickets'
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
 import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.attendee.saved'
+import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboard.attendee.following'
+import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
+import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
+import { Route as DashboardOrganiserScanIndexRouteImport } from './routes/dashboard.organiser.scan.index'
 import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
 
@@ -254,11 +258,33 @@ const DashboardAttendeeSavedRoute = DashboardAttendeeSavedRouteImport.update({
   path: '/saved',
   getParentRoute: () => DashboardAttendeeRoute,
 } as any)
+const DashboardAttendeeFollowingRoute =
+  DashboardAttendeeFollowingRouteImport.update({
+    id: '/following',
+    path: '/following',
+    getParentRoute: () => DashboardAttendeeRoute,
+  } as any)
+const DashboardAdminUsersRoute = DashboardAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
 const DashboardAdminTicketsRoute = DashboardAdminTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardAdminAnalyticsRoute = DashboardAdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardOrganiserScanIndexRoute =
+  DashboardOrganiserScanIndexRouteImport.update({
+    id: '/scan/',
+    path: '/scan/',
+    getParentRoute: () => DashboardOrganiserRoute,
+  } as any)
 const DashboardOrganiserScanEventIdRoute =
   DashboardOrganiserScanEventIdRouteImport.update({
     id: '/scan/$eventId',
@@ -299,7 +325,10 @@ export interface FileRoutesByFullPath {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
@@ -315,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
+  '/dashboard/organiser/scan/': typeof DashboardOrganiserScanIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -339,7 +369,10 @@ export interface FileRoutesByTo {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
+  '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
@@ -355,6 +388,7 @@ export interface FileRoutesByTo {
   '/events/$slug': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
+  '/dashboard/organiser/scan': typeof DashboardOrganiserScanIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -384,7 +418,10 @@ export interface FileRoutesById {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
@@ -400,6 +437,7 @@ export interface FileRoutesById {
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
+  '/dashboard/organiser/scan/': typeof DashboardOrganiserScanIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -430,7 +468,10 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/dashboard/'
     | '/events/'
+    | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
+    | '/dashboard/admin/users'
+    | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
@@ -446,6 +487,7 @@ export interface FileRouteTypes {
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/scan/$eventId'
+    | '/dashboard/organiser/scan/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -470,7 +512,10 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/dashboard'
     | '/events'
+    | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
+    | '/dashboard/admin/users'
+    | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
@@ -486,6 +531,7 @@ export interface FileRouteTypes {
     | '/events/$slug'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/scan/$eventId'
+    | '/dashboard/organiser/scan'
   id:
     | '__root__'
     | '/'
@@ -514,7 +560,10 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/dashboard/'
     | '/events/'
+    | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
+    | '/dashboard/admin/users'
+    | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
@@ -530,6 +579,7 @@ export interface FileRouteTypes {
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/scan/$eventId'
+    | '/dashboard/organiser/scan/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -834,12 +884,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAttendeeSavedRouteImport
       parentRoute: typeof DashboardAttendeeRoute
     }
+    '/dashboard/attendee/following': {
+      id: '/dashboard/attendee/following'
+      path: '/following'
+      fullPath: '/dashboard/attendee/following'
+      preLoaderRoute: typeof DashboardAttendeeFollowingRouteImport
+      parentRoute: typeof DashboardAttendeeRoute
+    }
+    '/dashboard/admin/users': {
+      id: '/dashboard/admin/users'
+      path: '/users'
+      fullPath: '/dashboard/admin/users'
+      preLoaderRoute: typeof DashboardAdminUsersRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/tickets': {
       id: '/dashboard/admin/tickets'
       path: '/tickets'
       fullPath: '/dashboard/admin/tickets'
       preLoaderRoute: typeof DashboardAdminTicketsRouteImport
       parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/analytics': {
+      id: '/dashboard/admin/analytics'
+      path: '/analytics'
+      fullPath: '/dashboard/admin/analytics'
+      preLoaderRoute: typeof DashboardAdminAnalyticsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/organiser/scan/': {
+      id: '/dashboard/organiser/scan/'
+      path: '/scan'
+      fullPath: '/dashboard/organiser/scan/'
+      preLoaderRoute: typeof DashboardOrganiserScanIndexRouteImport
+      parentRoute: typeof DashboardOrganiserRoute
     }
     '/dashboard/organiser/scan/$eventId': {
       id: '/dashboard/organiser/scan/$eventId'
@@ -859,12 +937,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardAdminRouteChildren {
+  DashboardAdminAnalyticsRoute: typeof DashboardAdminAnalyticsRoute
   DashboardAdminTicketsRoute: typeof DashboardAdminTicketsRoute
+  DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute
   DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
+  DashboardAdminAnalyticsRoute: DashboardAdminAnalyticsRoute,
   DashboardAdminTicketsRoute: DashboardAdminTicketsRoute,
+  DashboardAdminUsersRoute: DashboardAdminUsersRoute,
   DashboardAdminIndexRoute: DashboardAdminIndexRoute,
 }
 
@@ -873,6 +955,7 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
 )
 
 interface DashboardAttendeeRouteChildren {
+  DashboardAttendeeFollowingRoute: typeof DashboardAttendeeFollowingRoute
   DashboardAttendeeSavedRoute: typeof DashboardAttendeeSavedRoute
   DashboardAttendeeSettingsRoute: typeof DashboardAttendeeSettingsRoute
   DashboardAttendeeTicketsRoute: typeof DashboardAttendeeTicketsRoute
@@ -880,6 +963,7 @@ interface DashboardAttendeeRouteChildren {
 }
 
 const DashboardAttendeeRouteChildren: DashboardAttendeeRouteChildren = {
+  DashboardAttendeeFollowingRoute: DashboardAttendeeFollowingRoute,
   DashboardAttendeeSavedRoute: DashboardAttendeeSavedRoute,
   DashboardAttendeeSettingsRoute: DashboardAttendeeSettingsRoute,
   DashboardAttendeeTicketsRoute: DashboardAttendeeTicketsRoute,
@@ -898,6 +982,7 @@ interface DashboardOrganiserRouteChildren {
   DashboardOrganiserIndexRoute: typeof DashboardOrganiserIndexRoute
   DashboardOrganiserEditEventEventIdRoute: typeof DashboardOrganiserEditEventEventIdRoute
   DashboardOrganiserScanEventIdRoute: typeof DashboardOrganiserScanEventIdRoute
+  DashboardOrganiserScanIndexRoute: typeof DashboardOrganiserScanIndexRoute
 }
 
 const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
@@ -910,6 +995,7 @@ const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
   DashboardOrganiserEditEventEventIdRoute:
     DashboardOrganiserEditEventEventIdRoute,
   DashboardOrganiserScanEventIdRoute: DashboardOrganiserScanEventIdRoute,
+  DashboardOrganiserScanIndexRoute: DashboardOrganiserScanIndexRoute,
 }
 
 const DashboardOrganiserRouteWithChildren =

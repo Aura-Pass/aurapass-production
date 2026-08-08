@@ -38,14 +38,14 @@ function Step({ n, title, desc }: { n: number; title: string; desc: string }) {
 
 function HowItWorksPage() {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, activeRoles } = useAuth();
 
   function handleCreateEvent() {
     if (!user) {
       navigate({ to: "/signup" });
       return;
     }
-    if (profile?.role === "organiser" || profile?.role === "admin") {
+    if (activeRoles.includes("organiser") || activeRoles.includes("admin")) {
       navigate({ to: "/dashboard/organiser/create-event" });
     } else {
       navigate({ to: "/dashboard/attendee/settings" });

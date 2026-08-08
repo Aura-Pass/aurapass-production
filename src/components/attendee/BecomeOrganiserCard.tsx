@@ -1,5 +1,16 @@
+/**
+ * BecomeOrganiserCard — self-serve organiser onboarding.
+ *
+ * Multi-role system: this INSERTS a row into `user_roles`
+ * (role: 'organiser', status: 'active') instead of overwriting profiles.role.
+ * profiles.role is still kept in sync for legacy display badges.
+ * On success we refresh activeRoles so the dashboard sidebar updates
+ * immediately — no page reload required.
+ */
 import { useState } from "react";
 import { Megaphone } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
 
 interface Props {
   fullName: string;
@@ -20,28 +33,45 @@ interface Props {
 const MIN_LEN = 20;
 
 export function BecomeOrganiserCard({ fullName, email }: Props) {
+  const { user, activeRoles, refreshRoles } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const trimmed = message.trim();
   const valid = trimmed.length >= MIN_LEN;
+  const alreadyOrganiser = activeRoles.includes("organiser");
 
-  function handleSubmit() {
-    if (!valid) return;
-    const subject = `Organiser Access Request — ${fullName || "AuraPass user"}`;
-    const body =
-      `Name: ${fullName || "(not provided)"}\n` +
-      `Email: ${email || "(not provided)"}\n\n` +
-      `About my events:\n${trimmed}`;
-    const href =
-      `mailto:support@aurapassticket.com` +
-      `?subject=${encodeURIComponent(subject)}` +
-      `&body=${encodeURIComponent(body)}`;
-    if (typeof window !== "undefined") {
-      window.location.href = href;
+  async function handleSubmit() {
+    if (!valid || !user) return;
+    setSubmitting(true);
+
+    const { error } = await (supabase as any)
+      .from("user_roles")
+      .insert({ user_id: user.id, role: "organiser", status: "active" });
+
+    // Duplicate row means the role already exists — treat as success.
+    const duplicate = error?.code === "23505";
+
+    if (error && !duplicate) {
+      setSubmitting(false);
+      toast.error(error.message ?? "Could not enable organiser access. Please try again.");
+      return;
     }
+
+    // Legacy sync: keep profiles.role reflecting the user's "primary" role.
+    await (supabase as any).from("profiles").update({ role: "organiser" }).eq("id", user.id);
+
+    await refreshRoles();
+    setSubmitting(false);
     setOpen(false);
+    setMessage("");
+    toast.success("You're an organiser now — start creating events!");
+    navigate({ to: "/dashboard/organiser" });
   }
+
+  if (alreadyOrganiser) return null;
 
   return (
     <>
@@ -55,8 +85,8 @@ export function BecomeOrganiserCard({ fullName, email }: Props) {
               Become an Organiser
             </h3>
             <p className="mt-1 text-sm text-[#6B7280]">
-              Host and sell tickets to your own events on AuraPass. Request access
-              and our team will get in touch.
+              Host and sell tickets to your own events on AuraPass. Organiser access
+              is instant — you keep your attendee account too.
             </p>
             <div className="mt-4">
               <Button
@@ -65,7 +95,7 @@ export function BecomeOrganiserCard({ fullName, email }: Props) {
                 size="md"
                 onClick={() => setOpen(true)}
               >
-                Request Access
+                Become an Organiser
               </Button>
             </div>
           </div>
@@ -75,35 +105,36 @@ export function BecomeOrganiserCard({ fullName, email }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Request organiser access</DialogTitle>
+            <DialogTitle>Become an organiser</DialogTitle>
             <DialogDescription>
-              Tell us briefly about the events you plan to organise. Minimum{" "}
-              {MIN_LEN} characters.
+              Tell us briefly about the events you plan to host. Organiser tools
+              unlock straight away.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Tell us about the events you plan to organise"
-              rows={5}
-              className="min-h-[120px]"
-            />
-            <p className="text-xs text-[#6B7280]">
-              {trimmed.length}/{MIN_LEN} minimum
-            </p>
-          </div>
+
+          <Textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={5}
+            placeholder="e.g. I run monthly afrobeats parties in Ilorin..."
+          />
+          <p className="text-xs text-[#6B7280]">
+            {trimmed.length}/{MIN_LEN} characters minimum
+            {fullName || email ? ` · ${fullName || email}` : ""}
+          </p>
+
           <DialogFooter>
-            <Button variant="outline" size="md" onClick={() => setOpen(false)}>
+            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button
+              type="button"
               variant="primary"
-              size="md"
               disabled={!valid}
+              loading={submitting}
               onClick={handleSubmit}
             >
-              Send Request
+              Enable organiser access
             </Button>
           </DialogFooter>
         </DialogContent>
