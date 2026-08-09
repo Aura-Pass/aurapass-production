@@ -147,10 +147,13 @@ function DashboardShell() {
   // Lock the underlying page scroll while the mobile drawer is open.
   useEffect(() => {
     if (!drawerOpen) return;
-    const prev = document.body.style.overflow;
+    const body = document.body.style.overflow;
+    const html = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = body;
+      document.documentElement.style.overflow = html;
     };
   }, [drawerOpen]);
 
