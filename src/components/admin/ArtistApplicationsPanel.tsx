@@ -58,7 +58,7 @@ export function ArtistApplicationsPanel() {
   async function approve(app: ArtistProfile) {
     setWorking(true);
     const { error } = await (supabase as any).rpc("approve_artist_application", {
-      application_id: app.id,
+      _application_id: app.id,
     });
     setWorking(false);
     if (error) {
@@ -78,8 +78,8 @@ export function ArtistApplicationsPanel() {
     }
     setWorking(true);
     const { error } = await (supabase as any).rpc("reject_artist_application", {
-      application_id: rejectTarget.id,
-      reason: trimmed,
+      _application_id: rejectTarget.id,
+      _reason: trimmed,
     });
     setWorking(false);
     if (error) {

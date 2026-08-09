@@ -39,7 +39,7 @@ function BecomeArtistPage() {
   async function resubmit() {
     if (!application) return;
     const { error } = await (supabase as any).rpc("resubmit_artist_application", {
-      application_id: application.id,
+      _application_id: application.id,
     });
     if (error) {
       toast.error(error.message ?? "Could not resubmit your application.");

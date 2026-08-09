@@ -18,6 +18,7 @@ export interface ArtistProfile {
   rejection_reason: string | null;
   submitted_at: string;
   reviewed_at: string | null;
+  reviewed_by: string | null;
   created_at: string;
   updated_at: string;
 }
