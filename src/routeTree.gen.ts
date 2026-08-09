@@ -40,6 +40,7 @@ import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admi
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
 import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
+import { Route as DashboardArtistIndexRouteImport } from './routes/dashboard.artist.index'
 import { Route as DashboardAttendeeIndexRouteImport } from './routes/dashboard.attendee.index'
 import { Route as DashboardAttendeeBecomeArtistRouteImport } from './routes/dashboard.attendee.become-artist'
 import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboard.attendee.following'
@@ -214,6 +215,11 @@ const DashboardAdminUsersRoute = DashboardAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardArtistIndexRoute = DashboardArtistIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardArtistRoute,
+} as any)
 const DashboardAttendeeIndexRoute = DashboardAttendeeIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -332,7 +338,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
-  '/dashboard/artist': typeof DashboardArtistRoute
+  '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
@@ -380,7 +387,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/dashboard/artist': typeof DashboardArtistRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -400,6 +406,7 @@ export interface FileRoutesByTo {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/admin': typeof DashboardAdminIndexRoute
+  '/dashboard/artist': typeof DashboardArtistIndexRoute
   '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
   '/events/$slug': typeof EventsSlugIndexRoute
@@ -429,7 +436,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
-  '/dashboard/artist': typeof DashboardArtistRoute
+  '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -451,6 +458,7 @@ export interface FileRoutesById {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
@@ -503,6 +511,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
     | '/dashboard/admin/'
+    | '/dashboard/artist/'
     | '/dashboard/attendee/'
     | '/dashboard/organiser/'
     | '/events/$slug/'
@@ -529,7 +538,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/dashboard/artist'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/dashboard'
@@ -549,6 +557,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
     | '/dashboard/admin'
+    | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/events/$slug'
@@ -599,6 +608,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
     | '/dashboard/admin/'
+    | '/dashboard/artist/'
     | '/dashboard/attendee/'
     | '/dashboard/organiser/'
     | '/events/$slug/'
@@ -853,6 +863,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminUsersRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/artist/': {
+      id: '/dashboard/artist/'
+      path: '/'
+      fullPath: '/dashboard/artist/'
+      preLoaderRoute: typeof DashboardArtistIndexRouteImport
+      parentRoute: typeof DashboardArtistRoute
+    }
     '/dashboard/attendee/': {
       id: '/dashboard/attendee/'
       path: '/'
@@ -993,6 +1010,18 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
   DashboardAdminRouteChildren,
 )
 
+interface DashboardArtistRouteChildren {
+  DashboardArtistIndexRoute: typeof DashboardArtistIndexRoute
+}
+
+const DashboardArtistRouteChildren: DashboardArtistRouteChildren = {
+  DashboardArtistIndexRoute: DashboardArtistIndexRoute,
+}
+
+const DashboardArtistRouteWithChildren = DashboardArtistRoute._addFileChildren(
+  DashboardArtistRouteChildren,
+)
+
 interface DashboardAttendeeRouteChildren {
   DashboardAttendeeBecomeArtistRoute: typeof DashboardAttendeeBecomeArtistRoute
   DashboardAttendeeFollowingRoute: typeof DashboardAttendeeFollowingRoute
@@ -1044,7 +1073,7 @@ const DashboardOrganiserRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRouteWithChildren
-  DashboardArtistRoute: typeof DashboardArtistRoute
+  DashboardArtistRoute: typeof DashboardArtistRouteWithChildren
   DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardOrganiserRoute: typeof DashboardOrganiserRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -1052,7 +1081,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRouteWithChildren,
-  DashboardArtistRoute: DashboardArtistRoute,
+  DashboardArtistRoute: DashboardArtistRouteWithChildren,
   DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardOrganiserRoute: DashboardOrganiserRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
