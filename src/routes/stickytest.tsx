@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
 
-export const Route = createFileRoute("/__stickytest")({ component: T });
+export const Route = createFileRoute("/stickytest")({ component: T });
 
 function T() {
   return (
