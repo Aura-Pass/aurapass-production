@@ -10,7 +10,7 @@ function T() {
       <div className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-10">
           <div className="items-start gap-6 md:grid md:grid-cols-[220px_minmax(0,1fr)]">
-            <aside className="hidden md:sticky md:top-0 md:block md:h-screen md:self-start md:overflow-y-auto md:py-2">
+            <aside className="hidden md:sticky md:top-16 md:block md:h-[calc(100vh-4rem)] md:self-start md:overflow-y-auto md:py-2">
               <Card className="p-2" style={{ borderRadius: 12 }}>
                 <div id="navmark">nav</div>
               </Card>
