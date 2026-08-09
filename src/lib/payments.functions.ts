@@ -124,12 +124,16 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     if (isFree) {
+      const { ensureTicketsForOrder, sendConfirmationEmailSafely } = await import(
+        "@/lib/fulfilment.server"
+      );
+
       await sb
         .from("ticket_types")
         .update({ quantity_sold: ticketType.quantity_sold + data.quantity })
         .eq("id", data.ticketTypeId);
 
-      await generateTicketsForOrder(sb, {
+      await ensureTicketsForOrder(sb, {
         id: order.id,
         event_id: data.eventId,
         ticket_type_id: data.ticketTypeId,
@@ -140,6 +144,7 @@ export const initializePayment = createServerFn({ method: "POST" })
 
       return { free: true as const, orderId: order.id as string };
     }
+
 
 
     const secret = process.env.PAYSTACK_SECRET_KEY;
