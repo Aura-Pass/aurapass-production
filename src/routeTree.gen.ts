@@ -28,6 +28,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ArtistsIndexRouteImport } from './routes/artists.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
@@ -152,6 +153,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
+  id: '/artists/',
+  path: '/artists/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
@@ -343,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
+  '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
+  '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
@@ -441,6 +449,7 @@ export interface FileRoutesById {
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
+  '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
@@ -494,6 +503,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
+    | '/artists/'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/analytics'
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
+    | '/artists'
     | '/dashboard'
     | '/events'
     | '/dashboard/admin/analytics'
@@ -591,6 +602,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
+    | '/artists/'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/analytics'
@@ -639,6 +651,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
+  ArtistsIndexRoute: typeof ArtistsIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
   EventsSlugIndexRoute: typeof EventsSlugIndexRoute
@@ -777,6 +790,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artists/': {
+      id: '/artists/'
+      path: '/artists'
+      fullPath: '/artists/'
+      preLoaderRoute: typeof ArtistsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/': {
@@ -1113,6 +1133,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
+  ArtistsIndexRoute: ArtistsIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
   EventsSlugIndexRoute: EventsSlugIndexRoute,
