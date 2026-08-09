@@ -30,6 +30,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
+import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
@@ -160,6 +161,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const DashboardAdminRoute = DashboardAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardArtistRoute = DashboardArtistRouteImport.update({
+  id: '/artist',
+  path: '/artist',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAttendeeRoute = DashboardAttendeeRouteImport.update({
@@ -326,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
+  '/dashboard/artist': typeof DashboardArtistRoute
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -373,6 +380,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/dashboard/artist': typeof DashboardArtistRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -421,6 +429,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
+  '/dashboard/artist': typeof DashboardArtistRoute
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -472,6 +481,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/dashboard/admin'
+    | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/order-confirmation/$orderId'
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/dashboard/artist'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/dashboard'
@@ -566,6 +577,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/dashboard/admin'
+    | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/order-confirmation/$orderId'
@@ -769,6 +781,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/dashboard/admin'
       preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/artist': {
+      id: '/dashboard/artist'
+      path: '/artist'
+      fullPath: '/dashboard/artist'
+      preLoaderRoute: typeof DashboardArtistRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/attendee': {
@@ -1025,6 +1044,7 @@ const DashboardOrganiserRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRouteWithChildren
+  DashboardArtistRoute: typeof DashboardArtistRoute
   DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardOrganiserRoute: typeof DashboardOrganiserRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -1032,6 +1052,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRouteWithChildren,
+  DashboardArtistRoute: DashboardArtistRoute,
   DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardOrganiserRoute: DashboardOrganiserRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
