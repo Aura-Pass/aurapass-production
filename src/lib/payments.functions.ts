@@ -185,67 +185,84 @@ export const verifyPayment = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { fulfilPaidOrder, verifyWithPaystack } = await import("@/lib/fulfilment.server");
     const sb = supabaseAdmin as any;
 
-    const secret = process.env.PAYSTACK_SECRET_KEY;
-    if (!secret) return { success: false, error: "Payment provider not configured" };
-
-    const verifyRes = await fetch(
-      `https://api.paystack.co/transaction/verify/${encodeURIComponent(data.reference)}`,
-      { headers: { Authorization: `Bearer ${secret}` } },
-    );
-    const verifyData = (await verifyRes.json()) as any;
-
-    if (!verifyData?.status || verifyData.data?.status !== "success") {
-      await sb.from("orders").update({ status: "failed" }).eq("paystack_reference", data.reference);
-      return { success: false as const };
+    const verified = await verifyWithPaystack(data.reference);
+    if (!verified.ok) {
+      await sb
+        .from("orders")
+        .update({ status: "failed" })
+        .eq("paystack_reference", data.reference)
+        .neq("status", "confirmed");
+      return { success: false as const, error: verified.error };
     }
+
+    const result = await fulfilPaidOrder(sb, {
+      reference: data.reference,
+      verifiedData: verified.data,
+      amount: Number(verified.data?.amount ?? 0) / 100 || undefined,
+    });
+    if (!result.success) return { success: false as const, error: result.error };
+    return { success: true as const, orderId: result.orderId };
+  });
+
+/**
+ * Self-healing recovery: if a webhook was missed and an order is still pending,
+ * re-verify it against Paystack and fulfil it. Safe to call repeatedly.
+ * Called by the order-confirmation page for any non-confirmed order.
+ */
+export const reconcileOrder = createServerFn({ method: "POST" })
+  .inputValidator((data: { orderId: string }) => {
+    if (!data || typeof data.orderId !== "string") throw new Error("Invalid input");
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { fulfilPaidOrder, verifyWithPaystack, ensureTicketsForOrder } = await import(
+      "@/lib/fulfilment.server"
+    );
+    const sb = supabaseAdmin as any;
 
     const { data: order } = await sb
       .from("orders")
-      .select("*")
-      .eq("paystack_reference", data.reference)
-      .single();
+      .select("id, status, quantity, event_id, ticket_type_id, paystack_reference")
+      .eq("id", data.orderId)
+      .maybeSingle();
 
     if (!order) return { success: false as const, error: "Order not found" };
 
-    if (order.status !== "confirmed") {
-      await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-      const { data: ticketType } = await sb
-        .from("ticket_types")
-        .select("quantity_sold")
-        .eq("id", order.ticket_type_id)
-        .single();
-
-      if (ticketType) {
-        await sb
-          .from("ticket_types")
-          .update({ quantity_sold: ticketType.quantity_sold + order.quantity })
-          .eq("id", order.ticket_type_id);
-      }
-
-      await sb.from("payments").insert({
-        order_id: order.id,
-        paystack_reference: data.reference,
-        amount: order.total_amount,
-        status: "success",
-        paid_at: new Date().toISOString(),
-        raw_response: verifyData.data,
-      });
-
-      await generateTicketsForOrder(sb, {
+    if (order.status === "confirmed") {
+      // Confirmed but possibly missing ticket rows — heal those too.
+      await ensureTicketsForOrder(sb, {
         id: order.id,
         event_id: order.event_id,
         ticket_type_id: order.ticket_type_id,
-        quantity: order.quantity,
+        quantity: Number(order.quantity),
       });
-
-      // Ensure ticket rows are fully committed before email fetch
-      await new Promise<void>((resolve) => setTimeout(resolve, 1500));
-
-      await sendConfirmationEmailSafely(sb, order.id);
+      return { success: true as const, orderId: order.id as string, fulfilledNow: false };
     }
+
+    if (!order.paystack_reference) {
+      return { success: false as const, error: "No payment reference on this order" };
+    }
+
+    const verified = await verifyWithPaystack(order.paystack_reference);
+    if (!verified.ok) return { success: false as const, error: verified.error };
+
+    const result = await fulfilPaidOrder(sb, {
+      reference: order.paystack_reference,
+      verifiedData: verified.data,
+      amount: Number(verified.data?.amount ?? 0) / 100 || undefined,
+    });
+    if (!result.success) return { success: false as const, error: result.error };
+    return {
+      success: true as const,
+      orderId: result.orderId,
+      fulfilledNow: result.fulfilledNow,
+    };
+  });
+
 
 
     return { success: true as const, orderId: order.id as string };
