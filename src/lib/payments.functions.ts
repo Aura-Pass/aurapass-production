@@ -262,8 +262,3 @@ export const reconcileOrder = createServerFn({ method: "POST" })
       fulfilledNow: result.fulfilledNow,
     };
   });
-
-
-
-    return { success: true as const, orderId: order.id as string };
-  });
