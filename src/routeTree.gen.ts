@@ -29,6 +29,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ArtistsIndexRouteImport } from './routes/artists.index'
+import { Route as ArtistsIdRouteImport } from './routes/artists.$id'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
@@ -158,6 +159,11 @@ const TermsRoute = TermsRouteImport.update({
 const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
   id: '/artists/',
   path: '/artists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistsIdRoute = ArtistsIdRouteImport.update({
+  id: '/artists/$id',
+  path: '/artists/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
@@ -343,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
@@ -394,6 +401,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
@@ -443,6 +451,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
@@ -497,6 +506,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/artists/$id'
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
@@ -548,6 +558,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/artists/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists'
@@ -596,6 +607,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/artists/$id'
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
@@ -649,6 +661,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ArtistsIdRoute: typeof ArtistsIdRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
@@ -797,6 +810,13 @@ declare module '@tanstack/react-router' {
       path: '/artists'
       fullPath: '/artists/'
       preLoaderRoute: typeof ArtistsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artists/$id': {
+      id: '/artists/$id'
+      path: '/artists/$id'
+      fullPath: '/artists/$id'
+      preLoaderRoute: typeof ArtistsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/': {
@@ -1131,6 +1151,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ArtistsIdRoute: ArtistsIdRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
