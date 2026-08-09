@@ -18,34 +18,58 @@ export const Route = createFileRoute("/order-confirmation/$orderId")({
 
 function OrderConfirmationPage() {
   const { orderId } = Route.useParams();
+  const reconcile = useServerFn(reconcileOrder);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
 
   useEffect(() => {
     let active = true;
-    (async () => {
+
+    const load = async () => {
       const { data } = await (supabase as any)
         .from("orders")
         .select("*, events(title, event_date, venue, city), ticket_types(name)")
         .eq("id", orderId)
         .maybeSingle();
-      if (!active) return;
-      setOrder(data);
-
       const { data: ticketRows } = await (supabase as any)
         .from("tickets")
         .select("*")
         .eq("order_id", orderId)
         .order("created_at", { ascending: true });
+      return { order: data, tickets: (ticketRows ?? []) as Ticket[] };
+    };
+
+    (async () => {
+      let result = await load();
       if (!active) return;
-      setTickets((ticketRows ?? []) as Ticket[]);
+
+      // Self-heal a missed webhook: re-verify with Paystack and fulfil.
+      const needsRepair =
+        result.order &&
+        (result.order.status !== "confirmed" ||
+          result.tickets.length < Number(result.order.quantity ?? 0));
+
+      if (needsRepair) {
+        try {
+          await reconcile({ data: { orderId } });
+          if (!active) return;
+          result = await load();
+        } catch {
+          /* fall through and show whatever state we have */
+        }
+      }
+
+      if (!active) return;
+      setOrder(result.order);
+      setTickets(result.tickets);
       setLoading(false);
     })();
     return () => {
       active = false;
     };
-  }, [orderId]);
+  }, [orderId, reconcile]);
+
 
   if (loading) {
     return (
