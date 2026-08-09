@@ -19,6 +19,7 @@ import {
   ClipboardList,
   BarChart3,
   ShieldCheck,
+  Mic2,
   Menu,
   X,
 } from "lucide-react";
