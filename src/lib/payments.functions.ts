@@ -11,71 +11,8 @@
  * Dependencies: supabaseAdmin (service role), Resend (via email.server.ts), Paystack REST API
  */
 import { createServerFn } from "@tanstack/react-start";
-import { generateTicketCode } from "@/lib/generateTicketCode";
 
 
-async function sendConfirmationEmailSafely(sb: any, orderId: string) {
-  try {
-    console.log("[email] starting for order", orderId);
-    const { data: order } = await sb
-      .from("orders")
-      .select(
-        "id, buyer_name, buyer_email, quantity, total_amount, ticket_price, ticket_types(name), events(title, event_date, event_time, venue, city)",
-      )
-      .eq("id", orderId)
-      .single();
-    if (!order) {
-      console.error("[sendConfirmationEmailSafely] order not found", orderId);
-      return;
-    }
-    if (!process.env.RESEND_API_KEY) {
-      console.error("❌ RESEND_API_KEY not configured — skipping ticket confirmation email");
-      return;
-    }
-    try {
-      const { sendTicketConfirmationEmailImpl } = await import("@/lib/email.server");
-      await sendTicketConfirmationEmailImpl({
-        to: String(order.buyer_email ?? ""),
-        buyerName: String(order.buyer_name ?? "Guest"),
-        eventTitle: String(order.events?.title ?? "Your Event"),
-        eventDate: String(order.events?.event_date ?? ""),
-        eventTime: String(order.events?.event_time ?? ""),
-        eventVenue: String(order.events?.venue ?? ""),
-        eventCity: String(order.events?.city ?? ""),
-        ticketTypeName: String(order.ticket_types?.name ?? "Ticket"),
-        quantity: Number(order.quantity ?? 1),
-        totalAmount: Number(order.total_amount ?? 0),
-        orderId: String(order.id),
-        isFree: Number(order.ticket_price ?? 0) === 0,
-      });
-      console.log("✅ Ticket confirmation email sent to", order.buyer_email);
-    } catch (emailError) {
-      console.error("❌ Failed to send ticket confirmation email:", emailError);
-      // Never re-throw — email failure must not block the buyer's confirmation page
-    }
-    console.log("[email] completed for order", orderId);
-  } catch (err) {
-    console.error("[email] CRITICAL: unhandled error for order", orderId, err);
-    // Never re-throw
-  }
-}
-
-async function generateTicketsForOrder(
-  sb: any,
-  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
-) {
-  const rows = Array.from({ length: order.quantity }, () => ({
-    order_id: order.id,
-    event_id: order.event_id,
-    ticket_type_id: order.ticket_type_id,
-    qr_code: generateTicketCode(order.id),
-  }));
-  const { error } = await sb.from("tickets").insert(rows);
-  if (error) {
-    console.error("[generateTicketsForOrder] insert failed", error);
-    throw new Error(`Ticket generation failed: ${error.message}`);
-  }
-}
 
 
 interface InitInput {

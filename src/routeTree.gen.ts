@@ -38,6 +38,7 @@ import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organ
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
@@ -207,6 +208,12 @@ const OrganisersUsernameRoute = OrganisersUsernameRouteImport.update({
   path: '/organisers/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack-webhook',
+    path: '/api/public/paystack-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -359,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
@@ -407,6 +415,7 @@ export interface FileRoutesByTo {
   '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
@@ -461,6 +470,7 @@ export interface FileRoutesById {
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
@@ -516,6 +526,7 @@ export interface FileRouteTypes {
     | '/artists/'
     | '/dashboard/'
     | '/events/'
+    | '/api/public/paystack-webhook'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
@@ -564,6 +575,7 @@ export interface FileRouteTypes {
     | '/artists'
     | '/dashboard'
     | '/events'
+    | '/api/public/paystack-webhook'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
@@ -617,6 +629,7 @@ export interface FileRouteTypes {
     | '/artists/'
     | '/dashboard/'
     | '/events/'
+    | '/api/public/paystack-webhook'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
@@ -666,6 +679,7 @@ export interface RootRouteChildren {
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
   EventsSlugIndexRoute: typeof EventsSlugIndexRoute
 }
@@ -873,6 +887,13 @@ declare module '@tanstack/react-router' {
       path: '/organisers/$username'
       fullPath: '/organisers/$username'
       preLoaderRoute: typeof OrganisersUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/paystack-webhook': {
+      id: '/api/public/paystack-webhook'
+      path: '/api/public/paystack-webhook'
+      fullPath: '/api/public/paystack-webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/admin/': {
@@ -1156,19 +1177,10 @@ const rootRouteChildren: RootRouteChildren = {
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
   EventsSlugIndexRoute: EventsSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
