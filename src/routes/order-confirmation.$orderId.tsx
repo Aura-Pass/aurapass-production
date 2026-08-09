@@ -48,10 +48,12 @@ function OrderConfirmationPage() {
       if (!active) return;
 
       // Self-heal a missed webhook: re-verify with Paystack and fulfil.
+      // Runs whenever the order isn't visibly complete — including when RLS
+      // hides the row from a guest buyer, since the server fn uses service role.
       const needsRepair =
-        result.order &&
-        (result.order.status !== "confirmed" ||
-          result.tickets.length < Number(result.order.quantity ?? 0));
+        !result.order ||
+        result.order.status !== "confirmed" ||
+        result.tickets.length < Number(result.order.quantity ?? 0);
 
       if (needsRepair) {
         try {
@@ -62,6 +64,7 @@ function OrderConfirmationPage() {
           /* fall through and show whatever state we have */
         }
       }
+
 
       if (!active) return;
       setOrder(result.order);
