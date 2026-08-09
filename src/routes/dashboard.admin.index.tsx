@@ -192,9 +192,17 @@ function AdminDashboard() {
         >
           Cancellation Requests ({counts.cancellation_requests})
         </TabButton>
+        <TabButton
+          active={tab === "artist_applications"}
+          onClick={() => setTab("artist_applications")}
+        >
+          Artist Applications
+        </TabButton>
       </div>
 
-      {loading ? (
+      {tab === "artist_applications" ? (
+        <ArtistApplicationsPanel />
+      ) : loading ? (
         <div className="flex items-center justify-center py-16">
           <Spinner className="h-8 w-8" />
         </div>
