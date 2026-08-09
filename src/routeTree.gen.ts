@@ -28,8 +28,11 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ArtistsIndexRouteImport } from './routes/artists.index'
+import { Route as ArtistsIdRouteImport } from './routes/artists.$id'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
+import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
@@ -39,7 +42,9 @@ import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admi
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
 import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
+import { Route as DashboardArtistIndexRouteImport } from './routes/dashboard.artist.index'
 import { Route as DashboardAttendeeIndexRouteImport } from './routes/dashboard.attendee.index'
+import { Route as DashboardAttendeeBecomeArtistRouteImport } from './routes/dashboard.attendee.become-artist'
 import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboard.attendee.following'
 import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.attendee.saved'
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
@@ -151,6 +156,16 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
+  id: '/artists/',
+  path: '/artists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistsIdRoute = ArtistsIdRouteImport.update({
+  id: '/artists/$id',
+  path: '/artists/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -159,6 +174,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const DashboardAdminRoute = DashboardAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardArtistRoute = DashboardArtistRouteImport.update({
+  id: '/artist',
+  path: '/artist',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAttendeeRoute = DashboardAttendeeRouteImport.update({
@@ -207,11 +227,22 @@ const DashboardAdminUsersRoute = DashboardAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardArtistIndexRoute = DashboardArtistIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardArtistRoute,
+} as any)
 const DashboardAttendeeIndexRoute = DashboardAttendeeIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardAttendeeRoute,
 } as any)
+const DashboardAttendeeBecomeArtistRoute =
+  DashboardAttendeeBecomeArtistRouteImport.update({
+    id: '/become-artist',
+    path: '/become-artist',
+    getParentRoute: () => DashboardAttendeeRoute,
+  } as any)
 const DashboardAttendeeFollowingRoute =
   DashboardAttendeeFollowingRouteImport.update({
     id: '/following',
@@ -318,16 +349,20 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
+  '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
+  '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -339,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
@@ -365,13 +401,16 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
+  '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -383,6 +422,7 @@ export interface FileRoutesByTo {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/admin': typeof DashboardAdminIndexRoute
+  '/dashboard/artist': typeof DashboardArtistIndexRoute
   '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
   '/events/$slug': typeof EventsSlugIndexRoute
@@ -411,16 +451,20 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
+  '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
+  '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -432,6 +476,7 @@ export interface FileRoutesById {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
@@ -461,16 +506,20 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/artists/$id'
     | '/dashboard/admin'
+    | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
+    | '/artists/'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
+    | '/dashboard/attendee/become-artist'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -482,6 +531,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
     | '/dashboard/admin/'
+    | '/dashboard/artist/'
     | '/dashboard/attendee/'
     | '/dashboard/organiser/'
     | '/events/$slug/'
@@ -508,13 +558,16 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/artists/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
+    | '/artists'
     | '/dashboard'
     | '/events'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
+    | '/dashboard/attendee/become-artist'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -526,6 +579,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
     | '/dashboard/admin'
+    | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/events/$slug'
@@ -553,16 +607,20 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/artists/$id'
     | '/dashboard/admin'
+    | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
+    | '/artists/'
     | '/dashboard/'
     | '/events/'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
+    | '/dashboard/attendee/become-artist'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -574,6 +632,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
     | '/dashboard/admin/'
+    | '/dashboard/artist/'
     | '/dashboard/attendee/'
     | '/dashboard/organiser/'
     | '/events/$slug/'
@@ -602,8 +661,10 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ArtistsIdRoute: typeof ArtistsIdRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
+  ArtistsIndexRoute: typeof ArtistsIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
   EventsSlugIndexRoute: typeof EventsSlugIndexRoute
@@ -744,6 +805,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/artists/': {
+      id: '/artists/'
+      path: '/artists'
+      fullPath: '/artists/'
+      preLoaderRoute: typeof ArtistsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artists/$id': {
+      id: '/artists/$id'
+      path: '/artists/$id'
+      fullPath: '/artists/$id'
+      preLoaderRoute: typeof ArtistsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -756,6 +831,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/dashboard/admin'
       preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/artist': {
+      id: '/dashboard/artist'
+      path: '/artist'
+      fullPath: '/dashboard/artist'
+      preLoaderRoute: typeof DashboardArtistRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/attendee': {
@@ -821,11 +903,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminUsersRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/artist/': {
+      id: '/dashboard/artist/'
+      path: '/'
+      fullPath: '/dashboard/artist/'
+      preLoaderRoute: typeof DashboardArtistIndexRouteImport
+      parentRoute: typeof DashboardArtistRoute
+    }
     '/dashboard/attendee/': {
       id: '/dashboard/attendee/'
       path: '/'
       fullPath: '/dashboard/attendee/'
       preLoaderRoute: typeof DashboardAttendeeIndexRouteImport
+      parentRoute: typeof DashboardAttendeeRoute
+    }
+    '/dashboard/attendee/become-artist': {
+      id: '/dashboard/attendee/become-artist'
+      path: '/become-artist'
+      fullPath: '/dashboard/attendee/become-artist'
+      preLoaderRoute: typeof DashboardAttendeeBecomeArtistRouteImport
       parentRoute: typeof DashboardAttendeeRoute
     }
     '/dashboard/attendee/following': {
@@ -954,7 +1050,20 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
   DashboardAdminRouteChildren,
 )
 
+interface DashboardArtistRouteChildren {
+  DashboardArtistIndexRoute: typeof DashboardArtistIndexRoute
+}
+
+const DashboardArtistRouteChildren: DashboardArtistRouteChildren = {
+  DashboardArtistIndexRoute: DashboardArtistIndexRoute,
+}
+
+const DashboardArtistRouteWithChildren = DashboardArtistRoute._addFileChildren(
+  DashboardArtistRouteChildren,
+)
+
 interface DashboardAttendeeRouteChildren {
+  DashboardAttendeeBecomeArtistRoute: typeof DashboardAttendeeBecomeArtistRoute
   DashboardAttendeeFollowingRoute: typeof DashboardAttendeeFollowingRoute
   DashboardAttendeeSavedRoute: typeof DashboardAttendeeSavedRoute
   DashboardAttendeeSettingsRoute: typeof DashboardAttendeeSettingsRoute
@@ -963,6 +1072,7 @@ interface DashboardAttendeeRouteChildren {
 }
 
 const DashboardAttendeeRouteChildren: DashboardAttendeeRouteChildren = {
+  DashboardAttendeeBecomeArtistRoute: DashboardAttendeeBecomeArtistRoute,
   DashboardAttendeeFollowingRoute: DashboardAttendeeFollowingRoute,
   DashboardAttendeeSavedRoute: DashboardAttendeeSavedRoute,
   DashboardAttendeeSettingsRoute: DashboardAttendeeSettingsRoute,
@@ -1003,6 +1113,7 @@ const DashboardOrganiserRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRouteWithChildren
+  DashboardArtistRoute: typeof DashboardArtistRouteWithChildren
   DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardOrganiserRoute: typeof DashboardOrganiserRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -1010,6 +1121,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRouteWithChildren,
+  DashboardArtistRoute: DashboardArtistRouteWithChildren,
   DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardOrganiserRoute: DashboardOrganiserRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
@@ -1039,8 +1151,10 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ArtistsIdRoute: ArtistsIdRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
+  ArtistsIndexRoute: ArtistsIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
   EventsSlugIndexRoute: EventsSlugIndexRoute,

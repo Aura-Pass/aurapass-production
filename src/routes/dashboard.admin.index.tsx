@@ -19,6 +19,7 @@ import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { ExportEventSalesButton } from "@/components/admin/ExportEventSalesButton";
+import { ArtistApplicationsPanel } from "@/components/admin/ArtistApplicationsPanel";
 import {
   approveEventCancellation,
   declineEventCancellation,
@@ -30,7 +31,12 @@ export const Route = createFileRoute("/dashboard/admin/")({
   component: AdminDashboard,
 });
 
-type Tab = "pending_review" | "published" | "rejected" | "cancellation_requests";
+type Tab =
+  | "pending_review"
+  | "published"
+  | "rejected"
+  | "cancellation_requests"
+  | "artist_applications";
 
 function AdminDashboard() {
   const { events, loading, updateEventStatus, refetch } = useAdminEvents();
@@ -187,9 +193,17 @@ function AdminDashboard() {
         >
           Cancellation Requests ({counts.cancellation_requests})
         </TabButton>
+        <TabButton
+          active={tab === "artist_applications"}
+          onClick={() => setTab("artist_applications")}
+        >
+          Artist Applications
+        </TabButton>
       </div>
 
-      {loading ? (
+      {tab === "artist_applications" ? (
+        <ArtistApplicationsPanel />
+      ) : loading ? (
         <div className="flex items-center justify-center py-16">
           <Spinner className="h-8 w-8" />
         </div>

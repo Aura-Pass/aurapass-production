@@ -19,6 +19,7 @@ import {
   ClipboardList,
   BarChart3,
   ShieldCheck,
+  Mic2,
   Menu,
   X,
 } from "lucide-react";
@@ -63,6 +64,14 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/attendee/tickets", label: "My Tickets", icon: Ticket },
       { to: "/dashboard/attendee/following", label: "Following", icon: Users },
       { to: "/dashboard/attendee/saved", label: "Saved Events", icon: Heart },
+      { to: "/dashboard/attendee/become-artist", label: "Become an Artist", icon: Mic2 },
+    ],
+  },
+  {
+    role: "artist",
+    label: "Artist",
+    items: [
+      { to: "/dashboard/artist", label: "My Artist Profile", icon: Mic2, exact: true },
     ],
   },
   {
