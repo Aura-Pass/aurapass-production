@@ -30,7 +30,12 @@ export const Route = createFileRoute("/dashboard/admin/")({
   component: AdminDashboard,
 });
 
-type Tab = "pending_review" | "published" | "rejected" | "cancellation_requests";
+type Tab =
+  | "pending_review"
+  | "published"
+  | "rejected"
+  | "cancellation_requests"
+  | "artist_applications";
 
 function AdminDashboard() {
   const { events, loading, updateEventStatus, refetch } = useAdminEvents();
