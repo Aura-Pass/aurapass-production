@@ -19,6 +19,7 @@ import { useAdminEvents, type AdminEvent } from "@/hooks/useAdminEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { ExportEventSalesButton } from "@/components/admin/ExportEventSalesButton";
+import { ArtistApplicationsPanel } from "@/components/admin/ArtistApplicationsPanel";
 import {
   approveEventCancellation,
   declineEventCancellation,
