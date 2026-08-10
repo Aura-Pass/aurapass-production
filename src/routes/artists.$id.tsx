@@ -66,9 +66,29 @@ function ArtistProfilePage() {
     );
   }
 
-  const embeds = artist.video_links
-    .map((v) => ({ raw: v, src: toEmbedUrl(v) }))
-    .filter((v) => v.src);
+  const videos = artist.video_links
+    .map((raw) => ({ raw, src: toEmbedUrl(raw), platform: detectVideoPlatform(raw) }))
+    .filter((v): v is { raw: string; src: string; platform: NonNullable<ReturnType<typeof detectVideoPlatform>> } =>
+      Boolean(v.src && v.platform),
+    );
+
+  const mediaItems: MediaItem[] = [
+    ...artist.photo_urls.map((url) => ({
+      kind: "image" as const,
+      src: url,
+      alt: `${artist.stage_name} photo`,
+    })),
+    ...videos.map((v) => ({
+      kind: "video" as const,
+      src: v.platform === "youtube" ? `${v.src}?autoplay=1` : v.src,
+      title: `${artist.stage_name} video`,
+    })),
+  ];
+
+  const photoCount = artist.photo_urls.length;
+  const platformLabel = { youtube: "YouTube", instagram: "Instagram", tiktok: "TikTok" } as const;
+
+
 
   return (
     <PageWrapper>
