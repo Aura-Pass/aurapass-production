@@ -1,15 +1,17 @@
 /**
  * Public artist profile — gallery, embedded videos, genres and rate info.
  */
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Music2 } from "lucide-react";
+import { Music2, Play } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { MediaLightbox, type MediaItem } from "@/components/ui/MediaLightbox";
 import { useArtist } from "@/hooks/useArtists";
-import { toEmbedUrl } from "@/lib/artists";
+import { detectVideoPlatform, toEmbedUrl } from "@/lib/artists";
+
 
 export const Route = createFileRoute("/artists/$id")({
   head: () => ({
