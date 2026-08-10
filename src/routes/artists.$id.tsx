@@ -96,15 +96,23 @@ function ArtistProfilePage() {
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
           <div className="flex h-56 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F3F4F6] md:h-56 md:w-56">
             {artist.photo_urls[0] ? (
-              <img
-                src={artist.photo_urls[0]}
-                alt={`${artist.stage_name} performing`}
-                className="h-full w-full object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => setOpenIndex(0)}
+                aria-label="View photo full size"
+                className="h-full w-full"
+              >
+                <img
+                  src={artist.photo_urls[0]}
+                  alt={`${artist.stage_name} performing`}
+                  className="h-full w-full cursor-zoom-in object-cover transition hover:opacity-90"
+                />
+              </button>
             ) : (
               <Music2 className="h-8 w-8 text-[#9CA3AF]" />
             )}
           </div>
+
           <div className="min-w-0">
             <h1 className="text-3xl font-bold text-[#111827] md:text-4xl">
               {artist.stage_name}
