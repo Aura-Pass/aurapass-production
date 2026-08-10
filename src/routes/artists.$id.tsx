@@ -37,6 +37,8 @@ export const Route = createFileRoute("/artists/$id")({
 function ArtistProfilePage() {
   const { id } = Route.useParams();
   const { artist, loading } = useArtist(id);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
 
   if (loading) {
     return (
