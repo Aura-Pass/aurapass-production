@@ -1,15 +1,17 @@
 /**
  * Public artist profile — gallery, embedded videos, genres and rate info.
  */
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Music2 } from "lucide-react";
+import { Music2, Play } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { MediaLightbox, type MediaItem } from "@/components/ui/MediaLightbox";
 import { useArtist } from "@/hooks/useArtists";
-import { toEmbedUrl } from "@/lib/artists";
+import { detectVideoPlatform, toEmbedUrl } from "@/lib/artists";
+
 
 export const Route = createFileRoute("/artists/$id")({
   head: () => ({
@@ -35,6 +37,8 @@ export const Route = createFileRoute("/artists/$id")({
 function ArtistProfilePage() {
   const { id } = Route.useParams();
   const { artist, loading } = useArtist(id);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
 
   if (loading) {
     return (
@@ -62,9 +66,29 @@ function ArtistProfilePage() {
     );
   }
 
-  const embeds = artist.video_links
-    .map((v) => ({ raw: v, src: toEmbedUrl(v) }))
-    .filter((v) => v.src);
+  const videos = artist.video_links
+    .map((raw) => ({ raw, src: toEmbedUrl(raw), platform: detectVideoPlatform(raw) }))
+    .filter((v): v is { raw: string; src: string; platform: NonNullable<ReturnType<typeof detectVideoPlatform>> } =>
+      Boolean(v.src && v.platform),
+    );
+
+  const mediaItems: MediaItem[] = [
+    ...artist.photo_urls.map((url) => ({
+      kind: "image" as const,
+      src: url,
+      alt: `${artist.stage_name} photo`,
+    })),
+    ...videos.map((v) => ({
+      kind: "video" as const,
+      src: v.platform === "youtube" ? `${v.src}?autoplay=1` : v.src,
+      title: `${artist.stage_name} video`,
+    })),
+  ];
+
+  const photoCount = artist.photo_urls.length;
+  const platformLabel = { youtube: "YouTube", instagram: "Instagram", tiktok: "TikTok" } as const;
+
+
 
   return (
     <PageWrapper>
@@ -72,15 +96,23 @@ function ArtistProfilePage() {
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
           <div className="flex h-56 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F3F4F6] md:h-56 md:w-56">
             {artist.photo_urls[0] ? (
-              <img
-                src={artist.photo_urls[0]}
-                alt={`${artist.stage_name} performing`}
-                className="h-full w-full object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => setOpenIndex(0)}
+                aria-label="View photo full size"
+                className="h-full w-full"
+              >
+                <img
+                  src={artist.photo_urls[0]}
+                  alt={`${artist.stage_name} performing`}
+                  className="h-full w-full cursor-zoom-in object-cover transition hover:opacity-90"
+                />
+              </button>
             ) : (
               <Music2 className="h-8 w-8 text-[#9CA3AF]" />
             )}
           </div>
+
           <div className="min-w-0">
             <h1 className="text-3xl font-bold text-[#111827] md:text-4xl">
               {artist.stage_name}
@@ -105,45 +137,63 @@ function ArtistProfilePage() {
           </div>
         </div>
 
-        {artist.photo_urls.length > 1 ? (
+        {photoCount > 1 ? (
           <section className="mt-10">
             <h2 className="text-xl font-semibold text-[#111827]">Gallery</h2>
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {artist.photo_urls.map((url) => (
-                <img
+              {artist.photo_urls.map((url, i) => (
+                <button
                   key={url}
-                  src={url}
-                  alt={`${artist.stage_name} photo`}
-                  loading="lazy"
-                  className="h-40 w-full rounded-lg object-cover"
-                />
+                  type="button"
+                  onClick={() => setOpenIndex(i)}
+                  className="overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
+                >
+                  <img
+                    src={url}
+                    alt={`${artist.stage_name} photo`}
+                    loading="lazy"
+                    className="h-40 w-full cursor-zoom-in object-cover transition hover:scale-[1.03]"
+                  />
+                </button>
               ))}
             </div>
           </section>
         ) : null}
 
-        {embeds.length ? (
+        {videos.length ? (
           <section className="mt-10">
             <h2 className="text-xl font-semibold text-[#111827]">Videos</h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {embeds.map((v) => (
-                <Card key={v.raw} className="overflow-hidden" style={{ borderRadius: 12 }}>
-                  <div className="aspect-video w-full">
-                    <iframe
-                      src={v.src as string}
-                      title={`${artist.stage_name} video`}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                      className="h-full w-full border-0"
-                    />
-                  </div>
-                </Card>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {videos.map((v, i) => (
+                <button
+                  key={v.raw}
+                  type="button"
+                  onClick={() => setOpenIndex(photoCount + i)}
+                  className="group flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] transition hover:border-[#D946EF] hover:bg-[#FDF4FF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
+                >
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
+                    <Play className="h-5 w-5 fill-current" />
+                  </span>
+                  <span className="text-sm font-medium text-[#111827]">
+                    {platformLabel[v.platform]}
+                  </span>
+                  <span className="text-xs text-[#6B7280]">Tap to play</span>
+                </button>
               ))}
             </div>
           </section>
         ) : null}
       </div>
+
+      {openIndex !== null ? (
+        <MediaLightbox
+          items={mediaItems}
+          index={openIndex}
+          onIndexChange={setOpenIndex}
+          onClose={() => setOpenIndex(null)}
+        />
+      ) : null}
     </PageWrapper>
   );
+
 }
