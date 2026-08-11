@@ -115,6 +115,7 @@ function ArtistProfilePage() {
       kind: "video" as const,
       src: v.platform === "youtube" ? `${v.src}?autoplay=1` : v.src,
       title: `${artist.stage_name} video`,
+      platform: v.platform,
     })),
   ];
 
