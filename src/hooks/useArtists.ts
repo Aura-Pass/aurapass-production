@@ -32,6 +32,7 @@ export function usePublicArtists() {
 
 export function useArtist(id: string) {
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,13 +45,23 @@ export function useArtist(id: string) {
         .eq("id", id)
         .maybeSingle();
       if (!active) return;
-      setArtist((data as ArtistProfile | null) ?? null);
+      const row = (data as ArtistProfile | null) ?? null;
+      setArtist(row);
       setLoading(false);
+      if (row?.user_id) {
+        const { data: prof } = await (supabase as any)
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", row.user_id)
+          .maybeSingle();
+        if (!active) return;
+        setAvatarUrl((prof?.avatar_url as string | null) ?? null);
+      }
     })();
     return () => {
       active = false;
     };
   }, [id]);
 
-  return { artist, loading };
+  return { artist, avatarUrl, loading };
 }
