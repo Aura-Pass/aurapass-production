@@ -198,22 +198,50 @@ function ArtistProfilePage() {
           <section className="mt-10">
             <h2 className="text-xl font-semibold text-[#111827]">Videos</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {videos.map((v, i) => (
-                <button
-                  key={v.raw}
-                  type="button"
-                  onClick={() => setOpenIndex(photoCount + i)}
-                  className="group flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] transition hover:border-[#D946EF] hover:bg-[#FDF4FF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
-                    <Play className="h-5 w-5 fill-current" />
-                  </span>
-                  <span className="text-sm font-medium text-[#111827]">
-                    {platformLabel[v.platform]}
-                  </span>
-                  <span className="text-xs text-[#6B7280]">Tap to play</span>
-                </button>
-              ))}
+              {videos.map((v, i) => {
+                const thumb =
+                  v.platform === "youtube"
+                    ? youtubeThumbnailUrl(v.raw)
+                    : v.platform === "tiktok"
+                      ? tiktokThumbs[v.raw] ?? null
+                      : null;
+                return (
+                  <button
+                    key={v.raw}
+                    type="button"
+                    onClick={() => setOpenIndex(photoCount + i)}
+                    className="group relative flex aspect-video w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] transition hover:border-[#D946EF] hover:bg-[#FDF4FF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
+                  >
+                    {thumb ? (
+                      <>
+                        <img
+                          src={thumb}
+                          alt={`${artist.stage_name} ${platformLabel[v.platform]} video thumbnail`}
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.03]"
+                        />
+                        <span className="absolute inset-0 bg-black/30 transition group-hover:bg-black/40" />
+                        <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
+                          <Play className="h-5 w-5 fill-current" />
+                        </span>
+                        <span className="relative text-xs font-medium text-white">
+                          {platformLabel[v.platform]}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
+                          <Play className="h-5 w-5 fill-current" />
+                        </span>
+                        <span className="text-sm font-medium text-[#111827]">
+                          {platformLabel[v.platform]}
+                        </span>
+                        <span className="text-xs text-[#6B7280]">Tap to play</span>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </section>
         ) : null}
