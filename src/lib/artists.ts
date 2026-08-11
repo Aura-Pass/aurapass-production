@@ -61,6 +61,28 @@ export function isSupportedVideoUrl(rawUrl: string): boolean {
   return detectVideoPlatform(rawUrl) !== null;
 }
 
+/** Extracts the YouTube video id from a supported watch/short/embed URL. */
+export function getYouTubeId(rawUrl: string): string | null {
+  if (detectVideoPlatform(rawUrl) !== "youtube") return null;
+  let url: URL;
+  try {
+    url = new URL(rawUrl.trim());
+  } catch {
+    return null;
+  }
+  return url.hostname.includes("youtu.be")
+    ? url.pathname.slice(1) || null
+    : url.searchParams.get("v") ??
+        (url.pathname.startsWith("/shorts/") ? url.pathname.split("/")[2] ?? null : null) ??
+        (url.pathname.startsWith("/embed/") ? url.pathname.split("/")[2] ?? null : null);
+}
+
+/** YouTube thumbnail URL, or null for non-YouTube links. */
+export function youtubeThumbnailUrl(rawUrl: string): string | null {
+  const id = getYouTubeId(rawUrl);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
+
 /** Converts a supported watch/post URL into an embeddable iframe src. */
 export function toEmbedUrl(rawUrl: string): string | null {
   const platform = detectVideoPlatform(rawUrl);
