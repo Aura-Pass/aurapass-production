@@ -7,7 +7,12 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export type MediaItem =
   | { kind: "image"; src: string; alt: string }
-  | { kind: "video"; src: string; title: string };
+  | {
+      kind: "video";
+      src: string;
+      title: string;
+      platform: "youtube" | "instagram" | "tiktok";
+    };
 
 interface MediaLightboxProps {
   items: MediaItem[];
