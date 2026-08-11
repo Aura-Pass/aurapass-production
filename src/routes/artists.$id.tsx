@@ -1,7 +1,7 @@
 /**
  * Public artist profile — gallery, embedded videos, genres and rate info.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Music2, Play } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { MediaLightbox, type MediaItem } from "@/components/ui/MediaLightbox";
 import { useArtist } from "@/hooks/useArtists";
-import { detectVideoPlatform, toEmbedUrl } from "@/lib/artists";
+import { detectVideoPlatform, toEmbedUrl, youtubeThumbnailUrl } from "@/lib/artists";
+import { getTikTokThumbnail } from "@/lib/media.functions";
 
 
 export const Route = createFileRoute("/artists/$id")({
@@ -38,6 +39,38 @@ function ArtistProfilePage() {
   const { id } = Route.useParams();
   const { artist, loading } = useArtist(id);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [tiktokThumbs, setTiktokThumbs] = useState<Record<string, string>>({});
+
+  const tiktokLinks = (artist?.video_links ?? []).filter(
+    (raw) => detectVideoPlatform(raw) === "tiktok",
+  );
+  const tiktokKey = tiktokLinks.join("|");
+
+  useEffect(() => {
+    let active = true;
+    if (!tiktokKey) return;
+    void (async () => {
+      const entries = await Promise.all(
+        tiktokKey.split("|").map(async (url) => {
+          try {
+            const res = await getTikTokThumbnail({ data: { url } });
+            return [url, res.thumbnail] as const;
+          } catch {
+            return [url, null] as const;
+          }
+        }),
+      );
+      if (!active) return;
+      setTiktokThumbs(
+        Object.fromEntries(entries.filter((e): e is readonly [string, string] => Boolean(e[1]))),
+      );
+    })();
+    return () => {
+      active = false;
+    };
+  }, [tiktokKey]);
+
+
 
 
   if (loading) {
@@ -82,6 +115,7 @@ function ArtistProfilePage() {
       kind: "video" as const,
       src: v.platform === "youtube" ? `${v.src}?autoplay=1` : v.src,
       title: `${artist.stage_name} video`,
+      platform: v.platform,
     })),
   ];
 
@@ -164,22 +198,50 @@ function ArtistProfilePage() {
           <section className="mt-10">
             <h2 className="text-xl font-semibold text-[#111827]">Videos</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {videos.map((v, i) => (
-                <button
-                  key={v.raw}
-                  type="button"
-                  onClick={() => setOpenIndex(photoCount + i)}
-                  className="group flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] transition hover:border-[#D946EF] hover:bg-[#FDF4FF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
-                    <Play className="h-5 w-5 fill-current" />
-                  </span>
-                  <span className="text-sm font-medium text-[#111827]">
-                    {platformLabel[v.platform]}
-                  </span>
-                  <span className="text-xs text-[#6B7280]">Tap to play</span>
-                </button>
-              ))}
+              {videos.map((v, i) => {
+                const thumb =
+                  v.platform === "youtube"
+                    ? youtubeThumbnailUrl(v.raw)
+                    : v.platform === "tiktok"
+                      ? tiktokThumbs[v.raw] ?? null
+                      : null;
+                return (
+                  <button
+                    key={v.raw}
+                    type="button"
+                    onClick={() => setOpenIndex(photoCount + i)}
+                    className="group relative flex aspect-video w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] transition hover:border-[#D946EF] hover:bg-[#FDF4FF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
+                  >
+                    {thumb ? (
+                      <>
+                        <img
+                          src={thumb}
+                          alt={`${artist.stage_name} ${platformLabel[v.platform]} video thumbnail`}
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.03]"
+                        />
+                        <span className="absolute inset-0 bg-black/30 transition group-hover:bg-black/40" />
+                        <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
+                          <Play className="h-5 w-5 fill-current" />
+                        </span>
+                        <span className="relative text-xs font-medium text-white">
+                          {platformLabel[v.platform]}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF] text-white transition group-hover:scale-105">
+                          <Play className="h-5 w-5 fill-current" />
+                        </span>
+                        <span className="text-sm font-medium text-[#111827]">
+                          {platformLabel[v.platform]}
+                        </span>
+                        <span className="text-xs text-[#6B7280]">Tap to play</span>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </section>
         ) : null}

@@ -7,7 +7,12 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export type MediaItem =
   | { kind: "image"; src: string; alt: string }
-  | { kind: "video"; src: string; title: string };
+  | {
+      kind: "video";
+      src: string;
+      title: string;
+      platform: "youtube" | "instagram" | "tiktok";
+    };
 
 interface MediaLightboxProps {
   items: MediaItem[];
@@ -99,7 +104,14 @@ export function MediaLightbox({ items, index, onIndexChange, onClose }: MediaLig
             className="max-h-[85vh] max-w-full rounded-lg object-contain"
           />
         ) : (
-          <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
+          <div
+            className={
+              item.platform === "youtube"
+                ? "aspect-video w-full rounded-lg bg-black"
+                : "mx-auto aspect-[9/16] max-h-[85vh] w-auto rounded-lg bg-black"
+            }
+            style={item.platform === "youtube" ? undefined : { height: "85vh" }}
+          >
             <iframe
               src={item.src}
               title={item.title}
