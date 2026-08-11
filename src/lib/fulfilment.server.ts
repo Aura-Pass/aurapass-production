@@ -173,7 +173,16 @@ export async function fulfilPaidOrder(
     quantity: Number(order.quantity),
   });
 
-  if (fulfilledNow || created > 0) {
+  // Atomic email claim — only the caller that flips the column from null sends.
+  const { data: emailClaim } = await sb
+    .from("orders")
+    .update({ confirmation_email_sent_at: new Date().toISOString() })
+    .eq("id", order.id)
+    .is("confirmation_email_sent_at", null)
+    .select("id")
+    .maybeSingle();
+
+  if (emailClaim) {
     await sendConfirmationEmailSafely(sb, order.id);
   }
 
