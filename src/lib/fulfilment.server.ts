@@ -62,32 +62,41 @@ export async function ensureTicketsForOrder(
   sb: Sb,
   order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
 ): Promise<{ created: number; existing: number }> {
-  const { count, error: countError } = await sb
-    .from("tickets")
-    .select("id", { count: "exact", head: true })
-    .eq("order_id", order.id);
+  const countTickets = async () => {
+    const { count, error } = await sb
+      .from("tickets")
+      .select("id", { count: "exact", head: true })
+      .eq("order_id", order.id);
+    if (error) {
+      console.error("[fulfilment] ticket count failed", error);
+      throw new Error(`Ticket count failed: ${error.message}`);
+    }
+    return Number(count ?? 0);
+  };
 
-  if (countError) {
-    console.error("[fulfilment] ticket count failed", countError);
-    throw new Error(`Ticket count failed: ${countError.message}`);
-  }
+  const existing = await countTickets();
 
-  const existing = Number(count ?? 0);
-  const missing = Math.max(0, order.quantity - existing);
-  if (missing === 0) return { created: 0, existing };
-
-  const rows = Array.from({ length: missing }, () => ({
+  // Always attempt all sequence numbers; the unique (order_id, ticket_sequence)
+  // constraint decides what actually gets inserted. Concurrent callers can both
+  // run this safely — duplicates are silently ignored.
+  const rows = Array.from({ length: order.quantity }, (_, i) => ({
     order_id: order.id,
     event_id: order.event_id,
     ticket_type_id: order.ticket_type_id,
+    ticket_sequence: i + 1,
     qr_code: generateTicketCode(order.id),
   }));
-  const { error } = await sb.from("tickets").insert(rows);
+
+  const { error } = await sb
+    .from("tickets")
+    .upsert(rows, { onConflict: "order_id,ticket_sequence", ignoreDuplicates: true });
   if (error) {
-    console.error("[fulfilment] ticket insert failed", error);
+    console.error("[fulfilment] ticket upsert failed", error);
     throw new Error(`Ticket generation failed: ${error.message}`);
   }
-  return { created: missing, existing };
+
+  const total = await countTickets();
+  return { created: Math.max(0, total - existing), existing };
 }
 
 export interface FulfilResult {
@@ -133,17 +142,13 @@ export async function fulfilPaidOrder(
   const fulfilledNow = Boolean(claimed);
 
   if (fulfilledNow) {
-    const { data: ticketType } = await sb
-      .from("ticket_types")
-      .select("quantity_sold")
-      .eq("id", order.ticket_type_id)
-      .single();
-
-    if (ticketType) {
-      await sb
-        .from("ticket_types")
-        .update({ quantity_sold: Number(ticketType.quantity_sold ?? 0) + Number(order.quantity) })
-        .eq("id", order.ticket_type_id);
+    // Atomic single-statement increment — no read-then-write race.
+    const { error: incError } = await sb.rpc("increment_ticket_type_sold", {
+      _ticket_type_id: order.ticket_type_id,
+      _by: order.quantity,
+    });
+    if (incError) {
+      console.error("[fulfilment] stock increment failed", incError);
     }
 
     // paystack_reference is UNIQUE — a duplicate here just means another
