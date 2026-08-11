@@ -1,7 +1,7 @@
 /**
  * Public artist profile — gallery, embedded videos, genres and rate info.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Music2, Play } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { MediaLightbox, type MediaItem } from "@/components/ui/MediaLightbox";
 import { useArtist } from "@/hooks/useArtists";
-import { detectVideoPlatform, toEmbedUrl } from "@/lib/artists";
+import { detectVideoPlatform, toEmbedUrl, youtubeThumbnailUrl } from "@/lib/artists";
+import { getTikTokThumbnail } from "@/lib/media.functions";
 
 
 export const Route = createFileRoute("/artists/$id")({
