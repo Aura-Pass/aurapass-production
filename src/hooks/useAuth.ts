@@ -118,6 +118,17 @@ export function useAuth() {
     };
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    const id = user?.id ?? rolesUserId;
+    if (!id) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    setProfile((data as Profile | null) ?? null);
+  }, [user?.id]);
+
   const refreshRoles = useCallback(async () => {
     const id = user?.id ?? rolesUserId;
     if (!id) return [] as string[];
@@ -142,6 +153,7 @@ export function useAuth() {
     activeRoles,
     hasRole,
     refreshRoles,
+    refreshProfile,
     loading,
     signOut,
     isAuthenticated: !!user,
