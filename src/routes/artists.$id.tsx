@@ -37,7 +37,7 @@ export const Route = createFileRoute("/artists/$id")({
 
 function ArtistProfilePage() {
   const { id } = Route.useParams();
-  const { artist, loading } = useArtist(id);
+  const { artist, avatarUrl, loading } = useArtist(id);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [tiktokThumbs, setTiktokThumbs] = useState<Record<string, string>>({});
 
@@ -148,9 +148,24 @@ function ArtistProfilePage() {
           </div>
 
           <div className="min-w-0">
-            <h1 className="text-3xl font-bold text-[#111827] md:text-4xl">
-              {artist.stage_name}
-            </h1>
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-[#FDF4FF]">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={`${artist.stage_name} profile photo`}
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-lg font-bold text-[#A21CAF]">
+                    {artist.stage_name.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <h1 className="text-3xl font-bold text-[#111827] md:text-4xl">
+                {artist.stage_name}
+              </h1>
+            </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {artist.genres.map((g) => (
                 <Badge key={g} className="bg-[#FDF4FF] text-[#A21CAF] hover:bg-[#FDF4FF]">

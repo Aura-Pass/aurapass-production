@@ -5,6 +5,7 @@ import { UsernameSettings } from "@/components/settings/UsernameSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
+import { AvatarUpload } from "@/components/profile/AvatarUpload";
 
 export const Route = createFileRoute("/dashboard/organiser/settings")({
   head: () => ({ meta: [{ title: "Settings | AuraPass" }] }),
@@ -80,6 +81,13 @@ function OrganiserProfileSettings() {
           </span>
         </p>
       </div>
+
+      <AvatarUpload
+        value={profile?.avatar_url ?? null}
+        initials={(profile?.username ?? profile?.full_name ?? "U")
+          .slice(0, 2)
+          .toUpperCase()}
+      />
 
       <div>
         <label className="mb-1 block text-sm font-medium text-[#111827]">

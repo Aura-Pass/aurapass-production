@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import {
   GENRE_SUGGESTIONS,
   MAX_PHOTOS,
@@ -33,7 +34,7 @@ interface Props {
 }
 
 export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Props) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [stageName, setStageName] = useState(existing?.stage_name ?? "");
   const [bio, setBio] = useState(existing?.bio ?? "");
   const [genres, setGenres] = useState<string[]>(existing?.genres ?? []);
