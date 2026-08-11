@@ -88,9 +88,17 @@ export function Navbar() {
                 className="flex items-center gap-2 rounded-full p-1 pr-3 transition-colors hover:bg-[#F9FAFB]"
                 aria-label="Account menu"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
-                  {initialsOf(profile)}
-                </span>
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Your profile photo"
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
+                    {initialsOf(profile)}
+                  </span>
+                )}
                 <span className="text-sm font-medium text-[#111827]">
                   {displayNameOf(profile, user.email)}
                 </span>
@@ -161,9 +169,17 @@ export function Navbar() {
               {user ? (
                 <>
                   <div className="flex items-center gap-2 px-3 py-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
-                      {initialsOf(profile)}
-                    </span>
+                    {profile?.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt="Your profile photo"
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D946EF] text-xs font-semibold text-white">
+                        {initialsOf(profile)}
+                      </span>
+                    )}
                     <span className="text-sm font-medium text-[#111827]">
                       {displayNameOf(profile, user.email)}
                     </span>
