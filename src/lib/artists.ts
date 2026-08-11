@@ -70,11 +70,14 @@ export function getYouTubeId(rawUrl: string): string | null {
   } catch {
     return null;
   }
-  return url.hostname.includes("youtu.be")
-    ? url.pathname.slice(1) || null
-    : url.searchParams.get("v") ??
-        (url.pathname.startsWith("/shorts/") ? url.pathname.split("/")[2] ?? null : null) ??
-        (url.pathname.startsWith("/embed/") ? url.pathname.split("/")[2] ?? null : null);
+  if (url.hostname.includes("youtu.be")) return url.pathname.slice(1) || null;
+  const fromQuery = url.searchParams.get("v");
+  if (fromQuery) return fromQuery;
+  const parts = url.pathname.split("/");
+  if (url.pathname.startsWith("/shorts/") || url.pathname.startsWith("/embed/")) {
+    return parts[2] || null;
+  }
+  return null;
 }
 
 /** YouTube thumbnail URL, or null for non-YouTube links. */
