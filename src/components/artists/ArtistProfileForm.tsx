@@ -164,7 +164,13 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <AvatarUpload
+        value={profile?.avatar_url ?? null}
+        initials={(stageName || profile?.username || "U").slice(0, 2).toUpperCase()}
+      />
+
       <Field label="Stage name" required>
+
         <Input
           value={stageName}
           onChange={(e) => setStageName(e.target.value)}
