@@ -39,6 +39,38 @@ function ArtistProfilePage() {
   const { id } = Route.useParams();
   const { artist, loading } = useArtist(id);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [tiktokThumbs, setTiktokThumbs] = useState<Record<string, string>>({});
+
+  const tiktokLinks = (artist?.video_links ?? []).filter(
+    (raw) => detectVideoPlatform(raw) === "tiktok",
+  );
+  const tiktokKey = tiktokLinks.join("|");
+
+  useEffect(() => {
+    let active = true;
+    if (!tiktokKey) return;
+    void (async () => {
+      const entries = await Promise.all(
+        tiktokKey.split("|").map(async (url) => {
+          try {
+            const res = await getTikTokThumbnail({ data: { url } });
+            return [url, res.thumbnail] as const;
+          } catch {
+            return [url, null] as const;
+          }
+        }),
+      );
+      if (!active) return;
+      setTiktokThumbs(
+        Object.fromEntries(entries.filter((e): e is readonly [string, string] => Boolean(e[1]))),
+      );
+    })();
+    return () => {
+      active = false;
+    };
+  }, [tiktokKey]);
+
+
 
 
   if (loading) {
