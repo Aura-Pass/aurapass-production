@@ -81,6 +81,7 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/organiser/events", label: "My Events", icon: CalendarDays },
       { to: "/dashboard/organiser/sales", label: "Sales & Analytics", icon: WalletCards },
       { to: "/dashboard/organiser/scan", label: "Ticket Scanner", icon: ScanLine, exact: true },
+      { to: "/dashboard/organiser/settings", label: "Settings", icon: Settings },
     ],
   },
   {
