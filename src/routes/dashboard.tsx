@@ -73,6 +73,7 @@ const SECTIONS: NavSection[] = [
     label: "Artist",
     items: [
       { to: "/dashboard/artist", label: "My Artist Profile", icon: Mic2, exact: true },
+      { to: "/dashboard/artist/bookings", label: "Booking Inbox", icon: Inbox },
     ],
   },
   {
