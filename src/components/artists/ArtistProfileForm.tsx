@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { CITIES } from "@/constants";
 import {
   GENRE_SUGGESTIONS,
   MAX_PHOTOS,
@@ -40,6 +41,12 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
   const [genres, setGenres] = useState<string[]>(existing?.genres ?? []);
   const [genreInput, setGenreInput] = useState("");
   const [rateInfo, setRateInfo] = useState(existing?.rate_info ?? "");
+  const [locations, setLocations] = useState<string[]>(existing?.available_locations ?? []);
+  const [estimatedRate, setEstimatedRate] = useState(
+    existing?.estimated_rate != null ? String(existing.estimated_rate) : "",
+  );
+  const [spotifyUrl, setSpotifyUrl] = useState(existing?.spotify_url ?? "");
+  const [appleMusicUrl, setAppleMusicUrl] = useState(existing?.apple_music_url ?? "");
   const [photos, setPhotos] = useState<string[]>(existing?.photo_urls ?? []);
   const [videos, setVideos] = useState<string[]>(existing?.video_links ?? []);
   const [videoInput, setVideoInput] = useState("");
@@ -116,6 +123,19 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
       toast.error("Stage name is required.");
       return;
     }
+    const rate = estimatedRate.trim() ? Number(estimatedRate) : null;
+    if (rate !== null && (Number.isNaN(rate) || rate < 0)) {
+      toast.error("Estimated rate must be a positive number.");
+      return;
+    }
+    if (spotifyUrl.trim() && !isHostUrl(spotifyUrl, ["open.spotify.com", "spotify.com"])) {
+      toast.error("Enter a valid Spotify link (open.spotify.com).");
+      return;
+    }
+    if (appleMusicUrl.trim() && !isHostUrl(appleMusicUrl, ["music.apple.com"])) {
+      toast.error("Enter a valid Apple Music link (music.apple.com).");
+      return;
+    }
     setSubmitting(true);
 
     const payload = {
@@ -125,6 +145,10 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
       rate_info: rateInfo.trim() || null,
       photo_urls: photos,
       video_links: videos,
+      available_locations: locations,
+      estimated_rate: rate,
+      spotify_url: spotifyUrl.trim() || null,
+      apple_music_url: appleMusicUrl.trim() || null,
     };
 
     if (mode === "edit" && existing) {
@@ -248,6 +272,64 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
         />
       </Field>
 
+      <Field label="Available locations">
+        <p className="mb-2 text-xs text-[#6B7280]">
+          Organisers filter artists by where they can perform. Leave empty to appear everywhere.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {CITIES.map((c) => {
+            const on = locations.includes(c);
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() =>
+                  setLocations((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))
+                }
+                className={
+                  on
+                    ? "rounded-full border border-[#D946EF] bg-[#FDF4FF] px-3 py-1 text-xs font-medium text-[#A21CAF]"
+                    : "rounded-full border border-[#E5E7EB] px-3 py-1 text-xs text-[#6B7280] hover:border-[#D946EF] hover:text-[#D946EF]"
+                }
+              >
+                {c}
+              </button>
+            );
+          })}
+        </div>
+      </Field>
+
+      <Field label="Estimated rate (₦)">
+        <Input
+          type="number"
+          min="0"
+          step="5000"
+          value={estimatedRate}
+          onChange={(e) => setEstimatedRate(e.target.value)}
+          placeholder="e.g. 250000"
+        />
+        <p className="mt-1 text-xs text-[#6B7280]">
+          Used for budget filtering and the "proceed at estimated price" booking option.
+        </p>
+      </Field>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Spotify URL">
+          <Input
+            value={spotifyUrl}
+            onChange={(e) => setSpotifyUrl(e.target.value)}
+            placeholder="https://open.spotify.com/artist/…"
+          />
+        </Field>
+        <Field label="Apple Music URL">
+          <Input
+            value={appleMusicUrl}
+            onChange={(e) => setAppleMusicUrl(e.target.value)}
+            placeholder="https://music.apple.com/…"
+          />
+        </Field>
+      </div>
+
       <Field label={`Photos (${photos.length}/${MAX_PHOTOS})`}>
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
           {photos.map((url) => (
@@ -337,6 +419,18 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
       </Button>
     </form>
   );
+}
+
+/** True when `raw` parses as an https URL on one of the allowed hosts. */
+function isHostUrl(raw: string, hosts: string[]): boolean {
+  try {
+    const url = new URL(raw.trim());
+    if (url.protocol !== "https:") return false;
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
+    return hosts.includes(host);
+  } catch {
+    return false;
+  }
 }
 
 function Field({

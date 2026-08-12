@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Log In | AuraPass" }] }),
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string } => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
     ticketTypeId: typeof search.ticketTypeId === "string" ? search.ticketTypeId : undefined,
   }),

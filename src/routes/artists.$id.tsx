@@ -178,6 +178,41 @@ function ArtistProfilePage() {
                 <span className="font-medium">Rate:</span> {artist.rate_info}
               </p>
             ) : null}
+            {artist.estimated_rate ? (
+              <p className="mt-1 text-sm text-[#111827]">
+                <span className="font-medium">Estimated fee:</span>{" "}
+                ₦{Number(artist.estimated_rate).toLocaleString("en-NG")}
+              </p>
+            ) : null}
+            {artist.available_locations?.length ? (
+              <p className="mt-1 text-sm text-[#6B7280]">
+                Available in {artist.available_locations.join(", ")}
+              </p>
+            ) : null}
+            {artist.spotify_url || artist.apple_music_url ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {artist.spotify_url ? (
+                  <a
+                    href={artist.spotify_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] px-3 py-1.5 text-sm font-medium text-[#374151] hover:border-[#D946EF] hover:text-[#D946EF]"
+                  >
+                    <Music2 className="h-4 w-4" /> Spotify
+                  </a>
+                ) : null}
+                {artist.apple_music_url ? (
+                  <a
+                    href={artist.apple_music_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] px-3 py-1.5 text-sm font-medium text-[#374151] hover:border-[#D946EF] hover:text-[#D946EF]"
+                  >
+                    <Music2 className="h-4 w-4" /> Apple Music
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
             {artist.bio ? (
               <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[#374151]">
                 {artist.bio}

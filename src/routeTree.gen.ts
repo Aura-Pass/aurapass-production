@@ -44,6 +44,7 @@ import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
 import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
 import { Route as DashboardArtistIndexRouteImport } from './routes/dashboard.artist.index'
+import { Route as DashboardArtistBookingsRouteImport } from './routes/dashboard.artist.bookings'
 import { Route as DashboardAttendeeIndexRouteImport } from './routes/dashboard.attendee.index'
 import { Route as DashboardAttendeeBecomeArtistRouteImport } from './routes/dashboard.attendee.become-artist'
 import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboard.attendee.following'
@@ -51,6 +52,7 @@ import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.a
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
 import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard.attendee.tickets'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
+import { Route as DashboardOrganiserBookingsRouteImport } from './routes/dashboard.organiser.bookings'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
 import { Route as DashboardOrganiserEventsRouteImport } from './routes/dashboard.organiser.events'
 import { Route as DashboardOrganiserSalesRouteImport } from './routes/dashboard.organiser.sales'
@@ -239,6 +241,11 @@ const DashboardArtistIndexRoute = DashboardArtistIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardArtistRoute,
 } as any)
+const DashboardArtistBookingsRoute = DashboardArtistBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => DashboardArtistRoute,
+} as any)
 const DashboardAttendeeIndexRoute = DashboardAttendeeIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -278,6 +285,12 @@ const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardOrganiserRoute,
 } as any)
+const DashboardOrganiserBookingsRoute =
+  DashboardOrganiserBookingsRouteImport.update({
+    id: '/bookings',
+    path: '/bookings',
+    getParentRoute: () => DashboardOrganiserRoute,
+  } as any)
 const DashboardOrganiserCreateEventRoute =
   DashboardOrganiserCreateEventRouteImport.update({
     id: '/create-event',
@@ -370,11 +383,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
   '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
+  '/dashboard/organiser/bookings': typeof DashboardOrganiserBookingsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
@@ -419,11 +434,13 @@ export interface FileRoutesByTo {
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
   '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
+  '/dashboard/organiser/bookings': typeof DashboardOrganiserBookingsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
@@ -474,11 +491,13 @@ export interface FileRoutesById {
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
   '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
+  '/dashboard/organiser/bookings': typeof DashboardOrganiserBookingsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
@@ -530,11 +549,13 @@ export interface FileRouteTypes {
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
+    | '/dashboard/artist/bookings'
     | '/dashboard/attendee/become-artist'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
+    | '/dashboard/organiser/bookings'
     | '/dashboard/organiser/create-event'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
@@ -579,11 +600,13 @@ export interface FileRouteTypes {
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
+    | '/dashboard/artist/bookings'
     | '/dashboard/attendee/become-artist'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
+    | '/dashboard/organiser/bookings'
     | '/dashboard/organiser/create-event'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
@@ -633,11 +656,13 @@ export interface FileRouteTypes {
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
+    | '/dashboard/artist/bookings'
     | '/dashboard/attendee/become-artist'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
+    | '/dashboard/organiser/bookings'
     | '/dashboard/organiser/create-event'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
@@ -931,6 +956,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardArtistIndexRouteImport
       parentRoute: typeof DashboardArtistRoute
     }
+    '/dashboard/artist/bookings': {
+      id: '/dashboard/artist/bookings'
+      path: '/bookings'
+      fullPath: '/dashboard/artist/bookings'
+      preLoaderRoute: typeof DashboardArtistBookingsRouteImport
+      parentRoute: typeof DashboardArtistRoute
+    }
     '/dashboard/attendee/': {
       id: '/dashboard/attendee/'
       path: '/'
@@ -978,6 +1010,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/organiser/'
       preLoaderRoute: typeof DashboardOrganiserIndexRouteImport
+      parentRoute: typeof DashboardOrganiserRoute
+    }
+    '/dashboard/organiser/bookings': {
+      id: '/dashboard/organiser/bookings'
+      path: '/bookings'
+      fullPath: '/dashboard/organiser/bookings'
+      preLoaderRoute: typeof DashboardOrganiserBookingsRouteImport
       parentRoute: typeof DashboardOrganiserRoute
     }
     '/dashboard/organiser/create-event': {
@@ -1072,10 +1111,12 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
 )
 
 interface DashboardArtistRouteChildren {
+  DashboardArtistBookingsRoute: typeof DashboardArtistBookingsRoute
   DashboardArtistIndexRoute: typeof DashboardArtistIndexRoute
 }
 
 const DashboardArtistRouteChildren: DashboardArtistRouteChildren = {
+  DashboardArtistBookingsRoute: DashboardArtistBookingsRoute,
   DashboardArtistIndexRoute: DashboardArtistIndexRoute,
 }
 
@@ -1105,6 +1146,7 @@ const DashboardAttendeeRouteWithChildren =
   DashboardAttendeeRoute._addFileChildren(DashboardAttendeeRouteChildren)
 
 interface DashboardOrganiserRouteChildren {
+  DashboardOrganiserBookingsRoute: typeof DashboardOrganiserBookingsRoute
   DashboardOrganiserCreateEventRoute: typeof DashboardOrganiserCreateEventRoute
   DashboardOrganiserEventsRoute: typeof DashboardOrganiserEventsRoute
   DashboardOrganiserSalesRoute: typeof DashboardOrganiserSalesRoute
@@ -1117,6 +1159,7 @@ interface DashboardOrganiserRouteChildren {
 }
 
 const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
+  DashboardOrganiserBookingsRoute: DashboardOrganiserBookingsRoute,
   DashboardOrganiserCreateEventRoute: DashboardOrganiserCreateEventRoute,
   DashboardOrganiserEventsRoute: DashboardOrganiserEventsRoute,
   DashboardOrganiserSalesRoute: DashboardOrganiserSalesRoute,

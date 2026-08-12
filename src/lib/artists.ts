@@ -15,6 +15,11 @@ export interface ArtistProfile {
   photo_urls: string[];
   video_links: string[];
   status: ArtistStatus;
+  /** Cities the artist is willing to perform in (Phase 2 booking engine). */
+  available_locations: string[] | null;
+  estimated_rate: number | null;
+  spotify_url: string | null;
+  apple_music_url: string | null;
   rejection_reason: string | null;
   submitted_at: string;
   reviewed_at: string | null;

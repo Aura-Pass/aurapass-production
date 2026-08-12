@@ -14,6 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
 import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { BookArtistStep, type BookingSelection } from "@/components/bookings/BookArtistStep";
+import { saveBookingDraft } from "@/lib/bookings";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/organiser/create-event")({
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/dashboard/organiser/create-event")({
 });
 
 type TicketRow = { name: string; price: string; quantity: string };
+type Step = 1 | 2 | 3 | 4;
 
 interface EventForm {
   title: string;
@@ -44,7 +47,7 @@ function CreateEventPage() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
 
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,6 +63,7 @@ function CreateEventPage() {
   });
 
   const [tickets, setTickets] = useState<TicketRow[]>([{ ...EMPTY_TICKET }]);
+  const [bookings, setBookings] = useState<BookingSelection[]>([]);
 
   function set<K extends keyof EventForm>(key: K, value: EventForm[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -106,13 +110,14 @@ function CreateEventPage() {
       const err = validateStep2();
       if (err) { setError(err); return; }
       setStep(3);
+    } else if (step === 3) {
+      setStep(4);
     }
   }
 
   function goBack() {
     setError(null);
-    if (step === 2) setStep(1);
-    else if (step === 3) setStep(2);
+    if (step > 1) setStep((step - 1) as Step);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -159,6 +164,46 @@ function CreateEventPage() {
 
       if (ticketErr) {
         throw new Error(ticketErr.message);
+      }
+
+      // Artist booking requests. Ownership guard: re-read the event's
+      // organiser_id (the real ownership column on `events`) and require it to
+      // match the signed-in user before inserting any booking_requests row.
+      if (bookings.length) {
+        const { data: owned } = await (supabase as any)
+          .from("events")
+          .select("id, organiser_id")
+          .eq("id", eventRow.id)
+          .maybeSingle();
+
+        if (!owned || owned.organiser_id !== user.id) {
+          toast.error("Couldn't verify event ownership — artist requests were not sent.");
+        } else {
+          const { data: created, error: bookingErr } = await (supabase as any)
+            .from("booking_requests")
+            .insert(
+              bookings.map((b) => ({
+                event_id: owned.id,
+                organiser_id: user.id,
+                artist_id: b.artistUserId,
+                mode: b.mode,
+                requested_price: b.requestedPrice,
+              })),
+            )
+            .select("id, artist_id");
+
+          if (bookingErr) {
+            console.error("[create-event] booking requests failed", bookingErr);
+            toast.error("Event created, but artist requests could not be sent.");
+          } else {
+            // Queue opening notes locally — they're sent from the booking thread
+            // once the request is open for messaging.
+            for (const row of ((created as any[]) ?? [])) {
+              const match = bookings.find((b) => b.artistUserId === row.artist_id);
+              if (match?.draftMessage) saveBookingDraft(row.id, match.draftMessage);
+            }
+          }
+        }
       }
 
       // Fire admin notification — never block submission on email failure.
@@ -213,7 +258,10 @@ function CreateEventPage() {
                 />
               )}
               {step === 3 && (
-                <Step3 form={form} tickets={tickets} />
+                <BookArtistStep city={form.city} selections={bookings} onChange={setBookings} />
+              )}
+              {step === 4 && (
+                <Step3 form={form} tickets={tickets} bookings={bookings} />
               )}
 
               {error ? (
@@ -231,9 +279,9 @@ function CreateEventPage() {
                 >
                   Back
                 </Button>
-                {step < 3 ? (
+                {step < 4 ? (
                   <Button type="button" variant="primary" onClick={goNext}>
-                    Continue
+                    {step === 3 && bookings.length === 0 ? "Skip for now" : "Continue"}
                   </Button>
                 ) : (
                   <Button type="submit" variant="primary" disabled={submitting}>
@@ -255,11 +303,12 @@ function CreateEventPage() {
   );
 }
 
-function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
+function StepIndicator({ step }: { step: Step }) {
   const steps = [
     { n: 1, label: "Event details" },
     { n: 2, label: "Ticket types" },
-    { n: 3, label: "Review" },
+    { n: 3, label: "Book an artist" },
+    { n: 4, label: "Review" },
   ];
   return (
     <div className="flex items-center gap-3">
@@ -295,7 +344,7 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
         );
       })}
       <span className="ml-auto text-xs font-medium uppercase tracking-wide text-[#6B7280]">
-        Step {step} of 3
+        Step {step} of 4
       </span>
     </div>
   );
@@ -471,7 +520,15 @@ function Step2({
   );
 }
 
-function Step3({ form, tickets }: { form: EventForm; tickets: TicketRow[] }) {
+function Step3({
+  form,
+  tickets,
+  bookings,
+}: {
+  form: EventForm;
+  tickets: TicketRow[];
+  bookings: BookingSelection[];
+}) {
   return (
     <div className="space-y-5">
       <StepHeading>Review & submit</StepHeading>
@@ -488,6 +545,27 @@ function Step3({ form, tickets }: { form: EventForm; tickets: TicketRow[] }) {
           <Row label="Time" value={form.event_time} />
           <Row label="Banner URL" value={form.banner_url || "—"} />
         </dl>
+      </div>
+
+      <div className="rounded-xl border border-[#E5E7EB] bg-white p-5" style={{ borderRadius: 12 }}>
+        <h4 className="text-sm font-semibold text-[#111827]">Artist requests</h4>
+        {bookings.length === 0 ? (
+          <p className="mt-2 text-sm text-[#6B7280]">
+            No artists selected — you can book any time from Artist Bookings.
+          </p>
+        ) : (
+          <ul className="mt-3 divide-y divide-[#F3F4F6]">
+            {bookings.map((b) => (
+              <li key={b.artistUserId} className="flex items-center justify-between py-2 text-sm">
+                <span className="font-medium text-[#111827]">{b.stageName}</span>
+                <span className="text-[#6B7280]">
+                  {b.mode === "negotiate" ? "Negotiate" : "Estimated price"} ·{" "}
+                  {b.requestedPrice ? `₦${b.requestedPrice.toLocaleString()}` : "TBC"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="rounded-xl border border-[#E5E7EB] bg-white p-5" style={{ borderRadius: 12 }}>

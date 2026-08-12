@@ -10,8 +10,16 @@ import { toEventCardData } from "@/lib/event-adapter";
 type DateFilter = "any" | "today" | "weekend" | "week" | "month";
 type PriceFilter = "any" | "free" | "under2k" | "2k5k" | "5k10k" | "above10k";
 
+interface EventsSearch {
+  category?: string;
+  city?: string;
+  date?: string;
+  price?: string;
+  q?: string;
+}
+
 export const Route = createFileRoute("/events/")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): EventsSearch => ({
     category: typeof search.category === "string" ? search.category : undefined,
     city: typeof search.city === "string" ? search.city : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
