@@ -548,6 +548,27 @@ function Step3({
       </div>
 
       <div className="rounded-xl border border-[#E5E7EB] bg-white p-5" style={{ borderRadius: 12 }}>
+        <h4 className="text-sm font-semibold text-[#111827]">Artist requests</h4>
+        {bookings.length === 0 ? (
+          <p className="mt-2 text-sm text-[#6B7280]">
+            No artists selected — you can book any time from Artist Bookings.
+          </p>
+        ) : (
+          <ul className="mt-3 divide-y divide-[#F3F4F6]">
+            {bookings.map((b) => (
+              <li key={b.artistUserId} className="flex items-center justify-between py-2 text-sm">
+                <span className="font-medium text-[#111827]">{b.stageName}</span>
+                <span className="text-[#6B7280]">
+                  {b.mode === "negotiate" ? "Negotiate" : "Estimated price"} ·{" "}
+                  {b.requestedPrice ? `₦${b.requestedPrice.toLocaleString()}` : "TBC"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-[#E5E7EB] bg-white p-5" style={{ borderRadius: 12 }}>
         <h4 className="text-sm font-semibold text-[#111827]">Tickets</h4>
         <ul className="mt-3 divide-y divide-[#F3F4F6]">
           {tickets.map((t, i) => (
