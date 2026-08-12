@@ -27,6 +27,23 @@ if (typeof globalThis.addEventListener === "function") {
 }
 
 
+// The Vite/Node dev server emits `Error: aborted` (node:_http_server) whenever a
+// browser cancels an in-flight request — navigation, refresh or HMR reload.
+// Node surfaces it as an uncaughtException, which the platform then reports as a
+// runtime error even though nothing in the app failed. Swallow only that case.
+if (typeof process !== "undefined" && typeof process.on === "function") {
+  process.on("uncaughtException", (error) => {
+    if (isClientAbortError(error)) return;
+    record(error);
+    console.error(error);
+  });
+  process.on("unhandledRejection", (reason) => {
+    if (isClientAbortError(reason)) return;
+    record(reason);
+    console.error(reason);
+  });
+}
+
 export function consumeLastCapturedError(): unknown {
   if (!lastCapturedError) return undefined;
   if (Date.now() - lastCapturedError.at > TTL_MS) {
