@@ -65,6 +65,7 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/attendee/following", label: "Following", icon: Users },
       { to: "/dashboard/attendee/saved", label: "Saved Events", icon: Heart },
       { to: "/dashboard/attendee/become-artist", label: "Become an Artist", icon: Mic2 },
+      { to: "/dashboard/attendee/settings", label: "Settings", icon: Settings },
     ],
   },
   {
@@ -92,11 +93,6 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/admin/analytics", label: "Platform Analytics", icon: BarChart3 },
       { to: "/dashboard/admin/users", label: "User Management", icon: ShieldCheck },
     ],
-  },
-  {
-    role: null,
-    label: "",
-    items: [{ to: "/dashboard/attendee/settings", label: "Settings", icon: Settings }],
   },
 ];
 
