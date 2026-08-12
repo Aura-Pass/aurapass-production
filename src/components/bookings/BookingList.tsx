@@ -68,8 +68,7 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
         const other = perspective === "artist" ? b.organiser_id : b.artist_id;
         const counterpart = names[other] ?? (perspective === "artist" ? "Organiser" : "Artist");
         const canRespond =
-          perspective === "artist" &&
-          ["awaiting_artist_response", "negotiating"].includes(b.status);
+          perspective === "artist" && b.status === "awaiting_artist_response";
         const price = b.final_price ?? b.requested_price;
 
         return (
