@@ -70,16 +70,14 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
         const canRespond =
           perspective === "artist" && b.status === "awaiting_artist_response";
         const price = b.final_price ?? b.requested_price;
-        const standalone = !b.event_id;
-        const title = standalone
-          ? b.standalone_event_name ?? "Standalone booking"
-          : b.events?.title ?? "Event";
-        const dateLine = standalone
-          ? b.standalone_event_date ?? "—"
-          : `${b.events?.event_date ?? "—"} ${b.events?.event_time?.slice(0, 5) ?? ""}`;
-        const placeLine = standalone
-          ? b.standalone_venue ?? "—"
-          : `${b.events?.venue ? `${b.events.venue}, ` : ""}${b.events?.city ?? "—"}`;
+        const standalone = !b.events;
+        const title = b.events?.title ?? b.standalone_event_name ?? "Event";
+        const dateLine = b.events
+          ? `${b.events.event_date ?? "—"} ${b.events.event_time?.slice(0, 5) ?? ""}`
+          : b.standalone_event_date ?? "—";
+        const placeLine = b.events
+          ? `${b.events.venue ? `${b.events.venue}, ` : ""}${b.events.city ?? "—"}`
+          : b.standalone_venue ?? "—";
 
         return (
           <Card key={b.id} className="p-5" style={{ borderRadius: 12 }}>
@@ -100,9 +98,8 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
                   <p className="mt-1 text-sm text-[#6B7280]">
                     {b.standalone_event_type ?? "Event"}
                     {b.standalone_expected_attendance
-                      ? ` · ~${Number(b.standalone_expected_attendance).toLocaleString("en-NG")} guests`
+                      ? ` · ~${Number(b.standalone_expected_attendance).toLocaleString("en-NG")} expected`
                       : ""}
-                    {" · Not listed on AuraPass"}
                   </p>
                 ) : null}
                 <p className="mt-1 text-sm text-[#374151]">
