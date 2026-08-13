@@ -186,11 +186,6 @@ function ArtistProfilePage() {
                 </Badge>
               ))}
             </div>
-            {artist.rate_info ? (
-              <p className="mt-4 text-sm text-[#111827]">
-                <span className="font-medium">Rate:</span> {artist.rate_info}
-              </p>
-            ) : null}
             <div className="mt-4">
               <Button type="button" variant="primary" size="md" onClick={handleBook}>
                 Book {artist.stage_name}
