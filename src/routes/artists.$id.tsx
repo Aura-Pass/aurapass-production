@@ -2,7 +2,7 @@
  * Public artist profile — gallery, embedded videos, genres and rate info.
  */
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Music2, Play } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { MediaLightbox, type MediaItem } from "@/components/ui/MediaLightbox";
 import { useArtist } from "@/hooks/useArtists";
+import { useAuth } from "@/hooks/useAuth";
 import { detectVideoPlatform, toEmbedUrl, youtubeThumbnailUrl } from "@/lib/artists";
 import { getTikTokThumbnail } from "@/lib/media.functions";
 
@@ -38,6 +39,18 @@ export const Route = createFileRoute("/artists/$id")({
 function ArtistProfilePage() {
   const { id } = Route.useParams();
   const { artist, avatarUrl, loading } = useArtist(id);
+  const { user, activeRoles, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  function handleBook() {
+    if (authLoading) return;
+    if (!user) {
+      void navigate({ to: "/login", search: { redirect: `/artists/${id}/book` } });
+      return;
+    }
+    void navigate({ to: "/artists/$id/book", params: { id } });
+  }
+
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [tiktokThumbs, setTiktokThumbs] = useState<Record<string, string>>({});
 
@@ -178,18 +191,17 @@ function ArtistProfilePage() {
                 <span className="font-medium">Rate:</span> {artist.rate_info}
               </p>
             ) : null}
-            {artist.estimated_rate ? (
-              <p className="mt-1 text-sm text-[#111827]">
-                <span className="font-medium">Estimated fee:</span>{" "}
-                ₦{Number(artist.estimated_rate).toLocaleString("en-NG")}
-              </p>
-            ) : null}
+            <div className="mt-4">
+              <Button type="button" variant="primary" size="md" onClick={handleBook}>
+                Book {artist.stage_name}
+              </Button>
+            </div>
             {artist.available_locations?.length ? (
               <p className="mt-1 text-sm text-[#6B7280]">
                 Available in {artist.available_locations.join(", ")}
               </p>
             ) : null}
-            {artist.spotify_url || artist.apple_music_url ? (
+            {artist.spotify_url || artist.apple_music_url || artist.audiomack_url ? (
               <div className="mt-4 flex flex-wrap gap-2">
                 {artist.spotify_url ? (
                   <a
@@ -209,6 +221,16 @@ function ArtistProfilePage() {
                     className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] px-3 py-1.5 text-sm font-medium text-[#374151] hover:border-[#D946EF] hover:text-[#D946EF]"
                   >
                     <Music2 className="h-4 w-4" /> Apple Music
+                  </a>
+                ) : null}
+                {artist.audiomack_url ? (
+                  <a
+                    href={artist.audiomack_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] px-3 py-1.5 text-sm font-medium text-[#374151] hover:border-[#D946EF] hover:text-[#D946EF]"
+                  >
+                    <Music2 className="h-4 w-4" /> Audiomack
                   </a>
                 ) : null}
               </div>
