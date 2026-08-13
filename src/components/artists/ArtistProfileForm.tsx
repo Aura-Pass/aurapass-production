@@ -47,6 +47,7 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
   );
   const [spotifyUrl, setSpotifyUrl] = useState(existing?.spotify_url ?? "");
   const [appleMusicUrl, setAppleMusicUrl] = useState(existing?.apple_music_url ?? "");
+  const [audiomackUrl, setAudiomackUrl] = useState(existing?.audiomack_url ?? "");
   const [photos, setPhotos] = useState<string[]>(existing?.photo_urls ?? []);
   const [videos, setVideos] = useState<string[]>(existing?.video_links ?? []);
   const [videoInput, setVideoInput] = useState("");
@@ -136,6 +137,10 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
       toast.error("Enter a valid Apple Music link (music.apple.com).");
       return;
     }
+    if (audiomackUrl.trim() && !isHostUrl(audiomackUrl, ["audiomack.com"])) {
+      toast.error("Enter a valid Audiomack link (audiomack.com).");
+      return;
+    }
     setSubmitting(true);
 
     const payload = {
@@ -149,6 +154,7 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
       estimated_rate: rate,
       spotify_url: spotifyUrl.trim() || null,
       apple_music_url: appleMusicUrl.trim() || null,
+      audiomack_url: audiomackUrl.trim() || null,
     };
 
     if (mode === "edit" && existing) {
@@ -326,6 +332,13 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
             value={appleMusicUrl}
             onChange={(e) => setAppleMusicUrl(e.target.value)}
             placeholder="https://music.apple.com/…"
+          />
+        </Field>
+        <Field label="Audiomack URL">
+          <Input
+            value={audiomackUrl}
+            onChange={(e) => setAudiomackUrl(e.target.value)}
+            placeholder="https://audiomack.com/…"
           />
         </Field>
       </div>
