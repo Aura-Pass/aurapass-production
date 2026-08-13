@@ -29,7 +29,6 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ArtistsIndexRouteImport } from './routes/artists.index'
-import { Route as ArtistsIdRouteImport } from './routes/artists.$id'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
@@ -39,6 +38,7 @@ import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
+import { Route as ArtistsIdIndexRouteImport } from './routes/artists.$id.index'
 import { Route as ArtistsIdBookRouteImport } from './routes/artists.$id.book'
 import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
@@ -165,11 +165,6 @@ const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
   path: '/artists/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ArtistsIdRoute = ArtistsIdRouteImport.update({
-  id: '/artists/$id',
-  path: '/artists/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -217,10 +212,15 @@ const ApiPublicPaystackWebhookRoute =
     path: '/api/public/paystack-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ArtistsIdIndexRoute = ArtistsIdIndexRouteImport.update({
+  id: '/artists/$id/',
+  path: '/artists/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArtistsIdBookRoute = ArtistsIdBookRouteImport.update({
-  id: '/book',
-  path: '/book',
-  getParentRoute: () => ArtistsIdRoute,
+  id: '/artists/$id/book',
+  path: '/artists/$id/book',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
   id: '/',
@@ -375,7 +375,6 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/artists/$id': typeof ArtistsIdRouteWithChildren
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
@@ -403,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/settings': typeof DashboardOrganiserSettingsRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/artists/$id/': typeof ArtistsIdIndexRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
@@ -431,7 +431,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/artists/$id': typeof ArtistsIdRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
@@ -455,6 +454,7 @@ export interface FileRoutesByTo {
   '/dashboard/organiser/settings': typeof DashboardOrganiserSettingsRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/artists/$id': typeof ArtistsIdIndexRoute
   '/dashboard/admin': typeof DashboardAdminIndexRoute
   '/dashboard/artist': typeof DashboardArtistIndexRoute
   '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
@@ -485,7 +485,6 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/artists/$id': typeof ArtistsIdRouteWithChildren
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
@@ -513,6 +512,7 @@ export interface FileRoutesById {
   '/dashboard/organiser/settings': typeof DashboardOrganiserSettingsRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/artists/$id/': typeof ArtistsIdIndexRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
@@ -544,7 +544,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/artists/$id'
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
@@ -572,6 +571,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/settings'
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
+    | '/artists/$id/'
     | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
@@ -600,7 +600,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/artists/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists'
@@ -624,6 +623,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/settings'
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
+    | '/artists/$id'
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
@@ -653,7 +653,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/artists/$id'
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
@@ -681,6 +680,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/settings'
     | '/dashboard/organiser/tickets'
     | '/events/$slug/checkout'
+    | '/artists/$id/'
     | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
@@ -711,13 +711,14 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
-  ArtistsIdRoute: typeof ArtistsIdRouteWithChildren
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
+  ArtistsIdBookRoute: typeof ArtistsIdBookRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
+  ArtistsIdIndexRoute: typeof ArtistsIdIndexRoute
   EventsSlugIndexRoute: typeof EventsSlugIndexRoute
 }
 
@@ -863,13 +864,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtistsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/artists/$id': {
-      id: '/artists/$id'
-      path: '/artists/$id'
-      fullPath: '/artists/$id'
-      preLoaderRoute: typeof ArtistsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -933,12 +927,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/artists/$id/': {
+      id: '/artists/$id/'
+      path: '/artists/$id'
+      fullPath: '/artists/$id/'
+      preLoaderRoute: typeof ArtistsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/artists/$id/book': {
       id: '/artists/$id/book'
-      path: '/book'
+      path: '/artists/$id/book'
       fullPath: '/artists/$id/book'
       preLoaderRoute: typeof ArtistsIdBookRouteImport
-      parentRoute: typeof ArtistsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/admin/': {
       id: '/dashboard/admin/'
@@ -1214,18 +1215,6 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
-interface ArtistsIdRouteChildren {
-  ArtistsIdBookRoute: typeof ArtistsIdBookRoute
-}
-
-const ArtistsIdRouteChildren: ArtistsIdRouteChildren = {
-  ArtistsIdBookRoute: ArtistsIdBookRoute,
-}
-
-const ArtistsIdRouteWithChildren = ArtistsIdRoute._addFileChildren(
-  ArtistsIdRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -1246,13 +1235,14 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
-  ArtistsIdRoute: ArtistsIdRouteWithChildren,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
+  ArtistsIdBookRoute: ArtistsIdBookRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
+  ArtistsIdIndexRoute: ArtistsIdIndexRoute,
   EventsSlugIndexRoute: EventsSlugIndexRoute,
 }
 export const routeTree = rootRouteImport

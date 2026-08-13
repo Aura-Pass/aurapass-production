@@ -15,7 +15,7 @@ import { detectVideoPlatform, toEmbedUrl, youtubeThumbnailUrl } from "@/lib/arti
 import { getTikTokThumbnail } from "@/lib/media.functions";
 
 
-export const Route = createFileRoute("/artists/$id")({
+export const Route = createFileRoute("/artists/$id/")({
   head: () => ({
     meta: [
       { title: "Artist Profile | AuraPass" },
