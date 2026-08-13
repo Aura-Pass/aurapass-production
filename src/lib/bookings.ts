@@ -27,7 +27,8 @@ export type BookingStatus =
 
 export interface BookingRequest {
   id: string;
-  event_id: string;
+  /** null for standalone (non-event) bookings */
+  event_id: string | null;
   /** auth.users id of the artist (NOT artist_profiles.id) */
   artist_id: string;
   organiser_id: string;
@@ -40,6 +41,12 @@ export interface BookingRequest {
   responded_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Standalone booking details (present when event_id is null) */
+  standalone_event_name?: string | null;
+  standalone_event_date?: string | null;
+  standalone_venue?: string | null;
+  standalone_event_type?: string | null;
+  standalone_expected_attendance?: number | null;
   /** joined */
   events?: {
     id: string;

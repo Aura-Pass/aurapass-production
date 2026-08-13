@@ -20,6 +20,7 @@ export interface ArtistProfile {
   estimated_rate: number | null;
   spotify_url: string | null;
   apple_music_url: string | null;
+  audiomack_url: string | null;
   rejection_reason: string | null;
   submitted_at: string;
   reviewed_at: string | null;

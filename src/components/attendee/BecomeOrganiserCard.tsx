@@ -28,11 +28,15 @@ import { supabase } from "@/lib/supabase";
 interface Props {
   fullName: string;
   email: string;
+  /** Where to go after organiser access is granted (default: organiser dashboard). */
+  redirectTo?: string;
+  /** Called instead of navigating, when the caller wants to stay in place. */
+  onDone?: () => void;
 }
 
 const MIN_LEN = 20;
 
-export function BecomeOrganiserCard({ fullName, email }: Props) {
+export function BecomeOrganiserCard({ fullName, email, redirectTo, onDone }: Props) {
   const { user, activeRoles, refreshRoles } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -68,7 +72,11 @@ export function BecomeOrganiserCard({ fullName, email }: Props) {
     setOpen(false);
     setMessage("");
     toast.success("You're an organiser now — start creating events!");
-    navigate({ to: "/dashboard/organiser" });
+    if (onDone) {
+      onDone();
+      return;
+    }
+    navigate({ to: redirectTo ?? "/dashboard/organiser" });
   }
 
   if (alreadyOrganiser) return null;
