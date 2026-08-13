@@ -70,25 +70,41 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
         const canRespond =
           perspective === "artist" && b.status === "awaiting_artist_response";
         const price = b.final_price ?? b.requested_price;
+        const standalone = !b.event_id;
+        const title = standalone
+          ? b.standalone_event_name ?? "Standalone booking"
+          : b.events?.title ?? "Event";
+        const dateLine = standalone
+          ? b.standalone_event_date ?? "—"
+          : `${b.events?.event_date ?? "—"} ${b.events?.event_time?.slice(0, 5) ?? ""}`;
+        const placeLine = standalone
+          ? b.standalone_venue ?? "—"
+          : `${b.events?.venue ? `${b.events.venue}, ` : ""}${b.events?.city ?? "—"}`;
 
         return (
           <Card key={b.id} className="p-5" style={{ borderRadius: 12 }}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-base font-semibold text-[#111827]">
-                  {b.events?.title ?? "Event"}
-                </h3>
+                <h3 className="text-base font-semibold text-[#111827]">{title}</h3>
                 <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[#6B7280]">
                   <span className="flex items-center gap-1">
                     <CalendarDays className="h-4 w-4" />
-                    {b.events?.event_date ?? "—"} {b.events?.event_time?.slice(0, 5) ?? ""}
+                    {dateLine}
                   </span>
                   <span className="flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
-                    {b.events?.venue ? `${b.events.venue}, ` : ""}
-                    {b.events?.city ?? "—"}
+                    {placeLine}
                   </span>
                 </p>
+                {standalone ? (
+                  <p className="mt-1 text-sm text-[#6B7280]">
+                    {b.standalone_event_type ?? "Event"}
+                    {b.standalone_expected_attendance
+                      ? ` · ~${Number(b.standalone_expected_attendance).toLocaleString("en-NG")} guests`
+                      : ""}
+                    {" · Not listed on AuraPass"}
+                  </p>
+                ) : null}
                 <p className="mt-1 text-sm text-[#374151]">
                   {perspective === "artist" ? "From" : "Artist"}:{" "}
                   <span className="font-medium">{counterpart}</span>
@@ -119,13 +135,14 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
                 {openId === b.id ? "Hide conversation" : "View conversation"}
               </Button>
 
-              {b.events?.slug ? (
+              {!standalone && b.events?.slug ? (
                 <Button asChild variant="ghost" size="sm">
                   <Link to="/events/$slug" params={{ slug: b.events.slug }}>
                     View event
                   </Link>
                 </Button>
               ) : null}
+
 
               {canRespond ? (
                 <>
