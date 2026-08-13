@@ -39,6 +39,7 @@ import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
+import { Route as ArtistsIdBookRouteImport } from './routes/artists.$id.book'
 import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
@@ -216,6 +217,11 @@ const ApiPublicPaystackWebhookRoute =
     path: '/api/public/paystack-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ArtistsIdBookRoute = ArtistsIdBookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => ArtistsIdRoute,
+} as any)
 const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -369,7 +375,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/artists/$id': typeof ArtistsIdRoute
+  '/artists/$id': typeof ArtistsIdRouteWithChildren
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
@@ -424,13 +431,14 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/artists/$id': typeof ArtistsIdRoute
+  '/artists/$id': typeof ArtistsIdRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/events': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
@@ -477,7 +485,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/artists/$id': typeof ArtistsIdRoute
+  '/artists/$id': typeof ArtistsIdRouteWithChildren
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
@@ -488,6 +496,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
@@ -546,6 +555,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/events/'
     | '/api/public/paystack-webhook'
+    | '/artists/$id/book'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
@@ -597,6 +607,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/events'
     | '/api/public/paystack-webhook'
+    | '/artists/$id/book'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
@@ -653,6 +664,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/events/'
     | '/api/public/paystack-webhook'
+    | '/artists/$id/book'
     | '/dashboard/admin/analytics'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
@@ -699,7 +711,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
-  ArtistsIdRoute: typeof ArtistsIdRoute
+  ArtistsIdRoute: typeof ArtistsIdRouteWithChildren
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
@@ -920,6 +932,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/paystack-webhook'
       preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/artists/$id/book': {
+      id: '/artists/$id/book'
+      path: '/book'
+      fullPath: '/artists/$id/book'
+      preLoaderRoute: typeof ArtistsIdBookRouteImport
+      parentRoute: typeof ArtistsIdRoute
     }
     '/dashboard/admin/': {
       id: '/dashboard/admin/'
@@ -1195,6 +1214,18 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface ArtistsIdRouteChildren {
+  ArtistsIdBookRoute: typeof ArtistsIdBookRoute
+}
+
+const ArtistsIdRouteChildren: ArtistsIdRouteChildren = {
+  ArtistsIdBookRoute: ArtistsIdBookRoute,
+}
+
+const ArtistsIdRouteWithChildren = ArtistsIdRoute._addFileChildren(
+  ArtistsIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -1215,7 +1246,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
-  ArtistsIdRoute: ArtistsIdRoute,
+  ArtistsIdRoute: ArtistsIdRouteWithChildren,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,

@@ -39,7 +39,7 @@ export const Route = createFileRoute("/artists/$id")({
 function ArtistProfilePage() {
   const { id } = Route.useParams();
   const { artist, avatarUrl, loading } = useArtist(id);
-  const { user, activeRoles, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   function handleBook() {
