@@ -17,6 +17,7 @@ import { EVENT_CATEGORIES } from "@/constants";
 import { BookArtistStep, type BookingSelection } from "@/components/bookings/BookArtistStep";
 import { saveBookingDraft } from "@/lib/bookings";
 import { cn } from "@/lib/utils";
+import { CitySelect } from "@/components/ui/CitySelect";
 
 export const Route = createFileRoute("/dashboard/organiser/create-event")({
   head: () => ({ meta: [{ title: "Create Event — AuraPass" }] }),

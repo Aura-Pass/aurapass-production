@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
 import { EVENT_CATEGORIES } from "@/constants";
+import { CitySelect } from "@/components/ui/CitySelect";
 
 export const Route = createFileRoute("/dashboard/organiser/edit-event/$eventId")({
   head: () => ({ meta: [{ title: "Edit Event — AuraPass" }] }),
