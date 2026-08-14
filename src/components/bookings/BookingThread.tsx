@@ -9,12 +9,14 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Send } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookingMessages } from "@/hooks/useBookings";
+import { initializeBookingDeposit, reconcileBookingDeposit } from "@/lib/bookingPayments.functions";
 import {
   clearBookingDraft,
   formatNaira,
@@ -37,12 +39,33 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
   const [price, setPrice] = useState("");
   const [sending, setSending] = useState(false);
   const [finalising, setFinalising] = useState<number | null>(null);
+  const initDeposit = useServerFn(initializeBookingDeposit);
+  const reconcileDeposit = useServerFn(reconcileBookingDeposit);
+  const [payingDeposit, setPayingDeposit] = useState(false);
+
+  const isOrganiser = user?.id === booking.organiser_id;
+  const awaitingDeposit = booking.status === "awaiting_deposit" && !booking.deposit_paid_at;
 
   // Pull in any note queued at event-creation time (before the thread existed).
   useEffect(() => {
     const draft = readBookingDraft(booking.id);
     if (draft) setText((t) => t || draft);
   }, [booking.id]);
+
+  // Self-healing: if a payment reference exists but deposit_paid_at is still null,
+  // silently check whether the webhook already fulfilled it (same pattern as
+  // reconcileOrder on the order-confirmation page).
+  useEffect(() => {
+    if (!awaitingDeposit || !(booking as any).paystack_reference) return;
+    let active = true;
+    (async () => {
+      const result = await reconcileDeposit({ data: { bookingRequestId: booking.id } });
+      if (active && result.success && result.fulfilledNow) {
+        await onChanged();
+      }
+    })();
+    return () => { active = false; };
+  }, [booking.id, awaitingDeposit]);
 
   const canMessage = OPEN_STATUSES.includes(booking.status);
 
@@ -88,6 +111,22 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
     toast.success(`Booked at ${formatNaira(amount)} — awaiting deposit.`);
     await refetch();
     await onChanged();
+  }
+
+  async function payDeposit() {
+    setPayingDeposit(true);
+    const result = await initDeposit({
+      data: {
+        bookingRequestId: booking.id,
+        callbackUrl: `${window.location.origin}/booking-payment-callback`,
+      },
+    });
+    setPayingDeposit(false);
+    if ("error" in result) {
+      toast.error(result.error);
+      return;
+    }
+    window.location.href = result.authorizationUrl;
   }
 
   const lastCounterpartOffer = [...messages]
@@ -148,6 +187,34 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
               `Book at ${formatNaira(lastCounterpartOffer.proposed_price)}`
             )}
           </Button>
+        </div>
+      ) : null}
+
+      {isOrganiser && awaitingDeposit ? (
+        <div className="mt-4 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] px-3 py-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-[#111827]">
+                Deposit due: {formatNaira(booking.deposit_amount)}
+              </p>
+              <p className="text-xs text-[#6B7280]">
+                Pay the deposit to confirm this booking and unlock the artist's contact details.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={payingDeposit}
+              onClick={payDeposit}
+            >
+              {payingDeposit ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                `Pay Deposit — ${formatNaira(booking.deposit_amount)}`
+              )}
+            </Button>
+          </div>
         </div>
       ) : null}
 
