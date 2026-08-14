@@ -13,10 +13,11 @@ import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
-import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { EVENT_CATEGORIES } from "@/constants";
 import { BookArtistStep, type BookingSelection } from "@/components/bookings/BookArtistStep";
 import { saveBookingDraft } from "@/lib/bookings";
 import { cn } from "@/lib/utils";
+import { CitySelect } from "@/components/ui/CitySelect";
 
 export const Route = createFileRoute("/dashboard/organiser/create-event")({
   head: () => ({ meta: [{ title: "Create Event — AuraPass" }] }),
@@ -403,13 +404,7 @@ function Step1({
           options={EVENT_CATEGORIES.map((c) => ({ value: c.label, label: `${c.icon} ${c.label}` }))}
           placeholder="Choose a category"
         />
-        <NativeSelect
-          label="City"
-          value={form.city}
-          onChange={(v) => set("city", v)}
-          options={CITIES.map((c) => ({ value: c, label: c }))}
-          placeholder="Choose a city"
-        />
+        <CitySelect label="City" value={form.city} onChange={(v) => set("city", v)} />
       </div>
 
       <Input

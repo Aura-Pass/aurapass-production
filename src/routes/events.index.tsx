@@ -3,7 +3,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { EventCard } from "@/components/ui/event-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { EVENT_CATEGORIES } from "@/constants";
+import { CitySelect } from "@/components/ui/CitySelect";
 import { usePublishedEvents, type PublishedEvent } from "@/hooks/usePublishedEvents";
 import { toEventCardData } from "@/lib/event-adapter";
 
@@ -341,17 +342,12 @@ function EventsPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-              <select
+              <CitySelect
                 value={activeCity}
-                onChange={(e) => handleCityChange(e.target.value)}
-                className="h-11 rounded-md border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] focus:outline-none focus:border-[#D946EF] focus:ring-2 focus:ring-[#D946EF]/20"
-                aria-label="City"
-              >
-                <option value="all">All cities</option>
-                {CITIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+                onChange={handleCityChange}
+                allowAll
+                ariaLabel="City"
+              />
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
