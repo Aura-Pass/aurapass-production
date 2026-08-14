@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { CITIES } from "@/constants";
 import {
+import { CityMultiSelect } from "@/components/ui/CitySelect";
   GENRE_SUGGESTIONS,
   MAX_PHOTOS,
   MAX_VIDEOS,
@@ -282,27 +283,7 @@ export function ArtistProfileForm({ existing, mode, submitLabel, onSaved }: Prop
         <p className="mb-2 text-xs text-[#6B7280]">
           Organisers filter artists by where they can perform. Leave empty to appear everywhere.
         </p>
-        <div className="flex flex-wrap gap-2">
-          {CITIES.map((c) => {
-            const on = locations.includes(c);
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={() =>
-                  setLocations((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))
-                }
-                className={
-                  on
-                    ? "rounded-full border border-[#D946EF] bg-[#FDF4FF] px-3 py-1 text-xs font-medium text-[#A21CAF]"
-                    : "rounded-full border border-[#E5E7EB] px-3 py-1 text-xs text-[#6B7280] hover:border-[#D946EF] hover:text-[#D946EF]"
-                }
-              >
-                {c}
-              </button>
-            );
-          })}
-        </div>
+        <CityMultiSelect values={locations} onChange={setLocations} placeholder="Add a city" />
       </Field>
 
       <Field label="Estimated rate (₦)">

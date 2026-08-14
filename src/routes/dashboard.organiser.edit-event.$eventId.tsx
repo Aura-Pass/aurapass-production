@@ -327,13 +327,7 @@ function EditEventPage() {
                     }))}
                     placeholder="Choose a category"
                   />
-                  <NativeSelect
-                    label="City"
-                    value={form.city}
-                    onChange={(v) => setField("city", v)}
-                    options={CITIES.map((c) => ({ value: c, label: c }))}
-                    placeholder="Choose a city"
-                  />
+                  <CitySelect label="City" value={form.city} onChange={(v) => setField("city", v)} />
                 </div>
 
                 <Input

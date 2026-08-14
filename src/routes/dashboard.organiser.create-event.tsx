@@ -403,13 +403,7 @@ function Step1({
           options={EVENT_CATEGORIES.map((c) => ({ value: c.label, label: `${c.icon} ${c.label}` }))}
           placeholder="Choose a category"
         />
-        <NativeSelect
-          label="City"
-          value={form.city}
-          onChange={(v) => set("city", v)}
-          options={CITIES.map((c) => ({ value: c, label: c }))}
-          placeholder="Choose a city"
-        />
+        <CitySelect label="City" value={form.city} onChange={(v) => set("city", v)} />
       </div>
 
       <Input

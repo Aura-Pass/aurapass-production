@@ -3,7 +3,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { EventCard } from "@/components/ui/event-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { EVENT_CATEGORIES } from "@/constants";
+import { CitySelect } from "@/components/ui/CitySelect";
 import { usePublishedEvents, type PublishedEvent } from "@/hooks/usePublishedEvents";
 import { toEventCardData } from "@/lib/event-adapter";
 
