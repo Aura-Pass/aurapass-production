@@ -160,7 +160,7 @@ export const initializePayment = createServerFn({ method: "POST" })
         email: data.buyerEmail,
         amount: Math.round(totalAmount * 100),
         callback_url: data.callbackUrl,
-        metadata: { order_id: order.id, event_title: ticketType.events?.title },
+        metadata: { type: "ticket_order", order_id: order.id, event_title: ticketType.events?.title },
       }),
     });
 

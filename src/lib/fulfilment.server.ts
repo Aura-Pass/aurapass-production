@@ -189,6 +189,56 @@ export async function fulfilPaidOrder(
   return { success: true, orderId: order.id as string, fulfilledNow, ticketsCreated: created };
 }
 
+export interface FulfilBookingResult {
+  success: true;
+  bookingRequestId: string;
+  fulfilledNow: boolean;
+}
+
+export async function fulfilBookingDeposit(
+  sb: Sb,
+  params: { reference: string; verifiedData?: unknown; amount?: number },
+): Promise<FulfilBookingResult | { success: false; error: string }> {
+  const { reference } = params;
+
+  const { data: booking } = await sb
+    .from("booking_requests")
+    .select("*")
+    .eq("paystack_reference", reference)
+    .maybeSingle();
+
+  if (!booking) return { success: false, error: "Booking request not found" };
+
+  const { data: claimed } = await sb
+    .from("booking_requests")
+    .update({ deposit_paid_at: new Date().toISOString(), status: "accepted" })
+    .eq("id", booking.id)
+    .eq("status", "awaiting_deposit")
+    .is("deposit_paid_at", null)
+    .select("id")
+    .maybeSingle();
+
+  const fulfilledNow = Boolean(claimed);
+
+  if (fulfilledNow) {
+    const { error: paymentError } = await sb.from("payments").insert({
+      booking_request_id: booking.id,
+      paystack_reference: reference,
+      amount: params.amount ?? booking.deposit_amount,
+      status: "success",
+      paid_at: new Date().toISOString(),
+      raw_response: params.verifiedData ?? null,
+    });
+    if (paymentError && !String(paymentError.code).startsWith("23")) {
+      console.error("[fulfilment] booking payment insert failed", paymentError);
+    }
+  }
+
+  return { success: true, bookingRequestId: booking.id as string, fulfilledNow };
+}
+
+
+
 /** Calls Paystack's verify endpoint. Returns the raw `data` object on success. */
 export async function verifyWithPaystack(
   reference: string,
