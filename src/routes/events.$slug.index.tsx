@@ -22,7 +22,7 @@ interface TicketTypeDisplay {
   price: number;
 }
 
-interface EventWithTickets extends Event {
+interface EventWithTickets extends Omit<Event, "ticket_types"> {
   ticket_types: TicketTypeDisplay[];
   organiser_name: string;
   organiser_username: string | null;
