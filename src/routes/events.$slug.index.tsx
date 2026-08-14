@@ -12,16 +12,27 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import type { Event, TicketType } from "@/types";
+import type { Event } from "@/types";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { FollowButton } from "@/components/ui/FollowButton";
 
+interface TicketTypeDisplay {
+  id: string;
+  name: string;
+  price: number;
+}
+
 interface EventWithTickets extends Event {
-  ticket_types: TicketType[];
+  ticket_types: TicketTypeDisplay[];
   organiser_name: string;
   organiser_username: string | null;
   organiser_avatar_url: string | null;
 }
+
+type Availability =
+  | { loading: true }
+  | { privileged: true; quantity: number; quantity_sold: number; remaining: number }
+  | { privileged: false; status: "low" | "available"; remaining?: number; label: string };
 
 import { getPublishedEventForHead } from "@/lib/events.functions";
 
