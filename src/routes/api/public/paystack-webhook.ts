@@ -48,16 +48,27 @@ export const Route = createFileRoute("/api/public/paystack-webhook")({
 
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
-          const result = await fulfilPaidOrder(supabaseAdmin as any, {
-            reference,
-            verifiedData: payload.data,
-            amount: Number(payload?.data?.amount ?? 0) / 100 || undefined,
-          });
-          console.log("[paystack-webhook] charge.success", reference, result);
+          const metadataType = payload?.data?.metadata?.type;
+
+          if (metadataType === "booking_deposit") {
+            const { fulfilBookingDeposit } = await import("@/lib/fulfilment.server");
+            const result = await fulfilBookingDeposit(supabaseAdmin as any, {
+              reference,
+              verifiedData: payload.data,
+              amount: Number(payload?.data?.amount ?? 0) / 100 || undefined,
+            });
+            console.log("[paystack-webhook] booking deposit charge.success", reference, result);
+          } else {
+            const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
+            const result = await fulfilPaidOrder(supabaseAdmin as any, {
+              reference,
+              verifiedData: payload.data,
+              amount: Number(payload?.data?.amount ?? 0) / 100 || undefined,
+            });
+            console.log("[paystack-webhook] charge.success", reference, result);
+          }
         } catch (err) {
           console.error("[paystack-webhook] fulfilment error", reference, err);
-          // 500 makes Paystack retry — safe because fulfilment is idempotent.
           return new Response("Fulfilment error", { status: 500 });
         }
 
