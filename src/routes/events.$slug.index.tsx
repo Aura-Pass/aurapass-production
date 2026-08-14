@@ -119,6 +119,7 @@ function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [availability, setAvailability] = useState<Record<string, Availability>>({});
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
@@ -157,7 +158,7 @@ function EventDetailPage() {
     (async () => {
       const { data, error } = await (supabase as any)
         .from("events")
-        .select(`*, ticket_types (*)`)
+        .select(`*, ticket_types (id, name, price)`)
         .eq("slug", slug)
         .maybeSingle();
 
@@ -215,6 +216,49 @@ function EventDetailPage() {
       setMeta("name", "twitter:card", "summary_large_image");
     }
   }, [event]);
+
+  useEffect(() => {
+    if (!event?.ticket_types?.length) return;
+    let active = true;
+    setAvailability(
+      Object.fromEntries(event.ticket_types.map((t) => [t.id, { loading: true } as Availability])),
+    );
+
+    (async () => {
+      const results = await Promise.all(
+        event.ticket_types.map(async (t) => {
+          const { data, error } = await (supabase as any).rpc("get_ticket_availability", {
+            p_ticket_type_id: t.id,
+          });
+          if (error || !data) return null;
+          const result = data as any;
+          const availabilityEntry: Availability = result.privileged
+            ? {
+                privileged: true,
+                quantity: Number(result.quantity),
+                quantity_sold: Number(result.quantity_sold),
+                remaining: Number(result.remaining),
+              }
+            : {
+                privileged: false,
+                status: result.status,
+                remaining: result.remaining != null ? Number(result.remaining) : undefined,
+                label: result.label,
+              };
+          return [t.id, availabilityEntry] as [string, Availability];
+        }),
+      );
+      if (!active) return;
+      setAvailability((prev) => ({
+        ...prev,
+        ...Object.fromEntries(results.filter((r): r is [string, Availability] => r !== null)),
+      }));
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [event?.ticket_types]);
 
   if (loading) {
     return (
@@ -321,11 +365,9 @@ function EventDetailPage() {
                     className="space-y-2"
                   >
                     {tiers.map((t) => {
-                      const remaining = Math.max(
-                        0,
-                        Number(t.quantity) - Number(t.quantity_sold),
-                      );
-                      const soldOut = remaining < 1;
+                      const av = availability[t.id];
+                      const soldOut =
+                        av && !av.loading && (av.privileged ? av.remaining < 1 : (av.remaining ?? 0) < 1);
                       return (
                         <Label
                           key={t.id}
@@ -343,7 +385,15 @@ function EventDetailPage() {
                               <p className="text-sm text-[#6B7280]">
                                 {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
                                 {" · "}
-                                {soldOut ? "Sold out" : `${remaining} left`}
+                                {!av || av.loading ? (
+                                  "Checking availability…"
+                                ) : av.privileged ? (
+                                  `${av.quantity_sold} / ${av.quantity} sold`
+                                ) : av.status === "low" ? (
+                                  <span className="font-medium text-amber-600">{av.label}</span>
+                                ) : (
+                                  av.label
+                                )}
                               </p>
                             </div>
                           </div>
