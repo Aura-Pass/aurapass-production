@@ -367,7 +367,7 @@ function EventDetailPage() {
                     {tiers.map((t) => {
                       const av = availability[t.id];
                       const soldOut =
-                        av && av.type !== "loading" && (av.type === "privileged" ? av.remaining < 1 : (av.remaining ?? 0) < 1);
+                        av && av.type !== "loading" && (av.type === "privileged" ? av.remaining < 1 : (av.remaining ?? 1) < 1);
                       return (
                         <Label
                           key={t.id}
