@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { supabase } from "@/lib/supabase";
 import { formatNaira } from "@/lib/bookings";
+import { citiesMatch } from "@/lib/nigerianCities";
 import type { ArtistProfile } from "@/lib/artists";
 
 export interface BookingSelection {
@@ -70,8 +71,8 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
         if (!hit) return false;
       }
       if (onlyLocal && city) {
-        const locations = (a.available_locations ?? []).map((l) => l.toLowerCase());
-        if (locations.length && !locations.includes(city.toLowerCase())) return false;
+        const locations = a.available_locations ?? [];
+        if (locations.length && !locations.some((l) => citiesMatch(l, city))) return false;
       }
       if (cap !== null && !Number.isNaN(cap)) {
         if (a.estimated_rate !== null && a.estimated_rate !== undefined && a.estimated_rate > cap)

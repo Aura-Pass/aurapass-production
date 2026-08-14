@@ -13,7 +13,7 @@ import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
-import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { EVENT_CATEGORIES } from "@/constants";
 
 export const Route = createFileRoute("/dashboard/organiser/edit-event/$eventId")({
   head: () => ({ meta: [{ title: "Edit Event — AuraPass" }] }),

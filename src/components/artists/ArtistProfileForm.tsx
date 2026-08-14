@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
-import { CITIES } from "@/constants";
 import {
 import { CityMultiSelect } from "@/components/ui/CitySelect";
   GENRE_SUGGESTIONS,

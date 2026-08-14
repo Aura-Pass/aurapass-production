@@ -13,7 +13,7 @@ import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
-import { EVENT_CATEGORIES, CITIES } from "@/constants";
+import { EVENT_CATEGORIES } from "@/constants";
 import { BookArtistStep, type BookingSelection } from "@/components/bookings/BookArtistStep";
 import { saveBookingDraft } from "@/lib/bookings";
 import { cn } from "@/lib/utils";
