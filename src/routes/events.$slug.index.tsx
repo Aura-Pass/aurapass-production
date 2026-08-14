@@ -30,9 +30,9 @@ interface EventWithTickets extends Omit<Event, "ticket_types"> {
 }
 
 type Availability =
-  | { loading: true }
-  | { privileged: true; quantity: number; quantity_sold: number; remaining: number }
-  | { privileged: false; status: "low" | "available"; remaining?: number; label: string };
+  | { type: "loading" }
+  | { type: "privileged"; quantity: number; quantity_sold: number; remaining: number }
+  | { type: "public"; status: "low" | "available"; remaining?: number; label: string };
 
 import { getPublishedEventForHead } from "@/lib/events.functions";
 
@@ -221,7 +221,7 @@ function EventDetailPage() {
     if (!event?.ticket_types?.length) return;
     let active = true;
     setAvailability(
-      Object.fromEntries(event.ticket_types.map((t) => [t.id, { loading: true } as Availability])),
+      Object.fromEntries(event.ticket_types.map((t) => [t.id, { type: "loading" } as Availability])),
     );
 
     (async () => {
@@ -234,13 +234,13 @@ function EventDetailPage() {
           const result = data as any;
           const availabilityEntry: Availability = result.privileged
             ? {
-                privileged: true,
+                type: "privileged",
                 quantity: Number(result.quantity),
                 quantity_sold: Number(result.quantity_sold),
                 remaining: Number(result.remaining),
               }
             : {
-                privileged: false,
+                type: "public",
                 status: result.status,
                 remaining: result.remaining != null ? Number(result.remaining) : undefined,
                 label: result.label,
@@ -367,7 +367,7 @@ function EventDetailPage() {
                     {tiers.map((t) => {
                       const av = availability[t.id];
                       const soldOut =
-                        av && !av.loading && (av.privileged ? av.remaining < 1 : (av.remaining ?? 0) < 1);
+                        av && av.type !== "loading" && (av.type === "privileged" ? av.remaining < 1 : (av.remaining ?? 0) < 1);
                       return (
                         <Label
                           key={t.id}
@@ -385,9 +385,9 @@ function EventDetailPage() {
                               <p className="text-sm text-[#6B7280]">
                                 {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
                                 {" · "}
-                                {!av || av.loading ? (
+                                {!av || av.type === "loading" ? (
                                   "Checking availability…"
-                                ) : av.privileged ? (
+                                ) : av.type === "privileged" ? (
                                   `${av.quantity_sold} / ${av.quantity} sold`
                                 ) : av.status === "low" ? (
                                   <span className="font-medium text-amber-600">{av.label}</span>
