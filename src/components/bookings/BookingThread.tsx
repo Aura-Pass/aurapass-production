@@ -46,9 +46,16 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
   const initDeposit = useServerFn(initializeBookingDeposit);
   const reconcileDeposit = useServerFn(reconcileBookingDeposit);
   const [payingDeposit, setPayingDeposit] = useState(false);
+  const initBalance = useServerFn(initializeBookingBalance);
+  const [payingBalance, setPayingBalance] = useState(false);
 
   const isOrganiser = user?.id === booking.organiser_id;
   const awaitingDeposit = booking.status === "awaiting_deposit" && !booking.deposit_paid_at;
+  const balanceDue =
+    booking.status === "accepted" &&
+    !!booking.deposit_paid_at &&
+    !booking.balance_paid_at &&
+    Number(booking.balance_amount ?? 0) > 0;
 
   // Pull in any note queued at event-creation time (before the thread existed).
   useEffect(() => {
