@@ -37,6 +37,7 @@ export interface BookingRequest {
   final_price: number | null;
   deposit_amount: number | null;
   deposit_paid_at: string | null;
+  paystack_reference: string | null;
   status: BookingStatus;
   responded_at: string | null;
   created_at: string;
