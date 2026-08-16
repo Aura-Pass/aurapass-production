@@ -154,7 +154,7 @@ function GateAttendantsPage() {
           </p>
         </div>
         <Button asChild variant="outline" size="sm">
-          <Link to="/dashboard/organiser/events">Back to events</Link>
+          <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>Back to events</Link>
         </Button>
       </div>
 
