@@ -12,7 +12,7 @@ import { useEventTickets } from "@/hooks/useEventTickets";
 export const Route = createFileRoute("/dashboard/organiser/scan/$eventId")({
   head: () => ({ meta: [{ title: "Ticket Scanner | AuraPass" }] }),
   component: () => (
-    <ProtectedRoute allowedRoles={["organiser", "admin"]}>
+    <ProtectedRoute allowedRoles={["organiser", "admin", "gate_attendant"]}>
       <ScanPage />
     </ProtectedRoute>
   ),

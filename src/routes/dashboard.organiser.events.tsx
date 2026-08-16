@@ -317,6 +317,14 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
               Edit
             </Link>
           </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/dashboard/organiser/gate-attendants/$eventId"
+              params={{ eventId: event.id }}
+            >
+              Gate Attendants
+            </Link>
+          </Button>
         </div>
       </div>
     </Card>

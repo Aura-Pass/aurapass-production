@@ -79,6 +79,13 @@ const SECTIONS: NavSection[] = [
     ],
   },
   {
+    role: "gate_attendant",
+    label: "Gate Duty",
+    items: [
+      { to: "/dashboard/gate/scan", label: "My Assigned Events", icon: ScanLine, exact: true },
+    ],
+  },
+  {
     role: "organiser",
     label: "Organiser",
     items: [
