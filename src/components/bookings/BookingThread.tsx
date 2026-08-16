@@ -140,6 +140,23 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
     window.location.href = result.authorizationUrl;
   }
 
+  async function payBalance() {
+    setPayingBalance(true);
+    const result = await initBalance({
+      data: {
+        bookingRequestId: booking.id,
+        callbackUrl: `${window.location.origin}/booking-balance-callback`,
+      },
+    });
+    setPayingBalance(false);
+    if ("error" in result) {
+      toast.error(result.error);
+      return;
+    }
+    window.location.href = result.authorizationUrl;
+  }
+
+
   const lastCounterpartOffer = [...messages]
     .reverse()
     .find((m) => m.sender_id !== user?.id && m.proposed_price !== null);
