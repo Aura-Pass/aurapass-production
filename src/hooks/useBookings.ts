@@ -86,11 +86,10 @@ export function useBookingMessages(bookingId: string | null) {
       return;
     }
     setLoading(true);
-    const { data, error } = await (supabase as any)
-      .from("booking_messages")
-      .select("*")
-      .eq("booking_request_id", bookingId)
-      .order("created_at", { ascending: true });
+    const { data, error } = await (supabase as any).rpc(
+      "get_booking_messages",
+      { p_booking_request_id: bookingId },
+    );
     if (error) console.error("[useBookingMessages]", error);
     setMessages(((data as BookingMessage[] | null) ?? []));
     setLoading(false);
