@@ -56,7 +56,7 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
   // silently check whether the webhook already fulfilled it (same pattern as
   // reconcileOrder on the order-confirmation page).
   useEffect(() => {
-    if (!awaitingDeposit || !(booking as any).paystack_reference) return;
+    if (!awaitingDeposit || !booking.paystack_reference) return;
     let active = true;
     (async () => {
       const result = await reconcileDeposit({ data: { bookingRequestId: booking.id } });
