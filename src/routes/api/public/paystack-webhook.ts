@@ -58,6 +58,14 @@ export const Route = createFileRoute("/api/public/paystack-webhook")({
               amount: Number(payload?.data?.amount ?? 0) / 100 || undefined,
             });
             console.log("[paystack-webhook] booking deposit charge.success", reference, result);
+          } else if (metadataType === "booking_balance") {
+            const { fulfilBookingBalance } = await import("@/lib/fulfilment.server");
+            const result = await fulfilBookingBalance(supabaseAdmin as any, {
+              reference,
+              verifiedData: payload.data,
+              amount: Number(payload?.data?.amount ?? 0) / 100 || undefined,
+            });
+            console.log("[paystack-webhook] booking balance charge.success", reference, result);
           } else {
             const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
             const result = await fulfilPaidOrder(supabaseAdmin as any, {
