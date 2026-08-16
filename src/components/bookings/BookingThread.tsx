@@ -16,7 +16,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookingMessages } from "@/hooks/useBookings";
-import { initializeBookingDeposit, reconcileBookingDeposit } from "@/lib/bookingPayments.functions";
+import {
+  initializeBookingBalance,
+  initializeBookingDeposit,
+  reconcileBookingDeposit,
+} from "@/lib/bookingPayments.functions";
 import {
   clearBookingDraft,
   formatNaira,
@@ -42,9 +46,16 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
   const initDeposit = useServerFn(initializeBookingDeposit);
   const reconcileDeposit = useServerFn(reconcileBookingDeposit);
   const [payingDeposit, setPayingDeposit] = useState(false);
+  const initBalance = useServerFn(initializeBookingBalance);
+  const [payingBalance, setPayingBalance] = useState(false);
 
   const isOrganiser = user?.id === booking.organiser_id;
   const awaitingDeposit = booking.status === "awaiting_deposit" && !booking.deposit_paid_at;
+  const balanceDue =
+    booking.status === "accepted" &&
+    !!booking.deposit_paid_at &&
+    !booking.balance_paid_at &&
+    Number(booking.balance_amount ?? 0) > 0;
 
   // Pull in any note queued at event-creation time (before the thread existed).
   useEffect(() => {
@@ -128,6 +139,23 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
     }
     window.location.href = result.authorizationUrl;
   }
+
+  async function payBalance() {
+    setPayingBalance(true);
+    const result = await initBalance({
+      data: {
+        bookingRequestId: booking.id,
+        callbackUrl: `${window.location.origin}/booking-balance-callback`,
+      },
+    });
+    setPayingBalance(false);
+    if ("error" in result) {
+      toast.error(result.error);
+      return;
+    }
+    window.location.href = result.authorizationUrl;
+  }
+
 
   const lastCounterpartOffer = [...messages]
     .reverse()
@@ -217,6 +245,35 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
           </div>
         </div>
       ) : null}
+
+      {isOrganiser && balanceDue ? (
+        <div className="mt-4 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] px-3 py-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-[#111827]">
+                Balance due: {formatNaira(booking.balance_amount)}
+              </p>
+              <p className="text-xs text-[#6B7280]">
+                Pay the remaining balance to complete this booking.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={payingBalance}
+              onClick={payBalance}
+            >
+              {payingBalance ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Pay Remaining Balance"
+              )}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
 
       {canMessage ? (
         <div className="mt-4 space-y-2">

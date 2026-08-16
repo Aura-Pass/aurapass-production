@@ -38,6 +38,9 @@ export interface BookingRequest {
   deposit_amount: number | null;
   deposit_paid_at: string | null;
   paystack_reference: string | null;
+  balance_amount: number | null;
+  balance_paid_at: string | null;
+  balance_paystack_reference: string | null;
   status: BookingStatus;
   responded_at: string | null;
   created_at: string;
