@@ -246,6 +246,35 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
         </div>
       ) : null}
 
+      {isOrganiser && balanceDue ? (
+        <div className="mt-4 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] px-3 py-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-[#111827]">
+                Balance due: {formatNaira(booking.balance_amount)}
+              </p>
+              <p className="text-xs text-[#6B7280]">
+                Pay the remaining balance to complete this booking.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={payingBalance}
+              onClick={payBalance}
+            >
+              {payingBalance ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Pay Remaining Balance"
+              )}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+
       {canMessage ? (
         <div className="mt-4 space-y-2">
           <Textarea
