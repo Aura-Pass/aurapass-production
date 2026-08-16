@@ -16,7 +16,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookingMessages } from "@/hooks/useBookings";
-import { initializeBookingDeposit, reconcileBookingDeposit } from "@/lib/bookingPayments.functions";
+import {
+  initializeBookingBalance,
+  initializeBookingDeposit,
+  reconcileBookingDeposit,
+} from "@/lib/bookingPayments.functions";
 import {
   clearBookingDraft,
   formatNaira,

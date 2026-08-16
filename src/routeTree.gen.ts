@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BookingBalanceCallbackRouteImport } from './routes/booking-balance-callback'
 import { Route as BookingPaymentCallbackRouteImport } from './routes/booking-payment-callback'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -80,6 +81,11 @@ const AboutRoute = AboutRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingBalanceCallbackRoute = BookingBalanceCallbackRouteImport.update({
+  id: '/booking-balance-callback',
+  path: '/booking-balance-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingPaymentCallbackRoute = BookingPaymentCallbackRouteImport.update({
@@ -371,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
+  '/booking-balance-callback': typeof BookingBalanceCallbackRoute
   '/booking-payment-callback': typeof BookingPaymentCallbackRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
@@ -430,6 +437,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
+  '/booking-balance-callback': typeof BookingBalanceCallbackRoute
   '/booking-payment-callback': typeof BookingPaymentCallbackRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
@@ -484,6 +492,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
+  '/booking-balance-callback': typeof BookingBalanceCallbackRoute
   '/booking-payment-callback': typeof BookingPaymentCallbackRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
@@ -545,6 +554,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/blog'
+    | '/booking-balance-callback'
     | '/booking-payment-callback'
     | '/careers'
     | '/contact'
@@ -604,6 +614,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/blog'
+    | '/booking-balance-callback'
     | '/booking-payment-callback'
     | '/careers'
     | '/contact'
@@ -657,6 +668,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/blog'
+    | '/booking-balance-callback'
     | '/booking-payment-callback'
     | '/careers'
     | '/contact'
@@ -717,6 +729,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRoute
+  BookingBalanceCallbackRoute: typeof BookingBalanceCallbackRoute
   BookingPaymentCallbackRoute: typeof BookingPaymentCallbackRoute
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
@@ -765,6 +778,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking-balance-callback': {
+      id: '/booking-balance-callback'
+      path: '/booking-balance-callback'
+      fullPath: '/booking-balance-callback'
+      preLoaderRoute: typeof BookingBalanceCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/booking-payment-callback': {
@@ -1269,6 +1289,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRoute,
+  BookingBalanceCallbackRoute: BookingBalanceCallbackRoute,
   BookingPaymentCallbackRoute: BookingPaymentCallbackRoute,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
