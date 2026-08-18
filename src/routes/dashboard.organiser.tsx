@@ -7,7 +7,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 export const Route = createFileRoute("/dashboard/organiser")({
   component: () => (
-    <ProtectedRoute allowedRoles={["organiser", "admin"]}>
+    <ProtectedRoute allowedRoles={["organiser", "admin", "gate_attendant"]}>
       <Outlet />
     </ProtectedRoute>
   ),
