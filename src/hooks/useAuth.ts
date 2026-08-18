@@ -34,7 +34,7 @@ export async function fetchActiveRoles(userId: string): Promise<string[]> {
   try {
     const { data, error } = await (supabase as unknown as {
       rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
-    }).rpc("get_user_roles", { user_id: userId });
+    }).rpc("get_user_roles", { _user_id: userId });
 
     if (!error && Array.isArray(data)) {
       const roles = (data as unknown[])
