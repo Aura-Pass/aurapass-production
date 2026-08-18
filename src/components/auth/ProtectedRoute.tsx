@@ -24,6 +24,13 @@ export function ProtectedRoute({ children, allowedRoles }: Props) {
     return <Navigate to="/login" search={{ redirect: undefined, ticketTypeId: undefined }} />;
   }
 
+  console.log("[ProtectedRoute DEBUG]", {
+    path: window.location.pathname,
+    allowedRoles,
+    activeRoles,
+    loading,
+  });
+
   if (allowedRoles && allowedRoles.length > 0) {
     const permitted = allowedRoles.some((r) => activeRoles.includes(r));
     if (!permitted) return <Navigate to="/dashboard" />;
