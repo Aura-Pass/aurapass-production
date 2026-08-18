@@ -43,24 +43,18 @@ function GateAttendantsPage() {
 
   const loadAssignments = useCallback(async () => {
     const { data, error } = await (supabase as any)
-      .from("event_gate_attendants")
-      .select("id, attendant_user_id, profiles:attendant_user_id(username, avatar_url)")
-      .eq("event_id", eventId)
-      .eq("status", "active");
+      .rpc("get_event_gate_attendants", { p_event_id: eventId });
 
     if (error) {
       setAssignments([]);
     } else {
       setAssignments(
-        ((data as any[]) ?? []).map((r) => {
-          const p = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
-          return {
-            id: r.id,
-            attendant_user_id: r.attendant_user_id,
-            username: p?.username ?? null,
-            avatar_url: p?.avatar_url ?? null,
-          };
-        }),
+        ((data as any[]) ?? []).map((r) => ({
+          id: r.id,
+          attendant_user_id: r.attendant_user_id,
+          username: r.username,
+          avatar_url: r.avatar_url,
+        })),
       );
     }
     setLoading(false);
