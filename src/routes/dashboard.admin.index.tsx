@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { ExportEventSalesButton } from "@/components/admin/ExportEventSalesButton";
 import { ArtistApplicationsPanel } from "@/components/admin/ArtistApplicationsPanel";
+import { EquipmentApplicationsPanel } from "@/components/admin/EquipmentApplicationsPanel";
 import {
   approveEventCancellation,
   declineEventCancellation,
@@ -36,7 +37,8 @@ type Tab =
   | "published"
   | "rejected"
   | "cancellation_requests"
-  | "artist_applications";
+  | "artist_applications"
+  | "equipment_applications";
 
 function AdminDashboard() {
   const { events, loading, updateEventStatus, refetch } = useAdminEvents();
@@ -199,10 +201,18 @@ function AdminDashboard() {
         >
           Artist Applications
         </TabButton>
+        <TabButton
+          active={tab === "equipment_applications"}
+          onClick={() => setTab("equipment_applications")}
+        >
+          Equipment Applications
+        </TabButton>
       </div>
 
       {tab === "artist_applications" ? (
         <ArtistApplicationsPanel />
+      ) : tab === "equipment_applications" ? (
+        <EquipmentApplicationsPanel />
       ) : loading ? (
         <div className="flex items-center justify-center py-16">
           <Spinner className="h-8 w-8" />

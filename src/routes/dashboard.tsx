@@ -22,6 +22,7 @@ import {
   Mic2,
   Inbox,
   Handshake,
+  Wrench,
   Menu,
   X,
 } from "lucide-react";
@@ -67,6 +68,11 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/attendee/following", label: "Following", icon: Users },
       { to: "/dashboard/attendee/saved", label: "Saved Events", icon: Heart },
       { to: "/dashboard/attendee/become-artist", label: "Become an Artist", icon: Mic2 },
+      {
+        to: "/dashboard/attendee/become-equipment-lister",
+        label: "Become an Equipment Lister",
+        icon: Wrench,
+      },
       { to: "/dashboard/attendee/settings", label: "Settings", icon: Settings },
     ],
   },
