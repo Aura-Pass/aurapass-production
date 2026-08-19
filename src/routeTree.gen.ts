@@ -51,6 +51,7 @@ import { Route as DashboardArtistIndexRouteImport } from './routes/dashboard.art
 import { Route as DashboardArtistBookingsRouteImport } from './routes/dashboard.artist.bookings'
 import { Route as DashboardAttendeeIndexRouteImport } from './routes/dashboard.attendee.index'
 import { Route as DashboardAttendeeBecomeArtistRouteImport } from './routes/dashboard.attendee.become-artist'
+import { Route as DashboardAttendeeBecomeEquipmentListerRouteImport } from './routes/dashboard.attendee.become-equipment-lister'
 import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboard.attendee.following'
 import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.attendee.saved'
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
@@ -283,6 +284,12 @@ const DashboardAttendeeBecomeArtistRoute =
     path: '/become-artist',
     getParentRoute: () => DashboardAttendeeRoute,
   } as any)
+const DashboardAttendeeBecomeEquipmentListerRoute =
+  DashboardAttendeeBecomeEquipmentListerRouteImport.update({
+    id: '/become-equipment-lister',
+    path: '/become-equipment-lister',
+    getParentRoute: () => DashboardAttendeeRoute,
+  } as any)
 const DashboardAttendeeFollowingRoute =
   DashboardAttendeeFollowingRouteImport.update({
     id: '/following',
@@ -425,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
   '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
+  '/dashboard/attendee/become-equipment-lister': typeof DashboardAttendeeBecomeEquipmentListerRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -481,6 +489,7 @@ export interface FileRoutesByTo {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
   '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
+  '/dashboard/attendee/become-equipment-lister': typeof DashboardAttendeeBecomeEquipmentListerRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -544,6 +553,7 @@ export interface FileRoutesById {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
   '/dashboard/attendee/become-artist': typeof DashboardAttendeeBecomeArtistRoute
+  '/dashboard/attendee/become-equipment-lister': typeof DashboardAttendeeBecomeEquipmentListerRoute
   '/dashboard/attendee/following': typeof DashboardAttendeeFollowingRoute
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
@@ -608,6 +618,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/artist/bookings'
     | '/dashboard/attendee/become-artist'
+    | '/dashboard/attendee/become-equipment-lister'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -664,6 +675,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/artist/bookings'
     | '/dashboard/attendee/become-artist'
+    | '/dashboard/attendee/become-equipment-lister'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -726,6 +738,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/artist/bookings'
     | '/dashboard/attendee/become-artist'
+    | '/dashboard/attendee/become-equipment-lister'
     | '/dashboard/attendee/following'
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
@@ -1078,6 +1091,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAttendeeBecomeArtistRouteImport
       parentRoute: typeof DashboardAttendeeRoute
     }
+    '/dashboard/attendee/become-equipment-lister': {
+      id: '/dashboard/attendee/become-equipment-lister'
+      path: '/become-equipment-lister'
+      fullPath: '/dashboard/attendee/become-equipment-lister'
+      preLoaderRoute: typeof DashboardAttendeeBecomeEquipmentListerRouteImport
+      parentRoute: typeof DashboardAttendeeRoute
+    }
     '/dashboard/attendee/following': {
       id: '/dashboard/attendee/following'
       path: '/following'
@@ -1241,6 +1261,7 @@ const DashboardArtistRouteWithChildren = DashboardArtistRoute._addFileChildren(
 
 interface DashboardAttendeeRouteChildren {
   DashboardAttendeeBecomeArtistRoute: typeof DashboardAttendeeBecomeArtistRoute
+  DashboardAttendeeBecomeEquipmentListerRoute: typeof DashboardAttendeeBecomeEquipmentListerRoute
   DashboardAttendeeFollowingRoute: typeof DashboardAttendeeFollowingRoute
   DashboardAttendeeSavedRoute: typeof DashboardAttendeeSavedRoute
   DashboardAttendeeSettingsRoute: typeof DashboardAttendeeSettingsRoute
@@ -1250,6 +1271,8 @@ interface DashboardAttendeeRouteChildren {
 
 const DashboardAttendeeRouteChildren: DashboardAttendeeRouteChildren = {
   DashboardAttendeeBecomeArtistRoute: DashboardAttendeeBecomeArtistRoute,
+  DashboardAttendeeBecomeEquipmentListerRoute:
+    DashboardAttendeeBecomeEquipmentListerRoute,
   DashboardAttendeeFollowingRoute: DashboardAttendeeFollowingRoute,
   DashboardAttendeeSavedRoute: DashboardAttendeeSavedRoute,
   DashboardAttendeeSettingsRoute: DashboardAttendeeSettingsRoute,
