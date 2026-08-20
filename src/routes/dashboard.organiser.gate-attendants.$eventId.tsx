@@ -107,7 +107,10 @@ function GateAttendantsPage() {
     setBusyId(result.user_id);
     const { error } = await (supabase as any)
       .from("event_gate_attendants")
-      .insert({ event_id: eventId, attendant_user_id: result.user_id });
+      .upsert(
+        { event_id: eventId, attendant_user_id: result.user_id, status: "active", revoked_at: null },
+        { onConflict: "event_id,attendant_user_id" },
+      );
     setBusyId(null);
 
     if (error) {
