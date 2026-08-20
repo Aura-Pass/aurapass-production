@@ -38,6 +38,7 @@ import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
 import { Route as EquipmentIndexRouteImport } from './routes/equipment.index'
+import { Route as EquipmentIdRouteImport } from './routes/equipment.$id'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
@@ -215,6 +216,11 @@ const DashboardOrganiserRoute = DashboardOrganiserRouteImport.update({
 const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
   id: '/equipment/',
   path: '/equipment/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipmentIdRoute = EquipmentIdRouteImport.update({
+  id: '/equipment/$id',
+  path: '/equipment/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsIndexRoute = EventsIndexRouteImport.update({
@@ -426,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
+  '/equipment/$id': typeof EquipmentIdRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
@@ -484,6 +491,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/equipment/$id': typeof EquipmentIdRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
@@ -549,6 +557,7 @@ export interface FileRoutesById {
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
+  '/equipment/$id': typeof EquipmentIdRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
@@ -615,6 +624,7 @@ export interface FileRouteTypes {
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
+    | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists/'
@@ -673,6 +683,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists'
@@ -737,6 +748,7 @@ export interface FileRouteTypes {
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
+    | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists/'
@@ -798,6 +810,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ArtistsIdRoute: typeof ArtistsIdRouteWithChildren
+  EquipmentIdRoute: typeof EquipmentIdRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
@@ -1011,6 +1024,13 @@ declare module '@tanstack/react-router' {
       path: '/equipment'
       fullPath: '/equipment/'
       preLoaderRoute: typeof EquipmentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipment/$id': {
+      id: '/equipment/$id'
+      path: '/equipment/$id'
+      fullPath: '/equipment/$id'
+      preLoaderRoute: typeof EquipmentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events/': {
@@ -1395,6 +1415,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ArtistsIdRoute: ArtistsIdRouteWithChildren,
+  EquipmentIdRoute: EquipmentIdRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
