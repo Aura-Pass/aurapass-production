@@ -22,7 +22,7 @@ interface Row {
   roles: string[];
 }
 
-const GRANTABLE = ["organiser", "admin"] as const;
+const GRANTABLE = ["organiser"] as const;
 
 function UserManagement() {
   const [rows, setRows] = useState<Row[]>([]);
