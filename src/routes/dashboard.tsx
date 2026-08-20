@@ -85,6 +85,13 @@ const SECTIONS: NavSection[] = [
     ],
   },
   {
+    role: "equipment_lister",
+    label: "Equipment Lister",
+    items: [
+      { to: "/dashboard/equipment", label: "My Listings", icon: Wrench, exact: true },
+    ],
+  },
+  {
     role: "gate_attendant",
     label: "Gate Duty",
     items: [

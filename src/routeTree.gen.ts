@@ -58,6 +58,7 @@ import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboa
 import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.attendee.saved'
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
 import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard.attendee.tickets'
+import { Route as DashboardEquipmentIndexRouteImport } from './routes/dashboard.equipment.index'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
 import { Route as DashboardOrganiserBookingsRouteImport } from './routes/dashboard.organiser.bookings'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
@@ -326,6 +327,11 @@ const DashboardAttendeeTicketsRoute =
     path: '/tickets',
     getParentRoute: () => DashboardAttendeeRoute,
   } as any)
+const DashboardEquipmentIndexRoute = DashboardEquipmentIndexRouteImport.update({
+  id: '/equipment/',
+  path: '/equipment/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -468,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
+  '/dashboard/equipment/': typeof DashboardEquipmentIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/equipment/$id/': typeof EquipmentIdIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
@@ -527,6 +534,7 @@ export interface FileRoutesByTo {
   '/dashboard/admin': typeof DashboardAdminIndexRoute
   '/dashboard/artist': typeof DashboardArtistIndexRoute
   '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
+  '/dashboard/equipment': typeof DashboardEquipmentIndexRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
   '/equipment/$id': typeof EquipmentIdIndexRoute
   '/events/$slug': typeof EventsSlugIndexRoute
@@ -594,6 +602,7 @@ export interface FileRoutesById {
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
+  '/dashboard/equipment/': typeof DashboardEquipmentIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
   '/equipment/$id/': typeof EquipmentIdIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
@@ -662,6 +671,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
+    | '/dashboard/equipment/'
     | '/dashboard/organiser/'
     | '/equipment/$id/'
     | '/events/$slug/'
@@ -721,6 +731,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
+    | '/dashboard/equipment'
     | '/dashboard/organiser'
     | '/equipment/$id'
     | '/events/$slug'
@@ -787,6 +798,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
+    | '/dashboard/equipment/'
     | '/dashboard/organiser/'
     | '/equipment/$id/'
     | '/events/$slug/'
@@ -1176,6 +1188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAttendeeTicketsRouteImport
       parentRoute: typeof DashboardAttendeeRoute
     }
+    '/dashboard/equipment/': {
+      id: '/dashboard/equipment/'
+      path: '/equipment'
+      fullPath: '/dashboard/equipment/'
+      preLoaderRoute: typeof DashboardEquipmentIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/organiser/': {
       id: '/dashboard/organiser/'
       path: '/'
@@ -1379,6 +1398,7 @@ interface DashboardRouteChildren {
   DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardOrganiserRoute: typeof DashboardOrganiserRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardEquipmentIndexRoute: typeof DashboardEquipmentIndexRoute
   DashboardGateScanIndexRoute: typeof DashboardGateScanIndexRoute
 }
 
@@ -1388,6 +1408,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardOrganiserRoute: DashboardOrganiserRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardEquipmentIndexRoute: DashboardEquipmentIndexRoute,
   DashboardGateScanIndexRoute: DashboardGateScanIndexRoute,
 }
 
