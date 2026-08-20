@@ -147,12 +147,14 @@ function EquipmentListingPage() {
           </section>
         ) : null}
 
-        <MediaLightbox
-          items={mediaItems}
-          index={openIndex}
-          onClose={() => setOpenIndex(null)}
-          onIndexChange={setOpenIndex}
-        />
+        {openIndex !== null ? (
+          <MediaLightbox
+            items={mediaItems}
+            index={openIndex}
+            onIndexChange={setOpenIndex}
+            onClose={() => setOpenIndex(null)}
+          />
+        ) : null}
       </div>
     </PageWrapper>
   );
