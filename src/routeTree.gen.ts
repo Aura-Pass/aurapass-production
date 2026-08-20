@@ -37,6 +37,7 @@ import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
+import { Route as EquipmentIndexRouteImport } from './routes/equipment.index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
@@ -210,6 +211,11 @@ const DashboardOrganiserRoute = DashboardOrganiserRouteImport.update({
   id: '/organiser',
   path: '/organiser',
   getParentRoute: () => DashboardRoute,
+} as any)
+const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
+  id: '/equipment/',
+  path: '/equipment/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EventsIndexRoute = EventsIndexRouteImport.update({
   id: '/events/',
@@ -424,6 +430,7 @@ export interface FileRoutesByFullPath {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/equipment/': typeof EquipmentIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
@@ -481,6 +488,7 @@ export interface FileRoutesByTo {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/equipment': typeof EquipmentIndexRoute
   '/events': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
@@ -545,6 +553,7 @@ export interface FileRoutesById {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/equipment/': typeof EquipmentIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
@@ -610,6 +619,7 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/artists/'
     | '/dashboard/'
+    | '/equipment/'
     | '/events/'
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
@@ -667,6 +677,7 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/artists'
     | '/dashboard'
+    | '/equipment'
     | '/events'
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
@@ -730,6 +741,7 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/artists/'
     | '/dashboard/'
+    | '/equipment/'
     | '/events/'
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
@@ -789,6 +801,7 @@ export interface RootRouteChildren {
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
+  EquipmentIndexRoute: typeof EquipmentIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
@@ -992,6 +1005,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/organiser'
       preLoaderRoute: typeof DashboardOrganiserRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/equipment/': {
+      id: '/equipment/'
+      path: '/equipment'
+      fullPath: '/equipment/'
+      preLoaderRoute: typeof EquipmentIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/events/': {
       id: '/events/'
@@ -1378,6 +1398,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
+  EquipmentIndexRoute: EquipmentIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
