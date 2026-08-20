@@ -37,6 +37,8 @@ import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
+import { Route as EquipmentIndexRouteImport } from './routes/equipment.index'
+import { Route as EquipmentIdRouteImport } from './routes/equipment.$id'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
 import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$username'
@@ -56,6 +58,7 @@ import { Route as DashboardAttendeeFollowingRouteImport } from './routes/dashboa
 import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.attendee.saved'
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
 import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard.attendee.tickets'
+import { Route as DashboardEquipmentIndexRouteImport } from './routes/dashboard.equipment.index'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
 import { Route as DashboardOrganiserBookingsRouteImport } from './routes/dashboard.organiser.bookings'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
@@ -63,6 +66,7 @@ import { Route as DashboardOrganiserEventsRouteImport } from './routes/dashboard
 import { Route as DashboardOrganiserSalesRouteImport } from './routes/dashboard.organiser.sales'
 import { Route as DashboardOrganiserSettingsRouteImport } from './routes/dashboard.organiser.settings'
 import { Route as DashboardOrganiserTicketsRouteImport } from './routes/dashboard.organiser.tickets'
+import { Route as EquipmentIdIndexRouteImport } from './routes/equipment.$id.index'
 import { Route as EventsSlugIndexRouteImport } from './routes/events.$slug.index'
 import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.checkout'
 import { Route as DashboardGateScanIndexRouteImport } from './routes/dashboard.gate.scan.index'
@@ -211,6 +215,16 @@ const DashboardOrganiserRoute = DashboardOrganiserRouteImport.update({
   path: '/organiser',
   getParentRoute: () => DashboardRoute,
 } as any)
+const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
+  id: '/equipment/',
+  path: '/equipment/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipmentIdRoute = EquipmentIdRouteImport.update({
+  id: '/equipment/$id',
+  path: '/equipment/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsIndexRoute = EventsIndexRouteImport.update({
   id: '/events/',
   path: '/events/',
@@ -313,6 +327,11 @@ const DashboardAttendeeTicketsRoute =
     path: '/tickets',
     getParentRoute: () => DashboardAttendeeRoute,
   } as any)
+const DashboardEquipmentIndexRoute = DashboardEquipmentIndexRouteImport.update({
+  id: '/equipment/',
+  path: '/equipment/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -353,6 +372,11 @@ const DashboardOrganiserTicketsRoute =
     path: '/tickets',
     getParentRoute: () => DashboardOrganiserRoute,
   } as any)
+const EquipmentIdIndexRoute = EquipmentIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EquipmentIdRoute,
+} as any)
 const EventsSlugIndexRoute = EventsSlugIndexRouteImport.update({
   id: '/events/$slug/',
   path: '/events/$slug/',
@@ -420,10 +444,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
+  '/equipment/$id': typeof EquipmentIdRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/equipment/': typeof EquipmentIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
@@ -448,7 +474,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
+  '/dashboard/equipment/': typeof DashboardEquipmentIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
+  '/equipment/$id/': typeof EquipmentIdIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
@@ -481,6 +509,7 @@ export interface FileRoutesByTo {
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/equipment': typeof EquipmentIndexRoute
   '/events': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
@@ -505,7 +534,9 @@ export interface FileRoutesByTo {
   '/dashboard/admin': typeof DashboardAdminIndexRoute
   '/dashboard/artist': typeof DashboardArtistIndexRoute
   '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
+  '/dashboard/equipment': typeof DashboardEquipmentIndexRoute
   '/dashboard/organiser': typeof DashboardOrganiserIndexRoute
+  '/equipment/$id': typeof EquipmentIdIndexRoute
   '/events/$slug': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
@@ -541,10 +572,12 @@ export interface FileRoutesById {
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
+  '/equipment/$id': typeof EquipmentIdRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/equipment/': typeof EquipmentIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
@@ -569,7 +602,9 @@ export interface FileRoutesById {
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
+  '/dashboard/equipment/': typeof DashboardEquipmentIndexRoute
   '/dashboard/organiser/': typeof DashboardOrganiserIndexRoute
+  '/equipment/$id/': typeof EquipmentIdIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
@@ -606,10 +641,12 @@ export interface FileRouteTypes {
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
+    | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists/'
     | '/dashboard/'
+    | '/equipment/'
     | '/events/'
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
@@ -634,7 +671,9 @@ export interface FileRouteTypes {
     | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
+    | '/dashboard/equipment/'
     | '/dashboard/organiser/'
+    | '/equipment/$id/'
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
@@ -667,6 +706,7 @@ export interface FileRouteTypes {
     | '/organisers/$username'
     | '/artists'
     | '/dashboard'
+    | '/equipment'
     | '/events'
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
@@ -691,7 +731,9 @@ export interface FileRouteTypes {
     | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
+    | '/dashboard/equipment'
     | '/dashboard/organiser'
+    | '/equipment/$id'
     | '/events/$slug'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
@@ -726,10 +768,12 @@ export interface FileRouteTypes {
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
+    | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists/'
     | '/dashboard/'
+    | '/equipment/'
     | '/events/'
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
@@ -754,7 +798,9 @@ export interface FileRouteTypes {
     | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
+    | '/dashboard/equipment/'
     | '/dashboard/organiser/'
+    | '/equipment/$id/'
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
@@ -786,9 +832,11 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ArtistsIdRoute: typeof ArtistsIdRouteWithChildren
+  EquipmentIdRoute: typeof EquipmentIdRouteWithChildren
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
+  EquipmentIndexRoute: typeof EquipmentIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
@@ -993,6 +1041,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/equipment/': {
+      id: '/equipment/'
+      path: '/equipment'
+      fullPath: '/equipment/'
+      preLoaderRoute: typeof EquipmentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipment/$id': {
+      id: '/equipment/$id'
+      path: '/equipment/$id'
+      fullPath: '/equipment/$id'
+      preLoaderRoute: typeof EquipmentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events/': {
       id: '/events/'
       path: '/events'
@@ -1126,6 +1188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAttendeeTicketsRouteImport
       parentRoute: typeof DashboardAttendeeRoute
     }
+    '/dashboard/equipment/': {
+      id: '/dashboard/equipment/'
+      path: '/equipment'
+      fullPath: '/dashboard/equipment/'
+      preLoaderRoute: typeof DashboardEquipmentIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/organiser/': {
       id: '/dashboard/organiser/'
       path: '/'
@@ -1174,6 +1243,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/organiser/tickets'
       preLoaderRoute: typeof DashboardOrganiserTicketsRouteImport
       parentRoute: typeof DashboardOrganiserRoute
+    }
+    '/equipment/$id/': {
+      id: '/equipment/$id/'
+      path: '/'
+      fullPath: '/equipment/$id/'
+      preLoaderRoute: typeof EquipmentIdIndexRouteImport
+      parentRoute: typeof EquipmentIdRoute
     }
     '/events/$slug/': {
       id: '/events/$slug/'
@@ -1322,6 +1398,7 @@ interface DashboardRouteChildren {
   DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardOrganiserRoute: typeof DashboardOrganiserRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardEquipmentIndexRoute: typeof DashboardEquipmentIndexRoute
   DashboardGateScanIndexRoute: typeof DashboardGateScanIndexRoute
 }
 
@@ -1331,6 +1408,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardOrganiserRoute: DashboardOrganiserRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardEquipmentIndexRoute: DashboardEquipmentIndexRoute,
   DashboardGateScanIndexRoute: DashboardGateScanIndexRoute,
 }
 
@@ -1350,6 +1428,18 @@ const ArtistsIdRouteChildren: ArtistsIdRouteChildren = {
 
 const ArtistsIdRouteWithChildren = ArtistsIdRoute._addFileChildren(
   ArtistsIdRouteChildren,
+)
+
+interface EquipmentIdRouteChildren {
+  EquipmentIdIndexRoute: typeof EquipmentIdIndexRoute
+}
+
+const EquipmentIdRouteChildren: EquipmentIdRouteChildren = {
+  EquipmentIdIndexRoute: EquipmentIdIndexRoute,
+}
+
+const EquipmentIdRouteWithChildren = EquipmentIdRoute._addFileChildren(
+  EquipmentIdRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -1375,9 +1465,11 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ArtistsIdRoute: ArtistsIdRouteWithChildren,
+  EquipmentIdRoute: EquipmentIdRouteWithChildren,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
+  EquipmentIndexRoute: EquipmentIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
