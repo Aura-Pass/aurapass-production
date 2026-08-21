@@ -107,8 +107,10 @@ function EquipmentListingPage() {
               {formatNaira(listing.rental_price)}
             </p>
             <div className="mt-4">
-              <Button type="button" variant="primary" size="md" disabled>
-                Request to Book (coming soon)
+              <Button asChild variant="primary" size="md">
+                <Link to="/equipment/$id/request" params={{ id }}>
+                  Request to Book
+                </Link>
               </Button>
             </div>
             {listing.available_locations?.length ? (

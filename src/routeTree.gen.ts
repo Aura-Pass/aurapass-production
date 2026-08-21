@@ -17,6 +17,8 @@ import { Route as BookingPaymentCallbackRouteImport } from './routes/booking-pay
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as EquipmentBalanceCallbackRouteImport } from './routes/equipment-balance-callback'
+import { Route as EquipmentPaymentCallbackRouteImport } from './routes/equipment-payment-callback'
 import { Route as ForOrganisersRouteImport } from './routes/for-organisers'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as HelpRouteImport } from './routes/help'
@@ -59,14 +61,17 @@ import { Route as DashboardAttendeeSavedRouteImport } from './routes/dashboard.a
 import { Route as DashboardAttendeeSettingsRouteImport } from './routes/dashboard.attendee.settings'
 import { Route as DashboardAttendeeTicketsRouteImport } from './routes/dashboard.attendee.tickets'
 import { Route as DashboardEquipmentIndexRouteImport } from './routes/dashboard.equipment.index'
+import { Route as DashboardEquipmentBookingsRouteImport } from './routes/dashboard.equipment.bookings'
 import { Route as DashboardOrganiserIndexRouteImport } from './routes/dashboard.organiser.index'
 import { Route as DashboardOrganiserBookingsRouteImport } from './routes/dashboard.organiser.bookings'
 import { Route as DashboardOrganiserCreateEventRouteImport } from './routes/dashboard.organiser.create-event'
+import { Route as DashboardOrganiserEquipmentBookingsRouteImport } from './routes/dashboard.organiser.equipment-bookings'
 import { Route as DashboardOrganiserEventsRouteImport } from './routes/dashboard.organiser.events'
 import { Route as DashboardOrganiserSalesRouteImport } from './routes/dashboard.organiser.sales'
 import { Route as DashboardOrganiserSettingsRouteImport } from './routes/dashboard.organiser.settings'
 import { Route as DashboardOrganiserTicketsRouteImport } from './routes/dashboard.organiser.tickets'
 import { Route as EquipmentIdIndexRouteImport } from './routes/equipment.$id.index'
+import { Route as EquipmentIdRequestRouteImport } from './routes/equipment.$id.request'
 import { Route as EventsSlugIndexRouteImport } from './routes/events.$slug.index'
 import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.checkout'
 import { Route as DashboardGateScanIndexRouteImport } from './routes/dashboard.gate.scan.index'
@@ -115,6 +120,18 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EquipmentBalanceCallbackRoute =
+  EquipmentBalanceCallbackRouteImport.update({
+    id: '/equipment-balance-callback',
+    path: '/equipment-balance-callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const EquipmentPaymentCallbackRoute =
+  EquipmentPaymentCallbackRouteImport.update({
+    id: '/equipment-payment-callback',
+    path: '/equipment-payment-callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ForOrganisersRoute = ForOrganisersRouteImport.update({
   id: '/for-organisers',
   path: '/for-organisers',
@@ -332,6 +349,12 @@ const DashboardEquipmentIndexRoute = DashboardEquipmentIndexRouteImport.update({
   path: '/equipment/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardEquipmentBookingsRoute =
+  DashboardEquipmentBookingsRouteImport.update({
+    id: '/equipment/bookings',
+    path: '/equipment/bookings',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardOrganiserIndexRoute = DashboardOrganiserIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -347,6 +370,12 @@ const DashboardOrganiserCreateEventRoute =
   DashboardOrganiserCreateEventRouteImport.update({
     id: '/create-event',
     path: '/create-event',
+    getParentRoute: () => DashboardOrganiserRoute,
+  } as any)
+const DashboardOrganiserEquipmentBookingsRoute =
+  DashboardOrganiserEquipmentBookingsRouteImport.update({
+    id: '/equipment-bookings',
+    path: '/equipment-bookings',
     getParentRoute: () => DashboardOrganiserRoute,
   } as any)
 const DashboardOrganiserEventsRoute =
@@ -375,6 +404,11 @@ const DashboardOrganiserTicketsRoute =
 const EquipmentIdIndexRoute = EquipmentIdIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => EquipmentIdRoute,
+} as any)
+const EquipmentIdRequestRoute = EquipmentIdRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
   getParentRoute: () => EquipmentIdRoute,
 } as any)
 const EventsSlugIndexRoute = EventsSlugIndexRouteImport.update({
@@ -426,6 +460,8 @@ export interface FileRoutesByFullPath {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/equipment-balance-callback': typeof EquipmentBalanceCallbackRoute
+  '/equipment-payment-callback': typeof EquipmentPaymentCallbackRoute
   '/for-organisers': typeof ForOrganisersRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
@@ -463,12 +499,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
+  '/dashboard/equipment/bookings': typeof DashboardEquipmentBookingsRoute
   '/dashboard/organiser/bookings': typeof DashboardOrganiserBookingsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/dashboard/organiser/equipment-bookings': typeof DashboardOrganiserEquipmentBookingsRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
   '/dashboard/organiser/settings': typeof DashboardOrganiserSettingsRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
+  '/equipment/$id/request': typeof EquipmentIdRequestRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/artists/$id/': typeof ArtistsIdIndexRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
@@ -492,6 +531,8 @@ export interface FileRoutesByTo {
   '/booking-payment-callback': typeof BookingPaymentCallbackRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/equipment-balance-callback': typeof EquipmentBalanceCallbackRoute
+  '/equipment-payment-callback': typeof EquipmentPaymentCallbackRoute
   '/for-organisers': typeof ForOrganisersRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
@@ -523,12 +564,15 @@ export interface FileRoutesByTo {
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
+  '/dashboard/equipment/bookings': typeof DashboardEquipmentBookingsRoute
   '/dashboard/organiser/bookings': typeof DashboardOrganiserBookingsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/dashboard/organiser/equipment-bookings': typeof DashboardOrganiserEquipmentBookingsRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
   '/dashboard/organiser/settings': typeof DashboardOrganiserSettingsRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
+  '/equipment/$id/request': typeof EquipmentIdRequestRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/artists/$id': typeof ArtistsIdIndexRoute
   '/dashboard/admin': typeof DashboardAdminIndexRoute
@@ -554,6 +598,8 @@ export interface FileRoutesById {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/equipment-balance-callback': typeof EquipmentBalanceCallbackRoute
+  '/equipment-payment-callback': typeof EquipmentPaymentCallbackRoute
   '/for-organisers': typeof ForOrganisersRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
@@ -591,12 +637,15 @@ export interface FileRoutesById {
   '/dashboard/attendee/saved': typeof DashboardAttendeeSavedRoute
   '/dashboard/attendee/settings': typeof DashboardAttendeeSettingsRoute
   '/dashboard/attendee/tickets': typeof DashboardAttendeeTicketsRoute
+  '/dashboard/equipment/bookings': typeof DashboardEquipmentBookingsRoute
   '/dashboard/organiser/bookings': typeof DashboardOrganiserBookingsRoute
   '/dashboard/organiser/create-event': typeof DashboardOrganiserCreateEventRoute
+  '/dashboard/organiser/equipment-bookings': typeof DashboardOrganiserEquipmentBookingsRoute
   '/dashboard/organiser/events': typeof DashboardOrganiserEventsRoute
   '/dashboard/organiser/sales': typeof DashboardOrganiserSalesRoute
   '/dashboard/organiser/settings': typeof DashboardOrganiserSettingsRoute
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
+  '/equipment/$id/request': typeof EquipmentIdRequestRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/artists/$id/': typeof ArtistsIdIndexRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
@@ -623,6 +672,8 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/dashboard'
+    | '/equipment-balance-callback'
+    | '/equipment-payment-callback'
     | '/for-organisers'
     | '/forgot-password'
     | '/help'
@@ -660,12 +711,15 @@ export interface FileRouteTypes {
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
+    | '/dashboard/equipment/bookings'
     | '/dashboard/organiser/bookings'
     | '/dashboard/organiser/create-event'
+    | '/dashboard/organiser/equipment-bookings'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
     | '/dashboard/organiser/settings'
     | '/dashboard/organiser/tickets'
+    | '/equipment/$id/request'
     | '/events/$slug/checkout'
     | '/artists/$id/'
     | '/dashboard/admin/'
@@ -689,6 +743,8 @@ export interface FileRouteTypes {
     | '/booking-payment-callback'
     | '/careers'
     | '/contact'
+    | '/equipment-balance-callback'
+    | '/equipment-payment-callback'
     | '/for-organisers'
     | '/forgot-password'
     | '/help'
@@ -720,12 +776,15 @@ export interface FileRouteTypes {
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
+    | '/dashboard/equipment/bookings'
     | '/dashboard/organiser/bookings'
     | '/dashboard/organiser/create-event'
+    | '/dashboard/organiser/equipment-bookings'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
     | '/dashboard/organiser/settings'
     | '/dashboard/organiser/tickets'
+    | '/equipment/$id/request'
     | '/events/$slug/checkout'
     | '/artists/$id'
     | '/dashboard/admin'
@@ -750,6 +809,8 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/dashboard'
+    | '/equipment-balance-callback'
+    | '/equipment-payment-callback'
     | '/for-organisers'
     | '/forgot-password'
     | '/help'
@@ -787,12 +848,15 @@ export interface FileRouteTypes {
     | '/dashboard/attendee/saved'
     | '/dashboard/attendee/settings'
     | '/dashboard/attendee/tickets'
+    | '/dashboard/equipment/bookings'
     | '/dashboard/organiser/bookings'
     | '/dashboard/organiser/create-event'
+    | '/dashboard/organiser/equipment-bookings'
     | '/dashboard/organiser/events'
     | '/dashboard/organiser/sales'
     | '/dashboard/organiser/settings'
     | '/dashboard/organiser/tickets'
+    | '/equipment/$id/request'
     | '/events/$slug/checkout'
     | '/artists/$id/'
     | '/dashboard/admin/'
@@ -818,6 +882,8 @@ export interface RootRouteChildren {
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  EquipmentBalanceCallbackRoute: typeof EquipmentBalanceCallbackRoute
+  EquipmentPaymentCallbackRoute: typeof EquipmentPaymentCallbackRoute
   ForOrganisersRoute: typeof ForOrganisersRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HelpRoute: typeof HelpRoute
@@ -899,6 +965,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipment-balance-callback': {
+      id: '/equipment-balance-callback'
+      path: '/equipment-balance-callback'
+      fullPath: '/equipment-balance-callback'
+      preLoaderRoute: typeof EquipmentBalanceCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipment-payment-callback': {
+      id: '/equipment-payment-callback'
+      path: '/equipment-payment-callback'
+      fullPath: '/equipment-payment-callback'
+      preLoaderRoute: typeof EquipmentPaymentCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/for-organisers': {
@@ -1195,6 +1275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEquipmentIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/equipment/bookings': {
+      id: '/dashboard/equipment/bookings'
+      path: '/equipment/bookings'
+      fullPath: '/dashboard/equipment/bookings'
+      preLoaderRoute: typeof DashboardEquipmentBookingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/organiser/': {
       id: '/dashboard/organiser/'
       path: '/'
@@ -1214,6 +1301,13 @@ declare module '@tanstack/react-router' {
       path: '/create-event'
       fullPath: '/dashboard/organiser/create-event'
       preLoaderRoute: typeof DashboardOrganiserCreateEventRouteImport
+      parentRoute: typeof DashboardOrganiserRoute
+    }
+    '/dashboard/organiser/equipment-bookings': {
+      id: '/dashboard/organiser/equipment-bookings'
+      path: '/equipment-bookings'
+      fullPath: '/dashboard/organiser/equipment-bookings'
+      preLoaderRoute: typeof DashboardOrganiserEquipmentBookingsRouteImport
       parentRoute: typeof DashboardOrganiserRoute
     }
     '/dashboard/organiser/events': {
@@ -1249,6 +1343,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/equipment/$id/'
       preLoaderRoute: typeof EquipmentIdIndexRouteImport
+      parentRoute: typeof EquipmentIdRoute
+    }
+    '/equipment/$id/request': {
+      id: '/equipment/$id/request'
+      path: '/request'
+      fullPath: '/equipment/$id/request'
+      preLoaderRoute: typeof EquipmentIdRequestRouteImport
       parentRoute: typeof EquipmentIdRoute
     }
     '/events/$slug/': {
@@ -1362,6 +1463,7 @@ const DashboardAttendeeRouteWithChildren =
 interface DashboardOrganiserRouteChildren {
   DashboardOrganiserBookingsRoute: typeof DashboardOrganiserBookingsRoute
   DashboardOrganiserCreateEventRoute: typeof DashboardOrganiserCreateEventRoute
+  DashboardOrganiserEquipmentBookingsRoute: typeof DashboardOrganiserEquipmentBookingsRoute
   DashboardOrganiserEventsRoute: typeof DashboardOrganiserEventsRoute
   DashboardOrganiserSalesRoute: typeof DashboardOrganiserSalesRoute
   DashboardOrganiserSettingsRoute: typeof DashboardOrganiserSettingsRoute
@@ -1376,6 +1478,8 @@ interface DashboardOrganiserRouteChildren {
 const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
   DashboardOrganiserBookingsRoute: DashboardOrganiserBookingsRoute,
   DashboardOrganiserCreateEventRoute: DashboardOrganiserCreateEventRoute,
+  DashboardOrganiserEquipmentBookingsRoute:
+    DashboardOrganiserEquipmentBookingsRoute,
   DashboardOrganiserEventsRoute: DashboardOrganiserEventsRoute,
   DashboardOrganiserSalesRoute: DashboardOrganiserSalesRoute,
   DashboardOrganiserSettingsRoute: DashboardOrganiserSettingsRoute,
@@ -1398,6 +1502,7 @@ interface DashboardRouteChildren {
   DashboardAttendeeRoute: typeof DashboardAttendeeRouteWithChildren
   DashboardOrganiserRoute: typeof DashboardOrganiserRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardEquipmentBookingsRoute: typeof DashboardEquipmentBookingsRoute
   DashboardEquipmentIndexRoute: typeof DashboardEquipmentIndexRoute
   DashboardGateScanIndexRoute: typeof DashboardGateScanIndexRoute
 }
@@ -1408,6 +1513,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAttendeeRoute: DashboardAttendeeRouteWithChildren,
   DashboardOrganiserRoute: DashboardOrganiserRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardEquipmentBookingsRoute: DashboardEquipmentBookingsRoute,
   DashboardEquipmentIndexRoute: DashboardEquipmentIndexRoute,
   DashboardGateScanIndexRoute: DashboardGateScanIndexRoute,
 }
@@ -1431,10 +1537,12 @@ const ArtistsIdRouteWithChildren = ArtistsIdRoute._addFileChildren(
 )
 
 interface EquipmentIdRouteChildren {
+  EquipmentIdRequestRoute: typeof EquipmentIdRequestRoute
   EquipmentIdIndexRoute: typeof EquipmentIdIndexRoute
 }
 
 const EquipmentIdRouteChildren: EquipmentIdRouteChildren = {
+  EquipmentIdRequestRoute: EquipmentIdRequestRoute,
   EquipmentIdIndexRoute: EquipmentIdIndexRoute,
 }
 
@@ -1451,6 +1559,8 @@ const rootRouteChildren: RootRouteChildren = {
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  EquipmentBalanceCallbackRoute: EquipmentBalanceCallbackRoute,
+  EquipmentPaymentCallbackRoute: EquipmentPaymentCallbackRoute,
   ForOrganisersRoute: ForOrganisersRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HelpRoute: HelpRoute,

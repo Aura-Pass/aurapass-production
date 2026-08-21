@@ -89,6 +89,12 @@ const SECTIONS: NavSection[] = [
     label: "Equipment Lister",
     items: [
       { to: "/dashboard/equipment", label: "My Listings", icon: Wrench, exact: true },
+      {
+        to: "/dashboard/equipment/bookings",
+        label: "Booking Requests",
+        icon: Inbox,
+        exact: true,
+      },
     ],
   },
   {
@@ -106,6 +112,11 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/organiser/sales", label: "Sales & Analytics", icon: WalletCards },
       { to: "/dashboard/organiser/scan", label: "Ticket Scanner", icon: ScanLine, exact: true },
       { to: "/dashboard/organiser/bookings", label: "Artist Bookings", icon: Handshake },
+      {
+        to: "/dashboard/organiser/equipment-bookings",
+        label: "Equipment Bookings",
+        icon: Inbox,
+      },
       { to: "/dashboard/organiser/settings", label: "Settings", icon: Settings },
     ],
   },
