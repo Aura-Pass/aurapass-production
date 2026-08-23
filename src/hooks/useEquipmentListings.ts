@@ -75,6 +75,10 @@ export function useMyEquipmentListings() {
 
 export function useEquipmentListing(id: string) {
   const [listing, setListing] = useState<EquipmentListing | null>(null);
+  const [listerProfile, setListerProfile] = useState<{
+    id: string;
+    business_name: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -87,13 +91,24 @@ export function useEquipmentListing(id: string) {
         .eq("id", id)
         .maybeSingle();
       if (!active) return;
-      setListing((data as EquipmentListing | null) ?? null);
+      const row = (data as EquipmentListing | null) ?? null;
+      setListing(row);
       setLoading(false);
+      if (row?.lister_id) {
+        const { data: prof } = await (supabase as any)
+          .from("equipment_lister_profiles")
+          .select("id, business_name")
+          .eq("user_id", row.lister_id)
+          .eq("status", "approved")
+          .maybeSingle();
+        if (!active) return;
+        setListerProfile((prof as { id: string; business_name: string } | null) ?? null);
+      }
     })();
     return () => {
       active = false;
     };
   }, [id]);
 
-  return { listing, loading };
+  return { listing, listerProfile, loading };
 }
