@@ -35,7 +35,7 @@ export const Route = createFileRoute("/equipment/$id/")({
 
 function EquipmentListingPage() {
   const { id } = Route.useParams();
-  const { listing, loading } = useEquipmentListing(id);
+  const { listing, listerProfile, loading } = useEquipmentListing(id);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   if (loading) {
@@ -106,6 +106,15 @@ function EquipmentListingPage() {
             <p className="mt-4 text-xl font-semibold text-[#111827]">
               {formatNaira(listing.rental_price)}
             </p>
+            {listerProfile ? (
+              <Link
+                to="/equipment-listers/$id"
+                params={{ id: listerProfile.id }}
+                className="mt-1 inline-block text-sm text-[#A21CAF] hover:underline"
+              >
+                Listed by {listerProfile.business_name}
+              </Link>
+            ) : null}
             <div className="mt-4">
               <Button asChild variant="primary" size="md">
                 <Link to="/equipment/$id/request" params={{ id }}>
