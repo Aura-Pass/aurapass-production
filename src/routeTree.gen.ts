@@ -39,6 +39,8 @@ import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardArtistRouteImport } from './routes/dashboard.artist'
 import { Route as DashboardAttendeeRouteImport } from './routes/dashboard.attendee'
 import { Route as DashboardOrganiserRouteImport } from './routes/dashboard.organiser'
+import { Route as EquipmentListersIndexRouteImport } from './routes/equipment-listers.index'
+import { Route as EquipmentListersIdRouteImport } from './routes/equipment-listers.$id'
 import { Route as EquipmentIndexRouteImport } from './routes/equipment.index'
 import { Route as EquipmentIdRouteImport } from './routes/equipment.$id'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
@@ -231,6 +233,16 @@ const DashboardOrganiserRoute = DashboardOrganiserRouteImport.update({
   id: '/organiser',
   path: '/organiser',
   getParentRoute: () => DashboardRoute,
+} as any)
+const EquipmentListersIndexRoute = EquipmentListersIndexRouteImport.update({
+  id: '/equipment-listers/',
+  path: '/equipment-listers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipmentListersIdRoute = EquipmentListersIdRouteImport.update({
+  id: '/equipment-listers/$id',
+  path: '/equipment-listers/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
   id: '/equipment/',
@@ -480,11 +492,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
+  '/equipment-listers/$id': typeof EquipmentListersIdRoute
   '/equipment/$id': typeof EquipmentIdRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/equipment-listers/': typeof EquipmentListersIndexRoute
   '/equipment/': typeof EquipmentIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -546,10 +560,12 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/equipment-listers/$id': typeof EquipmentListersIdRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/equipment-listers': typeof EquipmentListersIndexRoute
   '/equipment': typeof EquipmentIndexRoute
   '/events': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -618,11 +634,13 @@ export interface FileRoutesById {
   '/dashboard/artist': typeof DashboardArtistRouteWithChildren
   '/dashboard/attendee': typeof DashboardAttendeeRouteWithChildren
   '/dashboard/organiser': typeof DashboardOrganiserRouteWithChildren
+  '/equipment-listers/$id': typeof EquipmentListersIdRoute
   '/equipment/$id': typeof EquipmentIdRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists/': typeof ArtistsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/equipment-listers/': typeof EquipmentListersIndexRoute
   '/equipment/': typeof EquipmentIndexRoute
   '/events/': typeof EventsIndexRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -692,11 +710,13 @@ export interface FileRouteTypes {
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
+    | '/equipment-listers/$id'
     | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists/'
     | '/dashboard/'
+    | '/equipment-listers/'
     | '/equipment/'
     | '/events/'
     | '/api/public/paystack-webhook'
@@ -758,10 +778,12 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/equipment-listers/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists'
     | '/dashboard'
+    | '/equipment-listers'
     | '/equipment'
     | '/events'
     | '/api/public/paystack-webhook'
@@ -829,11 +851,13 @@ export interface FileRouteTypes {
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/organiser'
+    | '/equipment-listers/$id'
     | '/equipment/$id'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists/'
     | '/dashboard/'
+    | '/equipment-listers/'
     | '/equipment/'
     | '/events/'
     | '/api/public/paystack-webhook'
@@ -898,10 +922,12 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ArtistsIdRoute: typeof ArtistsIdRouteWithChildren
+  EquipmentListersIdRoute: typeof EquipmentListersIdRoute
   EquipmentIdRoute: typeof EquipmentIdRouteWithChildren
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   OrganisersUsernameRoute: typeof OrganisersUsernameRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
+  EquipmentListersIndexRoute: typeof EquipmentListersIndexRoute
   EquipmentIndexRoute: typeof EquipmentIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
@@ -1120,6 +1146,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/organiser'
       preLoaderRoute: typeof DashboardOrganiserRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/equipment-listers/': {
+      id: '/equipment-listers/'
+      path: '/equipment-listers'
+      fullPath: '/equipment-listers/'
+      preLoaderRoute: typeof EquipmentListersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipment-listers/$id': {
+      id: '/equipment-listers/$id'
+      path: '/equipment-listers/$id'
+      fullPath: '/equipment-listers/$id'
+      preLoaderRoute: typeof EquipmentListersIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/equipment/': {
       id: '/equipment/'
@@ -1575,10 +1615,12 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ArtistsIdRoute: ArtistsIdRouteWithChildren,
+  EquipmentListersIdRoute: EquipmentListersIdRoute,
   EquipmentIdRoute: EquipmentIdRouteWithChildren,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   OrganisersUsernameRoute: OrganisersUsernameRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
+  EquipmentListersIndexRoute: EquipmentListersIndexRoute,
   EquipmentIndexRoute: EquipmentIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
