@@ -56,6 +56,7 @@ function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [manualRefCode, setManualRefCode] = useState(ref || "");
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -169,7 +170,7 @@ function CheckoutPage() {
           buyerEmail: email.trim(),
           buyerPhone: phone.trim(),
           userId: user?.id ?? null,
-          referralCode: ref || null,
+          referralCode: manualRefCode || null,
           callbackUrl: `${window.location.origin}/payment-callback`,
         },
       });
@@ -235,6 +236,19 @@ function CheckoutPage() {
                   </Button>
                 </div>
               </div>
+            </Card>
+
+            <Card className="p-6 space-y-3">
+              <h2 className="font-semibold text-[#111827]">Referral code (optional)</h2>
+              <p className="text-xs text-[#6B7280]">
+                If someone shared this event with you, enter their referral code here.
+              </p>
+              <Input
+                id="refCode"
+                placeholder="e.g. AURA50"
+                value={manualRefCode}
+                onChange={(e) => setManualRefCode(e.target.value.trim())}
+              />
             </Card>
 
             <Card className="p-6 space-y-4">
