@@ -17,6 +17,7 @@ import { initializePayment } from "@/lib/payments.functions";
 
 const search = z.object({
   ticketTypeId: fallback(z.string(), "").default(""),
+  ref: fallback(z.string(), "").default(""),
 });
 
 export const Route = createFileRoute("/events/$slug/checkout")({
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/events/$slug/checkout")({
 
 function CheckoutPage() {
   const { slug } = Route.useParams();
-  const { ticketTypeId } = Route.useSearch();
+  const { ticketTypeId, ref } = Route.useSearch();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const initPay = useServerFn(initializePayment);
@@ -168,6 +169,7 @@ function CheckoutPage() {
           buyerEmail: email.trim(),
           buyerPhone: phone.trim(),
           userId: user?.id ?? null,
+          referralCode: ref || null,
           callbackUrl: `${window.location.origin}/payment-callback`,
         },
       });

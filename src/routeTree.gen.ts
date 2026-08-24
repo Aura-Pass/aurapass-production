@@ -80,6 +80,7 @@ import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.ch
 import { Route as DashboardGateScanIndexRouteImport } from './routes/dashboard.gate.scan.index'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
 import { Route as DashboardOrganiserGateAttendantsEventIdRouteImport } from './routes/dashboard.organiser.gate-attendants.$eventId'
+import { Route as DashboardOrganiserMarketersEventIdRouteImport } from './routes/dashboard.organiser.marketers.$eventId'
 import { Route as DashboardOrganiserScanIndexRouteImport } from './routes/dashboard.organiser.scan.index'
 import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 
@@ -456,6 +457,12 @@ const DashboardOrganiserGateAttendantsEventIdRoute =
     path: '/gate-attendants/$eventId',
     getParentRoute: () => DashboardOrganiserRoute,
   } as any)
+const DashboardOrganiserMarketersEventIdRoute =
+  DashboardOrganiserMarketersEventIdRouteImport.update({
+    id: '/marketers/$eventId',
+    path: '/marketers/$eventId',
+    getParentRoute: () => DashboardOrganiserRoute,
+  } as any)
 const DashboardOrganiserScanIndexRoute =
   DashboardOrganiserScanIndexRouteImport.update({
     id: '/scan/',
@@ -540,6 +547,7 @@ export interface FileRoutesByFullPath {
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
+  '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
   '/dashboard/gate/scan/': typeof DashboardGateScanIndexRoute
   '/dashboard/organiser/scan/': typeof DashboardOrganiserScanIndexRoute
@@ -607,6 +615,7 @@ export interface FileRoutesByTo {
   '/events/$slug': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
+  '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
   '/dashboard/gate/scan': typeof DashboardGateScanIndexRoute
   '/dashboard/organiser/scan': typeof DashboardOrganiserScanIndexRoute
@@ -683,6 +692,7 @@ export interface FileRoutesById {
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
+  '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
   '/dashboard/gate/scan/': typeof DashboardGateScanIndexRoute
   '/dashboard/organiser/scan/': typeof DashboardOrganiserScanIndexRoute
@@ -760,6 +770,7 @@ export interface FileRouteTypes {
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
+    | '/dashboard/organiser/marketers/$eventId'
     | '/dashboard/organiser/scan/$eventId'
     | '/dashboard/gate/scan/'
     | '/dashboard/organiser/scan/'
@@ -827,6 +838,7 @@ export interface FileRouteTypes {
     | '/events/$slug'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
+    | '/dashboard/organiser/marketers/$eventId'
     | '/dashboard/organiser/scan/$eventId'
     | '/dashboard/gate/scan'
     | '/dashboard/organiser/scan'
@@ -902,6 +914,7 @@ export interface FileRouteTypes {
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
+    | '/dashboard/organiser/marketers/$eventId'
     | '/dashboard/organiser/scan/$eventId'
     | '/dashboard/gate/scan/'
     | '/dashboard/organiser/scan/'
@@ -1444,6 +1457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserGateAttendantsEventIdRouteImport
       parentRoute: typeof DashboardOrganiserRoute
     }
+    '/dashboard/organiser/marketers/$eventId': {
+      id: '/dashboard/organiser/marketers/$eventId'
+      path: '/marketers/$eventId'
+      fullPath: '/dashboard/organiser/marketers/$eventId'
+      preLoaderRoute: typeof DashboardOrganiserMarketersEventIdRouteImport
+      parentRoute: typeof DashboardOrganiserRoute
+    }
     '/dashboard/organiser/scan/': {
       id: '/dashboard/organiser/scan/'
       path: '/scan'
@@ -1528,6 +1548,7 @@ interface DashboardOrganiserRouteChildren {
   DashboardOrganiserIndexRoute: typeof DashboardOrganiserIndexRoute
   DashboardOrganiserEditEventEventIdRoute: typeof DashboardOrganiserEditEventEventIdRoute
   DashboardOrganiserGateAttendantsEventIdRoute: typeof DashboardOrganiserGateAttendantsEventIdRoute
+  DashboardOrganiserMarketersEventIdRoute: typeof DashboardOrganiserMarketersEventIdRoute
   DashboardOrganiserScanEventIdRoute: typeof DashboardOrganiserScanEventIdRoute
   DashboardOrganiserScanIndexRoute: typeof DashboardOrganiserScanIndexRoute
 }
@@ -1546,6 +1567,8 @@ const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
     DashboardOrganiserEditEventEventIdRoute,
   DashboardOrganiserGateAttendantsEventIdRoute:
     DashboardOrganiserGateAttendantsEventIdRoute,
+  DashboardOrganiserMarketersEventIdRoute:
+    DashboardOrganiserMarketersEventIdRoute,
   DashboardOrganiserScanEventIdRoute: DashboardOrganiserScanEventIdRoute,
   DashboardOrganiserScanIndexRoute: DashboardOrganiserScanIndexRoute,
 }

@@ -23,6 +23,7 @@ interface InitInput {
   buyerEmail: string;
   buyerPhone: string;
   userId?: string | null;
+  referralCode?: string | null;
   callbackUrl: string;
 }
 
@@ -101,6 +102,15 @@ export const initializePayment = createServerFn({ method: "POST" })
     const platformFee = isFree ? 0 : Math.round(subtotal * 0.035 + 100);
     const totalAmount = subtotal + platformFee;
 
+    let referredBy: string | null = null;
+    if (data.referralCode) {
+      const { data: marketerId } = await sb.rpc("resolve_referral_code", {
+        p_event_id: data.eventId,
+        p_referral_code: data.referralCode,
+      });
+      referredBy = (marketerId as string | null) ?? null;
+    }
+
     const { data: order, error: orderError } = await sb
       .from("orders")
       .insert({
@@ -115,6 +125,7 @@ export const initializePayment = createServerFn({ method: "POST" })
         total_amount: totalAmount,
         status: isFree ? "confirmed" : "pending",
         user_id: data.userId || null,
+        referred_by: referredBy,
       })
       .select()
       .single();

@@ -10,16 +10,17 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Log In | AuraPass" }] }),
-  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string; ref?: string } => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
     ticketTypeId: typeof search.ticketTypeId === "string" ? search.ticketTypeId : undefined,
+    ref: typeof search.ref === "string" ? search.ref : undefined,
   }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { redirect: redirectTo, ticketTypeId } = Route.useSearch();
+  const { redirect: redirectTo, ticketTypeId, ref } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +64,10 @@ function LoginPage() {
     if (redirectTo) {
       navigate({
         to: redirectTo,
-        search: ticketTypeId ? ({ ticketTypeId } as any) : undefined,
+        search: {
+          ...(ticketTypeId ? { ticketTypeId } : {}),
+          ...(ref ? { ref } : {}),
+        } as any,
       });
       return;
     }
@@ -138,7 +142,15 @@ function LoginPage() {
 
           <p className="text-center text-sm text-[#6B7280]">
             Don't have an account?{" "}
-            <Link to="/signup" className="font-semibold text-[#D946EF] hover:underline">
+            <Link
+              to="/signup"
+              search={{
+                ...(redirectTo ? { redirect: redirectTo } : {}),
+                ...(ticketTypeId ? { ticketTypeId } : {}),
+                ...(ref ? { ref } : {}),
+              }}
+              className="font-semibold text-[#D946EF] hover:underline"
+            >
               Sign up
             </Link>
           </p>

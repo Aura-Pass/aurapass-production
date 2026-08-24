@@ -10,8 +10,10 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Create Account | AuraPass" }] }),
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string; ref?: string } => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    ticketTypeId: typeof search.ticketTypeId === "string" ? search.ticketTypeId : undefined,
+    ref: typeof search.ref === "string" ? search.ref : undefined,
   }),
   component: SignUpPage,
 });
@@ -20,7 +22,7 @@ type Role = "attendee" | "organiser";
 
 function SignUpPage() {
   const navigate = useNavigate();
-  const { redirect: redirectTo } = Route.useSearch();
+  const { redirect: redirectTo, ticketTypeId, ref } = Route.useSearch();
   const [role, setRole] = useState<Role>("attendee");
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -70,6 +72,14 @@ function SignUpPage() {
 
 
 
+    const loginParams = new URLSearchParams();
+    if (redirectTo) loginParams.set("redirect", redirectTo);
+    if (ticketTypeId) loginParams.set("ticketTypeId", ticketTypeId);
+    if (ref) loginParams.set("ref", ref);
+    const emailRedirectTo = loginParams.toString()
+      ? `${window.location.origin}/login?${loginParams.toString()}`
+      : `${window.location.origin}/login`;
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: email.trim(),
       password,
@@ -80,7 +90,7 @@ function SignUpPage() {
           role,
           username: username.trim(),
         },
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo,
       },
     });
 
@@ -111,7 +121,13 @@ function SignUpPage() {
     if (data?.session) {
       // Email confirmation is OFF — redirect immediately
       if (redirectTo) {
-        navigate({ to: redirectTo });
+        navigate({
+          to: redirectTo,
+          search: {
+            ...(ticketTypeId ? { ticketTypeId } : {}),
+            ...(ref ? { ref } : {}),
+          } as any,
+        });
         return;
       }
       if (role === "organiser") {
@@ -289,7 +305,15 @@ function SignUpPage() {
 
               <p className="mt-6 text-center text-sm text-[#6B7280]">
                 Already have an account?{" "}
-                <Link to="/login" className="font-semibold text-[#D946EF] hover:underline">
+                <Link
+                  to="/login"
+                  search={{
+                    ...(redirectTo ? { redirect: redirectTo } : {}),
+                    ...(ticketTypeId ? { ticketTypeId } : {}),
+                    ...(ref ? { ref } : {}),
+                  }}
+                  className="font-semibold text-[#D946EF] hover:underline"
+                >
                   Log in
                 </Link>
               </p>
