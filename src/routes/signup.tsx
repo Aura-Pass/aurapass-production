@@ -167,6 +167,20 @@ function SignUpPage() {
                 </button>
                 .
               </p>
+              <p className="mt-4 text-sm text-[#6B7280]">
+                Already confirmed your email?{" "}
+                <Link
+                  to="/login"
+                  search={{
+                    ...(redirectTo ? { redirect: redirectTo } : {}),
+                    ...(ticketTypeId ? { ticketTypeId } : {}),
+                    ...(ref ? { ref } : {}),
+                  }}
+                  className="font-semibold text-[#D946EF] hover:underline"
+                >
+                  Continue to Login
+                </Link>
+              </p>
             </div>
           ) : (
             <>

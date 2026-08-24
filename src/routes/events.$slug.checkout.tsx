@@ -56,6 +56,7 @@ function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [manualRefCode, setManualRefCode] = useState(ref || "");
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 
