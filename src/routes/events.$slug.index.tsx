@@ -34,9 +34,16 @@ type Availability =
   | { type: "privileged"; quantity: number; quantity_sold: number; remaining: number }
   | { type: "public"; status: "low" | "available"; remaining?: number; label: string };
 
+import { z } from "zod";
+import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { getPublishedEventForHead } from "@/lib/events.functions";
 
+const search = z.object({
+  ref: fallback(z.string(), "").default(""),
+});
+
 export const Route = createFileRoute("/events/$slug/")({
+  validateSearch: zodValidator(search),
   loader: ({ params }) => getPublishedEventForHead({ data: { slug: params.slug } }),
   head: ({ loaderData: event, params }) => {
     const canonicalUrl = event
@@ -122,6 +129,7 @@ function EventDetailPage() {
   const [availability, setAvailability] = useState<Record<string, Availability>>({});
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { ref } = Route.useSearch();
 
   async function handleBuyTickets(ticketTypeId: string) {
     if (authLoading) return;
@@ -139,6 +147,7 @@ function EventDetailPage() {
         search: {
           redirect: `/events/${slug}/checkout`,
           ticketTypeId,
+          ...(ref ? { ref } : {}),
         },
       });
       return;
@@ -147,7 +156,7 @@ function EventDetailPage() {
     navigate({
       to: "/events/$slug/checkout",
       params: { slug },
-      search: { ticketTypeId },
+      search: { ticketTypeId, ...(ref ? { ref } : {}) },
     });
   }
 
