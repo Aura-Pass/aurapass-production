@@ -10,10 +10,10 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Create Account | AuraPass" }] }),
-  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string; ref?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string; aref?: string } => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
     ticketTypeId: typeof search.ticketTypeId === "string" ? search.ticketTypeId : undefined,
-    ref: typeof search.ref === "string" ? search.ref : undefined,
+    aref: typeof search.aref === "string" ? search.aref : undefined,
   }),
   component: SignUpPage,
 });
@@ -22,7 +22,7 @@ type Role = "attendee" | "organiser";
 
 function SignUpPage() {
   const navigate = useNavigate();
-  const { redirect: redirectTo, ticketTypeId, ref } = Route.useSearch();
+  const { redirect: redirectTo, ticketTypeId, aref } = Route.useSearch();
   const [role, setRole] = useState<Role>("attendee");
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -75,7 +75,7 @@ function SignUpPage() {
     const loginParams = new URLSearchParams();
     if (redirectTo) loginParams.set("redirect", redirectTo);
     if (ticketTypeId) loginParams.set("ticketTypeId", ticketTypeId);
-    if (ref) loginParams.set("ref", ref);
+    if (aref) loginParams.set("aref", aref);
     const emailRedirectTo = loginParams.toString()
       ? `${window.location.origin}/login?${loginParams.toString()}`
       : `${window.location.origin}/login`;
@@ -125,7 +125,7 @@ function SignUpPage() {
           to: redirectTo,
           search: {
             ...(ticketTypeId ? { ticketTypeId } : {}),
-            ...(ref ? { ref } : {}),
+            ...(aref ? { aref } : {}),
           } as any,
         });
         return;
@@ -174,7 +174,7 @@ function SignUpPage() {
                   search={{
                     ...(redirectTo ? { redirect: redirectTo } : {}),
                     ...(ticketTypeId ? { ticketTypeId } : {}),
-                    ...(ref ? { ref } : {}),
+                    ...(aref ? { aref } : {}),
                   }}
                   className="font-semibold text-[#D946EF] hover:underline"
                 >
@@ -324,7 +324,7 @@ function SignUpPage() {
                   search={{
                     ...(redirectTo ? { redirect: redirectTo } : {}),
                     ...(ticketTypeId ? { ticketTypeId } : {}),
-                    ...(ref ? { ref } : {}),
+                    ...(aref ? { aref } : {}),
                   }}
                   className="font-semibold text-[#D946EF] hover:underline"
                 >

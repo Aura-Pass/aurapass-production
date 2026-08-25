@@ -39,7 +39,7 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { getPublishedEventForHead } from "@/lib/events.functions";
 
 const search = z.object({
-  ref: fallback(z.string(), "").default(""),
+  aref: fallback(z.string(), "").default(""),
 });
 
 export const Route = createFileRoute("/events/$slug/")({
@@ -129,7 +129,7 @@ function EventDetailPage() {
   const [availability, setAvailability] = useState<Record<string, Availability>>({});
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { ref } = Route.useSearch();
+  const { aref } = Route.useSearch();
 
   async function handleBuyTickets(ticketTypeId: string) {
     if (authLoading) return;
@@ -147,7 +147,7 @@ function EventDetailPage() {
         search: {
           redirect: `/events/${slug}/checkout`,
           ticketTypeId,
-          ...(ref ? { ref } : {}),
+          ...(aref ? { aref } : {}),
         },
       });
       return;
@@ -156,7 +156,7 @@ function EventDetailPage() {
     navigate({
       to: "/events/$slug/checkout",
       params: { slug },
-      search: { ticketTypeId, ...(ref ? { ref } : {}) },
+      search: { ticketTypeId, ...(aref ? { aref } : {}) },
     });
   }
 

@@ -17,7 +17,7 @@ import { initializePayment } from "@/lib/payments.functions";
 
 const search = z.object({
   ticketTypeId: fallback(z.string(), "").default(""),
-  ref: fallback(z.string(), "").default(""),
+  aref: fallback(z.string(), "").default(""),
 });
 
 export const Route = createFileRoute("/events/$slug/checkout")({
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/events/$slug/checkout")({
 
 function CheckoutPage() {
   const { slug } = Route.useParams();
-  const { ticketTypeId, ref } = Route.useSearch();
+  const { ticketTypeId, aref } = Route.useSearch();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const initPay = useServerFn(initializePayment);
@@ -56,7 +56,7 @@ function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [manualRefCode, setManualRefCode] = useState(ref || "");
+  const [manualRefCode, setManualRefCode] = useState(aref || "");
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 

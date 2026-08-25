@@ -10,17 +10,17 @@ import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Log In | AuraPass" }] }),
-  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string; ref?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; ticketTypeId?: string; aref?: string } => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
     ticketTypeId: typeof search.ticketTypeId === "string" ? search.ticketTypeId : undefined,
-    ref: typeof search.ref === "string" ? search.ref : undefined,
+    aref: typeof search.aref === "string" ? search.aref : undefined,
   }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { redirect: redirectTo, ticketTypeId, ref } = Route.useSearch();
+  const { redirect: redirectTo, ticketTypeId, aref } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -66,7 +66,7 @@ function LoginPage() {
         to: redirectTo,
         search: {
           ...(ticketTypeId ? { ticketTypeId } : {}),
-          ...(ref ? { ref } : {}),
+          ...(aref ? { aref } : {}),
         } as any,
       });
       return;
@@ -147,7 +147,7 @@ function LoginPage() {
               search={{
                 ...(redirectTo ? { redirect: redirectTo } : {}),
                 ...(ticketTypeId ? { ticketTypeId } : {}),
-                ...(ref ? { ref } : {}),
+                ...(aref ? { aref } : {}),
               }}
               className="font-semibold text-[#D946EF] hover:underline"
             >
