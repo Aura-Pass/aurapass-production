@@ -234,11 +234,31 @@ function MarketersPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-[#111827]">
-                      @{r.username ?? "user"}
+                      {r.full_name || r.username || "Unknown"}
                     </p>
+                    <p className="text-xs text-[#6B7280]">@{r.username ?? "user"}</p>
                     <p className="mt-1 break-all text-xs text-[#6B7280]">
                       {referralLink(r.referral_code)}
                     </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs text-[#6B7280]">Code:</span>
+                      <code className="rounded bg-[#F3F4F6] px-1.5 py-0.5 font-mono text-xs text-[#111827]">
+                        {r.referral_code}
+                      </code>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyCode(r.referral_code)}
+                        title="Copy referral code"
+                        aria-label="Copy referral code"
+                      >
+                        {copiedCode === r.referral_code ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <Button
