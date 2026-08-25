@@ -46,6 +46,7 @@ interface MarketerStat {
   event_marketer_id: string;
   marketer_user_id: string;
   username: string | null;
+  full_name: string | null;
   referral_code: string;
   order_count: number;
   tickets_sold: number;
@@ -62,6 +63,7 @@ function MarketersPage() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const { data, error } = await (supabase as any).rpc("get_event_marketer_stats", {
@@ -71,11 +73,12 @@ function MarketersPage() {
       error
         ? []
         : ((data as any[]) ?? []).map((r) => ({
-            event_marketer_id: r.event_marketer_id ?? r.id,
+            event_marketer_id: r.event_marketer_id,
             marketer_user_id: r.marketer_user_id,
-            username: r.username,
+            username: r.marketer_username,
+            full_name: r.marketer_full_name,
             referral_code: r.referral_code,
-            order_count: Number(r.order_count ?? 0),
+            order_count: Number(r.confirmed_orders ?? 0),
             tickets_sold: Number(r.tickets_sold ?? 0),
             gross_revenue: Number(r.gross_revenue ?? 0),
           })),
@@ -106,7 +109,7 @@ function MarketersPage() {
 
   function referralLink(code: string) {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    return `${origin}/events/${eventSlug}?ref=${code}`;
+    return `${origin}/events/${eventSlug}?aref=${code}`;
   }
 
   async function copyLink(code: string) {
@@ -117,6 +120,17 @@ function MarketersPage() {
       setTimeout(() => setCopied((c) => (c === code ? null : c)), 2000);
     } catch {
       toast.error("Could not copy the link");
+    }
+  }
+
+  async function copyCode(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+      toast.success("Referral code copied");
+      setTimeout(() => setCopiedCode((c) => (c === code ? null : c)), 2000);
+    } catch {
+      toast.error("Could not copy the code");
     }
   }
 
