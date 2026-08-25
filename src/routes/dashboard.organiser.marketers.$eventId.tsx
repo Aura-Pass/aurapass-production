@@ -14,6 +14,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
@@ -161,7 +172,7 @@ function MarketersPage() {
     load();
   }
 
-  async function remove(eventMarketerId: string) {
+  async function handleRemove(eventMarketerId: string) {
     setBusyId(eventMarketerId);
     const { error } = await (supabase as any).rpc("unassign_event_marketer", {
       p_event_marketer_id: eventMarketerId,
