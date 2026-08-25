@@ -14,6 +14,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
@@ -161,7 +172,7 @@ function MarketersPage() {
     load();
   }
 
-  async function remove(eventMarketerId: string) {
+  async function handleRemove(eventMarketerId: string) {
     setBusyId(eventMarketerId);
     const { error } = await (supabase as any).rpc("unassign_event_marketer", {
       p_event_marketer_id: eventMarketerId,
@@ -273,15 +284,36 @@ function MarketersPage() {
                         <Copy className="h-4 w-4" />
                       )}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={busyId === r.event_marketer_id}
-                      onClick={() => remove(r.event_marketer_id)}
-                      aria-label="Remove marketer"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={busyId === r.event_marketer_id}
+                          aria-label="Remove marketer"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Remove {r.full_name || r.username || "this marketer"}?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Their referral link and code will stop working immediately. Orders
+                            already attributed to them stay on record — this only stops new
+                            attribution.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleRemove(r.event_marketer_id)}>
+                            Remove
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
