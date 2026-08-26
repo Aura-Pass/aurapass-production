@@ -61,7 +61,7 @@ export function MediaLightbox({ items, index, onIndexChange, onClose }: MediaLig
         type="button"
         onClick={onClose}
         aria-label="Close"
-        className="absolute right-3 top-3 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-[#D946EF] sm:right-5 sm:top-5"
+        className="absolute right-3 top-3 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-primary sm:right-5 sm:top-5"
       >
         <X className="h-6 w-6" />
       </button>
@@ -75,7 +75,7 @@ export function MediaLightbox({ items, index, onIndexChange, onClose }: MediaLig
               e.stopPropagation();
               go(-1);
             }}
-            className="absolute left-2 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-[#D946EF] sm:left-5"
+            className="absolute left-2 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-primary sm:left-5"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -86,7 +86,7 @@ export function MediaLightbox({ items, index, onIndexChange, onClose }: MediaLig
               e.stopPropagation();
               go(1);
             }}
-            className="absolute right-2 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-[#D946EF] sm:right-5"
+            className="absolute right-2 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-primary sm:right-5"
           >
             <ChevronRight className="h-6 w-6" />
           </button>

@@ -62,7 +62,7 @@ export function CitySelect({
   return (
     <div className={className}>
       {label ? (
-        <label className="mb-1 block text-sm font-medium text-[#374151]">{label}</label>
+        <label className="mb-1 block text-sm font-medium text-foreground-secondary">{label}</label>
       ) : null}
       <div className="relative" ref={ref}>
         <button
@@ -72,16 +72,16 @@ export function CitySelect({
             setOpen((v) => !v);
             setQuery("");
           }}
-          className="flex h-11 w-full items-center justify-between rounded-md border border-[#E5E7EB] bg-white px-3 text-left text-sm text-[#111827] focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+          className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-background px-3 text-left text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         >
-          <span className={display ? "" : "text-[#9CA3AF]"}>{display || placeholder}</span>
-          <ChevronDown className="h-4 w-4 shrink-0 text-[#9CA3AF]" />
+          <span className={display ? "" : "text-muted-foreground-light"}>{display || placeholder}</span>
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground-light" />
         </button>
 
         {open ? (
-          <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-[#E5E7EB] bg-white shadow-lg">
-            <div className="relative border-b border-[#F3F4F6]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+          <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-background shadow-lg">
+            <div className="relative border-b border-border">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground-light" />
               <input
                 autoFocus
                 value={query}
@@ -99,15 +99,15 @@ export function CitySelect({
                       onChange("all");
                       setOpen(false);
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-[#111827] hover:bg-[#FDF4FF]"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-foreground hover:bg-brand-tint"
                   >
                     {allLabel}
-                    {value === "all" ? <Check className="h-4 w-4 text-[#A21CAF]" /> : null}
+                    {value === "all" ? <Check className="h-4 w-4 text-brand-hover" /> : null}
                   </button>
                 </li>
               ) : null}
               {results.length === 0 ? (
-                <li className="px-3 py-2 text-sm text-[#6B7280]">No matching city</li>
+                <li className="px-3 py-2 text-sm text-muted-foreground">No matching city</li>
               ) : (
                 results.map((c) => (
                   <li key={c}>
@@ -117,10 +117,10 @@ export function CitySelect({
                         onChange(c);
                         setOpen(false);
                       }}
-                      className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-[#111827] hover:bg-[#FDF4FF]"
+                      className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-foreground hover:bg-brand-tint"
                     >
                       {c}
-                      {value === c ? <Check className="h-4 w-4 text-[#A21CAF]" /> : null}
+                      {value === c ? <Check className="h-4 w-4 text-brand-hover" /> : null}
                     </button>
                   </li>
                 ))
@@ -162,14 +162,14 @@ export function CityMultiSelect({
           {values.map((c) => (
             <span
               key={c}
-              className="inline-flex items-center gap-1 rounded-full border border-[#D946EF] bg-[#FDF4FF] px-3 py-1 text-xs font-medium text-[#A21CAF]"
+              className="inline-flex items-center gap-1 rounded-full border border-primary bg-brand-tint px-3 py-1 text-xs font-medium text-brand-hover"
             >
               {c}
               <button
                 type="button"
                 aria-label={`Remove ${c}`}
                 onClick={() => toggle(c)}
-                className="text-[#A21CAF]/70 hover:text-[#A21CAF]"
+                className="text-brand-hover/70 hover:text-brand-hover"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -185,16 +185,16 @@ export function CityMultiSelect({
             setOpen((v) => !v);
             setQuery("");
           }}
-          className="flex h-11 w-full items-center justify-between rounded-md border border-[#E5E7EB] bg-white px-3 text-left text-sm text-[#6B7280] focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+          className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-background px-3 text-left text-sm text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         >
           {placeholder}
-          <ChevronDown className="h-4 w-4 shrink-0 text-[#9CA3AF]" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground-light" />
         </button>
 
         {open ? (
-          <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-[#E5E7EB] bg-white shadow-lg">
-            <div className="relative border-b border-[#F3F4F6]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+          <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-background shadow-lg">
+            <div className="relative border-b border-border">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground-light" />
               <input
                 autoFocus
                 value={query}
@@ -205,17 +205,17 @@ export function CityMultiSelect({
             </div>
             <ul className="max-h-60 overflow-y-auto py-1">
               {results.length === 0 ? (
-                <li className="px-3 py-2 text-sm text-[#6B7280]">No matching city</li>
+                <li className="px-3 py-2 text-sm text-muted-foreground">No matching city</li>
               ) : (
                 results.map((c) => (
                   <li key={c}>
                     <button
                       type="button"
                       onClick={() => toggle(c)}
-                      className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-[#111827] hover:bg-[#FDF4FF]"
+                      className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-foreground hover:bg-brand-tint"
                     >
                       {c}
-                      {values.includes(c) ? <Check className="h-4 w-4 text-[#A21CAF]" /> : null}
+                      {values.includes(c) ? <Check className="h-4 w-4 text-brand-hover" /> : null}
                     </button>
                   </li>
                 ))

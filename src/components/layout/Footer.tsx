@@ -42,22 +42,22 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
 
 export function Footer() {
   return (
-    <footer role="contentinfo" className="border-t border-[#E5E7EB] bg-[#F9FAFB]">
+    <footer role="contentinfo" className="border-t border-border bg-muted">
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
         <div className="grid gap-10 md:grid-cols-6">
           <div className="md:col-span-2 space-y-3">
             <Logo />
-            <p className="text-sm text-[#6B7280]">Access The Moment</p>
+            <p className="text-sm text-muted-foreground">Access The Moment</p>
           </div>
           {COLUMNS.map((col) => (
             <div key={col.title} className="space-y-3">
-              <h4 className="text-sm font-semibold text-[#111827]">{col.title}</h4>
+              <h4 className="text-sm font-semibold text-foreground">{col.title}</h4>
               <ul className="space-y-2">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     <Link
                       to={l.to}
-                      className="text-sm text-[#6B7280] transition-colors hover:text-[#D946EF]"
+                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
                     >
                       {l.label}
                     </Link>
@@ -68,16 +68,16 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-[#E5E7EB] pt-6 md:flex-row md:items-center">
-          <p className="text-xs text-[#6B7280]">© 2026 AuraPass. All rights reserved.</p>
+        <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 md:flex-row md:items-center">
+          <p className="text-xs text-muted-foreground">© 2026 AuraPass. All rights reserved.</p>
           <div className="flex items-center gap-3">
-            <a aria-label="Twitter" href="#" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
+            <a aria-label="Twitter" href="#" className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-primary transition-colors">
               <Twitter className="h-4 w-4" />
             </a>
-            <a aria-label="Instagram" href="https://www.instagram.com/aurapassticket/" target="_blank" rel="noopener noreferrer" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
+            <a aria-label="Instagram" href="https://www.instagram.com/aurapassticket/" target="_blank" rel="noopener noreferrer" className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-primary transition-colors">
               <Instagram className="h-4 w-4" />
             </a>
-            <a aria-label="LinkedIn" href="#" className="rounded-md p-2 text-[#6B7280] hover:bg-white hover:text-[#D946EF] transition-colors">
+            <a aria-label="LinkedIn" href="#" className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-primary transition-colors">
               <Linkedin className="h-4 w-4" />
             </a>
           </div>

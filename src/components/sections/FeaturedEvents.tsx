@@ -9,23 +9,23 @@ export function FeaturedEvents() {
   const items = events.map(toEventCardData);
 
   return (
-    <section className="bg-white py-16 md:py-20">
+    <section className="bg-background py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <h2
-              className="text-2xl font-bold tracking-tight text-[#111827] md:text-3xl"
+              className="text-2xl font-bold tracking-tight text-foreground md:text-3xl"
               style={{ fontFamily: '"Playfair Display", serif' }}
             >
               Featured Events
             </h2>
-            <p className="mt-1 text-sm text-[#6B7280]">
+            <p className="mt-1 text-sm text-muted-foreground">
               Handpicked moments you don't want to miss.
             </p>
           </div>
           <Link
             to="/events"
-            className="text-sm font-semibold text-[#D946EF] hover:underline flex items-center gap-1 shrink-0"
+            className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 shrink-0"
           >
             View all →
           </Link>
@@ -38,8 +38,8 @@ export function FeaturedEvents() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] py-16 text-center">
-            <p className="text-sm text-[#6B7280]">
+          <div className="rounded-xl border border-dashed border-border bg-muted py-16 text-center">
+            <p className="text-sm text-muted-foreground">
               No events right now — check back soon!
             </p>
           </div>
