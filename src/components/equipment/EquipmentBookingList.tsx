@@ -64,7 +64,7 @@ export function EquipmentBookingList({
   if (!bookings.length) {
     return (
       <Card className="p-6" style={{ borderRadius: 12 }}>
-        <p className="text-sm text-[#6B7280]">
+        <p className="text-sm text-muted-foreground">
           {perspective === "lister"
             ? "No equipment booking requests yet. Organisers will find your gear in the equipment directory."
             : "You haven't requested any equipment yet. Browse the equipment directory to get started."}
@@ -89,7 +89,7 @@ export function EquipmentBookingList({
           <Card key={b.id} className="p-5" style={{ borderRadius: 12 }}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex min-w-0 gap-3">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#F3F4F6]">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-accent">
                   {photo ? (
                     <img
                       src={photo}
@@ -97,14 +97,14 @@ export function EquipmentBookingList({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <Speaker className="h-5 w-5 text-[#9CA3AF]" />
+                    <Speaker className="h-5 w-5 text-muted-foreground-light" />
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-base font-semibold text-[#111827]">
+                  <h3 className="text-base font-semibold text-foreground">
                     {b.equipment_listings?.title ?? "Equipment"}
                   </h3>
-                  <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[#6B7280]">
+                  <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <CalendarDays className="h-4 w-4" />
                       {b.event_date ?? "—"}
@@ -114,13 +114,13 @@ export function EquipmentBookingList({
                       {b.venue ?? "—"}
                     </span>
                   </p>
-                  <p className="mt-1 text-sm text-[#6B7280]">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {b.event_name ?? "Event"}
                     {b.expected_attendance
                       ? ` · ~${Number(b.expected_attendance).toLocaleString("en-NG")} expected`
                       : ""}
                   </p>
-                  <p className="mt-1 text-sm text-[#374151]">
+                  <p className="mt-1 text-sm text-foreground-secondary">
                     {perspective === "lister" ? "From" : "Lister"}:{" "}
                     <span className="font-medium">{counterpart}</span>
                   </p>
@@ -130,11 +130,11 @@ export function EquipmentBookingList({
                 <Badge className={bookingStatusClasses(b.status)}>
                   {STATUS_LABEL[b.status] ?? b.status}
                 </Badge>
-                <p className="mt-2 text-sm font-semibold text-[#111827]">
+                <p className="mt-2 text-sm font-semibold text-foreground">
                   {b.final_price ? "Agreed: " : "Requested: "}
                   {formatNaira(price)}
                 </p>
-                <p className="text-xs text-[#9CA3AF]">
+                <p className="text-xs text-muted-foreground-light">
                   {b.mode === "negotiate" ? "Negotiable" : "Direct request"}
                 </p>
               </div>

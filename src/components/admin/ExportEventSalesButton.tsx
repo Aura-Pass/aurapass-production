@@ -124,7 +124,7 @@ export function ExportEventSalesButton({
       type="button"
       onClick={handleExport}
       disabled={exporting}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white px-3 py-1.5 text-xs font-medium text-[#6B7280] hover:border-[#D946EF] hover:text-[#D946EF] transition-colors disabled:opacity-60"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-60"
     >
       <Download className="h-3.5 w-3.5" />
       {exporting ? "Exporting..." : "Export Sales"}

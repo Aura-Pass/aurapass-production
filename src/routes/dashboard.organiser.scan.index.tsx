@@ -19,8 +19,8 @@ function ScanIndexPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Ticket Scanner</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Ticket Scanner</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Pick an event to open the scanner and check attendees in.
         </p>
       </div>
@@ -31,8 +31,8 @@ function ScanIndexPage() {
         </div>
       ) : scannable.length === 0 ? (
         <Card className="p-10 text-center" style={{ borderRadius: 12 }}>
-          <ScanLine className="mx-auto h-8 w-8 text-[#D1D5DB]" />
-          <p className="mt-3 text-sm text-[#6B7280]">
+          <ScanLine className="mx-auto h-8 w-8 text-border-strong" />
+          <p className="mt-3 text-sm text-muted-foreground">
             You have no published events to scan yet.
           </p>
         </Card>
@@ -45,15 +45,15 @@ function ScanIndexPage() {
               style={{ borderRadius: 12 }}
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111827]">{e.title}</p>
-                <p className="text-xs text-[#6B7280]">
+                <p className="truncate text-sm font-semibold text-foreground">{e.title}</p>
+                <p className="text-xs text-muted-foreground">
                   {e.event_date ? formatDate(e.event_date) : ""}
                 </p>
               </div>
               <Link
                 to="/dashboard/organiser/scan/$eventId"
                 params={{ eventId: e.id }}
-                className="inline-flex items-center gap-2 rounded-md bg-[#D946EF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#C026D3]"
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
               >
                 <ScanLine className="h-4 w-4" />
                 Open scanner

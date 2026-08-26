@@ -51,7 +51,7 @@ export function FollowButton({ organiserId, size = "md" }: FollowButtonProps) {
       {followerCount > 0 && (
         <span
           className={`ml-1 rounded-full px-1.5 py-0.5 text-xs ${
-            isFollowing ? "bg-brand-tint text-primary" : "bg-white/20 text-primary-foreground"
+            isFollowing ? "bg-brand-tint text-primary" : "bg-card/20 text-primary-foreground"
           }`}
         >
           {followerCount}

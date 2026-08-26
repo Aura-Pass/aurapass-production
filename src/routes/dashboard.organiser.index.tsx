@@ -34,14 +34,14 @@ function OrganiserDashboard() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB]">
+      <div className="bg-muted">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
+              <h1 className="text-2xl font-bold text-foreground md:text-3xl">
                 Welcome back, {profile?.username ? `@${profile.username}` : (profile?.full_name || "Organiser")}
               </h1>
-              <p className="mt-1 text-sm text-[#6B7280]">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Manage your events and track your ticket sales.
               </p>
             </div>
@@ -102,15 +102,15 @@ function StatCard({
       className="group block"
     >
       <Card
-        className="p-5 transition-all border border-[#E5E7EB] hover:border-[#D946EF] hover:-translate-y-0.5 hover:shadow-md"
+        className="p-5 transition-all border border-border hover:border-primary hover:-translate-y-0.5 hover:shadow-md"
         style={{ borderRadius: 12 }}
       >
-        <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <p className="text-2xl font-bold text-[#111827]">{value}</p>
-          <ArrowRight className="h-4 w-4 text-[#9CA3AF] transition-colors group-hover:text-[#D946EF]" />
+          <p className="text-2xl font-bold text-foreground">{value}</p>
+          <ArrowRight className="h-4 w-4 text-muted-foreground-light transition-colors group-hover:text-primary" />
         </div>
       </Card>
     </Link>

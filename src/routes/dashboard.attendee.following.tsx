@@ -15,8 +15,8 @@ function FollowingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Following</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Following</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Organisers you follow and their upcoming events.
         </p>
       </div>
@@ -27,14 +27,14 @@ function FollowingPage() {
         </div>
       ) : organisers.length === 0 ? (
         <Card className="p-10 text-center" style={{ borderRadius: 12 }}>
-          <Users className="mx-auto h-8 w-8 text-[#D1D5DB]" />
-          <p className="mt-3 text-sm text-[#6B7280]">
+          <Users className="mx-auto h-8 w-8 text-border-strong" />
+          <p className="mt-3 text-sm text-muted-foreground">
             You're not following any organisers yet.
           </p>
           <Link
             to="/events"
             search={{ category: undefined, city: undefined, date: undefined, price: undefined, q: undefined }}
-            className="mt-4 inline-block text-sm font-semibold text-[#D946EF] hover:underline"
+            className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
           >
             Discover events
           </Link>
@@ -51,20 +51,20 @@ function FollowingPage() {
                     className="h-10 w-10 rounded-full object-cover"
                   />
                 ) : (
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D946EF] text-sm font-semibold text-white">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
                     {(o.username ?? o.full_name ?? "U").slice(0, 2).toUpperCase()}
                   </span>
                 )}
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-[#111827]">
+                  <p className="truncate text-sm font-semibold text-foreground">
                     {o.full_name}
                   </p>
                   {o.username ? (
-                    <p className="truncate text-xs text-[#6B7280]">@{o.username}</p>
+                    <p className="truncate text-xs text-muted-foreground">@{o.username}</p>
                   ) : null}
                 </div>
               </div>
-              <p className="mt-3 text-xs text-[#6B7280]">
+              <p className="mt-3 text-xs text-muted-foreground">
                 {o.upcomingEventCount} upcoming event
                 {o.upcomingEventCount === 1 ? "" : "s"}
               </p>
@@ -72,7 +72,7 @@ function FollowingPage() {
                 <Link
                   to="/organisers/$username"
                   params={{ username: o.username }}
-                  className="mt-3 inline-block text-sm font-semibold text-[#D946EF] hover:underline"
+                  className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
                 >
                   View profile
                 </Link>

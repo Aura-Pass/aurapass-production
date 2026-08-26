@@ -193,7 +193,7 @@ export function EquipmentListerProfileForm({ existing, mode, submitLabel, onSave
       <Field label="Equipment categories">
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
-            <Badge key={c} className="bg-[#FDF4FF] text-[#A21CAF] hover:bg-[#FDF4FF]">
+            <Badge key={c} className="bg-brand-tint text-brand-hover hover:bg-brand-tint">
               {c}
               <button
                 type="button"
@@ -231,7 +231,7 @@ export function EquipmentListerProfileForm({ existing, mode, submitLabel, onSave
               key={c}
               type="button"
               onClick={() => addCategory(c)}
-              className="rounded-full border border-[#E5E7EB] px-3 py-1 text-xs text-[#6B7280] hover:border-[#D946EF] hover:text-[#D946EF]"
+              className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:border-primary hover:text-primary"
             >
               + {c}
             </button>
@@ -240,7 +240,7 @@ export function EquipmentListerProfileForm({ existing, mode, submitLabel, onSave
       </Field>
 
       <Field label="Available locations">
-        <p className="mb-2 text-xs text-[#6B7280]">
+        <p className="mb-2 text-xs text-muted-foreground">
           Organisers filter listers by where they can deliver. Leave empty to appear everywhere.
         </p>
         <CityMultiSelect values={locations} onChange={setLocations} placeholder="Add a city" />
@@ -266,10 +266,10 @@ export function EquipmentListerProfileForm({ existing, mode, submitLabel, onSave
               type="button"
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-[#E5E7EB] bg-[#F9FAFB] text-xs text-[#6B7280] hover:border-[#D946EF] hover:bg-[#FDF4FF]"
+              className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted text-xs text-muted-foreground hover:border-primary hover:bg-brand-tint"
             >
               {uploading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-[#D946EF]" />
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
               ) : (
                 <Upload className="h-5 w-5" />
               )}
@@ -294,15 +294,15 @@ export function EquipmentListerProfileForm({ existing, mode, submitLabel, onSave
           {videos.map((v) => (
             <li
               key={v}
-              className="flex items-center justify-between gap-2 rounded-md border border-[#E5E7EB] px-3 py-2"
+              className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2"
             >
-              <span className="truncate text-sm text-[#374151]">{v}</span>
+              <span className="truncate text-sm text-foreground-secondary">{v}</span>
               <button
                 type="button"
                 onClick={() => setVideos((prev) => prev.filter((x) => x !== v))}
                 aria-label="Remove video link"
               >
-                <X className="h-4 w-4 text-[#6B7280]" />
+                <X className="h-4 w-4 text-muted-foreground" />
               </button>
             </li>
           ))}
@@ -325,7 +325,7 @@ export function EquipmentListerProfileForm({ existing, mode, submitLabel, onSave
             </Button>
           </div>
         ) : null}
-        <p className="mt-1 text-xs text-[#6B7280]">
+        <p className="mt-1 text-xs text-muted-foreground">
           Only YouTube, Instagram and TikTok links are accepted.
         </p>
       </Field>
@@ -350,9 +350,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium text-[#111827]">
+      <label className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
-        {required ? <span className="text-[#D946EF]"> *</span> : null}
+        {required ? <span className="text-primary"> *</span> : null}
       </label>
       {children}
     </div>

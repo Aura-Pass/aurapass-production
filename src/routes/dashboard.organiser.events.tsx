@@ -39,19 +39,19 @@ const TABS: { key: FilterKey; label: string }[] = [
 function statusVariant(status: Event["status"]) {
   switch (status) {
     case "published":
-      return { className: "bg-[#ECFDF5] text-[#047857]", label: "Published" };
+      return { className: "bg-success-light text-success-strong", label: "Published" };
     case "pending_review":
-      return { className: "bg-[#FFFBEB] text-[#B45309]", label: "Pending review" };
+      return { className: "bg-warning-light text-warning-strong", label: "Pending review" };
     case "rejected":
-      return { className: "bg-[#FEE2E2] text-[#B91C1C]", label: "Rejected" };
+      return { className: "bg-destructive-light text-destructive-strong", label: "Rejected" };
     case "draft":
-      return { className: "bg-[#F3F4F6] text-[#374151]", label: "Draft" };
+      return { className: "bg-accent text-foreground-secondary", label: "Draft" };
     case "sold_out":
-      return { className: "bg-[#FEE2E2] text-[#B91C1C]", label: "Sold out" };
+      return { className: "bg-destructive-light text-destructive-strong", label: "Sold out" };
     case "ended":
-      return { className: "bg-[#F3F4F6] text-[#374151]", label: "Ended" };
+      return { className: "bg-accent text-foreground-secondary", label: "Ended" };
     default:
-      return { className: "bg-[#F3F4F6] text-[#374151]", label: status };
+      return { className: "bg-accent text-foreground-secondary", label: status };
   }
 }
 
@@ -103,12 +103,12 @@ function MyEventsPage() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB] min-h-screen">
+      <div className="bg-muted min-h-screen">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Events</h1>
-              <p className="mt-1 text-sm text-[#6B7280]">
+              <h1 className="text-2xl font-bold text-foreground md:text-3xl">My Events</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Manage every event you've created.
               </p>
             </div>
@@ -122,7 +122,7 @@ function MyEventsPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-2 border-b border-[#E5E7EB]">
+          <div className="mt-6 flex flex-wrap gap-2 border-b border-border">
             {TABS.map((t) => (
               <button
                 key={t.key}
@@ -130,8 +130,8 @@ function MyEventsPage() {
                 onClick={() => setTab(t.key)}
                 className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${
                   tab === t.key
-                    ? "border-[#D946EF] text-[#D946EF]"
-                    : "border-transparent text-[#6B7280] hover:text-[#111827]"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t.label}
@@ -148,7 +148,7 @@ function MyEventsPage() {
               className="mt-8 flex flex-col items-center justify-center gap-3 p-10 text-center"
               style={{ borderRadius: 12 }}
             >
-              <p className="text-[#6B7280]">You haven't created any events yet</p>
+              <p className="text-muted-foreground">You haven't created any events yet</p>
               <Button asChild variant="primary">
                 <Link to="/dashboard/organiser/create-event">Create your first event</Link>
               </Button>
@@ -173,26 +173,26 @@ function MyEventsPage() {
           onClick={closeCancel}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+            className="w-full max-w-md rounded-xl bg-card p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-[#111827]">Request cancellation?</h3>
-            <p className="mt-1 text-sm text-[#6B7280]">
+            <h3 className="text-lg font-bold text-foreground">Request cancellation?</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               Your request will be reviewed by the AuraPass admin team within 24 hours.
               If approved, all confirmed paid buyers will be refunded automatically via
               Paystack and notified by email.
             </p>
-            <div className="mt-4 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
+            <div className="mt-4 rounded-md border border-border bg-muted px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
                 Event
               </p>
-              <p className="mt-1 text-sm font-medium text-[#111827]">
+              <p className="mt-1 text-sm font-medium text-foreground">
                 {cancellingEvent.title}
               </p>
             </div>
 
             <div className="mt-4">
-              <label className="mb-1 block text-sm font-medium text-[#111827]">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Reason for cancellation (required)
               </label>
               <textarea
@@ -201,9 +201,9 @@ function MyEventsPage() {
                 placeholder="e.g. Venue unavailability, weather conditions..."
                 rows={3}
                 minLength={20}
-                className="w-full resize-none rounded-lg border border-[#E5E7EB] px-4 py-3 text-sm focus:border-[#D946EF] focus:outline-none"
+                className="w-full resize-none rounded-lg border border-border px-4 py-3 text-sm focus:border-primary focus:outline-none"
               />
-              <p className="mt-1 text-xs text-[#9CA3AF]">
+              <p className="mt-1 text-xs text-muted-foreground-light">
                 {cancelReason.trim().length}/20 minimum
               </p>
             </div>
@@ -213,7 +213,7 @@ function MyEventsPage() {
                 type="button"
                 onClick={closeCancel}
                 disabled={cancelling}
-                className="flex-1 rounded-lg border border-[#E5E7EB] px-4 py-2.5 text-sm font-medium text-[#6B7280] hover:bg-[#F9FAFB] disabled:opacity-60"
+                className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-60"
               >
                 Keep Event
               </button>
@@ -221,7 +221,7 @@ function MyEventsPage() {
                 type="button"
                 disabled={cancelReason.trim().length < 20 || cancelling}
                 onClick={confirmCancel}
-                className="flex-1 rounded-lg bg-[#EF4444] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#DC2626] disabled:opacity-50"
+                className="flex-1 rounded-lg bg-destructive px-4 py-2.5 text-sm font-semibold text-white hover:bg-destructive disabled:opacity-50"
               >
                 {cancelling ? "Submitting..." : "Submit Request"}
               </button>
@@ -240,7 +240,7 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
   return (
     <Card className="overflow-hidden" style={{ borderRadius: 12 }}>
       <div className="flex flex-col gap-4 p-5 md:flex-row">
-        <div className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#F3F4F6] md:w-44">
+        <div className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-accent md:w-44">
           {event.banner_url ? (
             <img
               src={event.banner_url}
@@ -248,30 +248,30 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
               className="h-full w-full object-cover"
             />
           ) : (
-            <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
+            <ImageIcon className="h-8 w-8 text-muted-foreground-light" />
           )}
         </div>
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-[#111827]">{event.title}</h3>
+            <h3 className="text-base font-semibold text-foreground">{event.title}</h3>
             <Badge className={s.className}>{s.label}</Badge>
           </div>
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-sm text-muted-foreground">
             {formatDate(event.event_date)} · {event.city}
           </p>
           {event.cancellation_status === "requested" && (
-            <div className="mt-1 rounded-md border border-[#FDE68A] bg-[#FFFBEB] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#B45309]">
+            <div className="mt-1 rounded-md border border-warning-light bg-warning-light px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-warning-strong">
                 Cancellation pending admin review
               </p>
             </div>
           )}
           {event.cancellation_status === "declined" && event.cancellation_admin_remark && (
-            <div className="mt-1 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#B91C1C]">
+            <div className="mt-1 rounded-md border border-destructive-strong bg-destructive-light px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-destructive-strong">
                 Cancellation declined
               </p>
-              <p className="mt-1 text-sm text-[#7F1D1D] whitespace-pre-wrap">
+              <p className="mt-1 text-sm text-destructive-strong whitespace-pre-wrap">
                 {event.cancellation_admin_remark}
               </p>
             </div>
@@ -281,7 +281,7 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="text-xs font-medium text-[#EF4444] hover:underline"
+                className="text-xs font-medium text-destructive hover:underline"
               >
                 Cancel Event
               </button>

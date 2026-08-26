@@ -102,8 +102,8 @@ export function EquipmentApplicationsPanel() {
             onClick={() => setSubTab(s)}
             className={
               subTab === s
-                ? "rounded-full bg-[#FDF4FF] px-3 py-1 text-sm font-semibold text-[#A21CAF]"
-                : "rounded-full px-3 py-1 text-sm text-[#6B7280] hover:text-[#A21CAF]"
+                ? "rounded-full bg-brand-tint px-3 py-1 text-sm font-semibold text-brand-hover"
+                : "rounded-full px-3 py-1 text-sm text-muted-foreground hover:text-brand-hover"
             }
           >
             {s === "pending_review" ? "Pending" : s === "approved" ? "Approved" : "Rejected"} (
@@ -118,7 +118,7 @@ export function EquipmentApplicationsPanel() {
         </div>
       ) : filtered.length === 0 ? (
         <Card className="mt-6 p-10 text-center" style={{ borderRadius: 12 }}>
-          <p className="text-[#6B7280]">No equipment applications in this state.</p>
+          <p className="text-muted-foreground">No equipment applications in this state.</p>
         </Card>
       ) : (
         <div className="mt-6 grid gap-4">
@@ -126,8 +126,8 @@ export function EquipmentApplicationsPanel() {
             <Card key={app.id} className="p-5" style={{ borderRadius: 12 }}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#111827]">{app.business_name}</h3>
-                  <p className="text-xs text-[#6B7280]">
+                  <h3 className="text-lg font-semibold text-foreground">{app.business_name}</h3>
+                  <p className="text-xs text-muted-foreground">
                     Submitted {formatDate(app.submitted_at)}
                   </p>
                 </div>
@@ -157,13 +157,13 @@ export function EquipmentApplicationsPanel() {
               </div>
 
               {app.bio ? (
-                <p className="mt-3 whitespace-pre-wrap text-sm text-[#374151]">{app.bio}</p>
+                <p className="mt-3 whitespace-pre-wrap text-sm text-foreground-secondary">{app.bio}</p>
               ) : null}
 
               {app.equipment_categories?.length ? (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {app.equipment_categories.map((c) => (
-                    <Badge key={c} className="bg-[#FDF4FF] text-[#A21CAF] hover:bg-[#FDF4FF]">
+                    <Badge key={c} className="bg-brand-tint text-brand-hover hover:bg-brand-tint">
                       {c}
                     </Badge>
                   ))}
@@ -191,7 +191,7 @@ export function EquipmentApplicationsPanel() {
                         href={v}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm text-[#A21CAF] underline break-all"
+                        className="text-sm text-brand-hover underline break-all"
                       >
                         {v}
                       </a>
@@ -201,7 +201,7 @@ export function EquipmentApplicationsPanel() {
               ) : null}
 
               {app.status === "rejected" && app.rejection_reason ? (
-                <p className="mt-3 rounded-md bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
+                <p className="mt-3 rounded-md bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
                   {app.rejection_reason}
                 </p>
               ) : null}
@@ -219,10 +219,10 @@ export function EquipmentApplicationsPanel() {
           }
         }}
       >
-        <DialogContent className="bg-white sm:max-w-lg" style={{ borderRadius: 12 }}>
+        <DialogContent className="bg-card sm:max-w-lg" style={{ borderRadius: 12 }}>
           <DialogHeader>
-            <DialogTitle className="text-[#111827]">Reject equipment application</DialogTitle>
-            <DialogDescription className="text-[#6B7280]">
+            <DialogTitle className="text-foreground">Reject equipment application</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               The applicant will see this reason and can edit and resubmit.
             </DialogDescription>
           </DialogHeader>
@@ -232,7 +232,7 @@ export function EquipmentApplicationsPanel() {
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. Photos are low quality, equipment details are unclear..."
           />
-          <p className="text-xs text-[#6B7280]">{reason.trim().length} / 10 characters minimum</p>
+          <p className="text-xs text-muted-foreground">{reason.trim().length} / 10 characters minimum</p>
           <DialogFooter className="gap-2 sm:gap-2">
             <Button
               type="button"
@@ -249,7 +249,7 @@ export function EquipmentApplicationsPanel() {
               type="button"
               onClick={confirmReject}
               disabled={working || reason.trim().length < 10}
-              className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+              className="bg-destructive text-white hover:bg-destructive"
             >
               Confirm Rejection
             </Button>

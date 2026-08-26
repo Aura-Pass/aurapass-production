@@ -72,8 +72,8 @@ function MyEquipmentListingsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Listings</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">My Listings</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage the equipment you rent out to event organisers.
           </p>
         </div>
@@ -109,8 +109,8 @@ function MyEquipmentListingsPage() {
         </div>
       ) : listings.length === 0 ? (
         <Card className="p-10 text-center" style={{ borderRadius: 12 }}>
-          <Speaker className="mx-auto h-8 w-8 text-[#9CA3AF]" />
-          <p className="mt-3 text-[#6B7280]">You haven't listed any equipment yet.</p>
+          <Speaker className="mx-auto h-8 w-8 text-muted-foreground-light" />
+          <p className="mt-3 text-muted-foreground">You haven't listed any equipment yet.</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -118,14 +118,14 @@ function MyEquipmentListingsPage() {
             <Card key={l.id} className="p-5" style={{ borderRadius: 12 }}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="text-lg font-semibold text-[#111827]">{l.title}</h2>
-                  <p className="mt-1 text-sm text-[#6B7280]">{formatNaira(l.rental_price)}</p>
+                  <h2 className="text-lg font-semibold text-foreground">{l.title}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">{formatNaira(l.rental_price)}</p>
                 </div>
                 <Badge
                   className={
                     l.is_active
-                      ? "bg-[#ECFDF5] text-[#047857] hover:bg-[#ECFDF5]"
-                      : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#F3F4F6]"
+                      ? "bg-success-light text-success-strong hover:bg-success-light"
+                      : "bg-accent text-muted-foreground hover:bg-accent"
                   }
                 >
                   {l.is_active ? "Active" : "Paused"}
@@ -163,7 +163,7 @@ function MyEquipmentListingsPage() {
               </div>
 
               {editingId === l.id ? (
-                <div className="mt-5 border-t border-[#E5E7EB] pt-5">
+                <div className="mt-5 border-t border-border pt-5">
                   <EquipmentListingForm
                     mode="edit"
                     existing={l}

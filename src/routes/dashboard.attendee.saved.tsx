@@ -17,10 +17,10 @@ function AttendeeSavedPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">
           Saved Events
         </h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <p className="mt-1 text-sm text-muted-foreground">
           Events you save will appear here.
         </p>
       </div>
@@ -28,14 +28,14 @@ function AttendeeSavedPage() {
         className="flex flex-col items-center justify-center gap-4 p-10 text-center"
         style={{ borderRadius: 12 }}
       >
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FDF4FF]">
-          <Heart className="h-6 w-6 text-[#D946EF]" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-tint">
+          <Heart className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <p className="text-base font-semibold text-[#111827]">
+          <p className="text-base font-semibold text-foreground">
             No saved events yet
           </p>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Events you save will appear here.
           </p>
         </div>

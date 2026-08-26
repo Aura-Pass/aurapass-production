@@ -162,13 +162,13 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
     .find((m) => m.sender_id !== user?.id && m.proposed_price !== null);
 
   return (
-    <div className="mt-4 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4">
-      <h4 className="text-sm font-semibold text-[#111827]">Messages</h4>
+    <div className="mt-4 rounded-xl border border-border bg-muted p-4">
+      <h4 className="text-sm font-semibold text-foreground">Messages</h4>
 
       {loading ? (
-        <p className="mt-3 text-sm text-[#6B7280]">Loading conversation…</p>
+        <p className="mt-3 text-sm text-muted-foreground">Loading conversation…</p>
       ) : messages.length === 0 ? (
-        <p className="mt-3 text-sm text-[#6B7280]">No messages yet.</p>
+        <p className="mt-3 text-sm text-muted-foreground">No messages yet.</p>
       ) : (
         <ul className="mt-3 space-y-3">
           {messages.map((m) => {
@@ -177,17 +177,17 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
               <li key={m.id} className={mine ? "text-right" : "text-left"}>
                 <div
                   className={`inline-block max-w-[85%] rounded-xl px-3 py-2 text-sm ${
-                    mine ? "bg-[#D946EF] text-white" : "bg-white text-[#374151] border border-[#E5E7EB]"
+                    mine ? "bg-primary text-white" : "bg-card text-foreground-secondary border border-border"
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{m.message}</p>
                   {m.proposed_price !== null ? (
-                    <p className={`mt-1 text-xs font-semibold ${mine ? "text-white/90" : "text-[#A21CAF]"}`}>
+                    <p className={`mt-1 text-xs font-semibold ${mine ? "text-white/90" : "text-brand-hover"}`}>
                       Proposed: {formatNaira(m.proposed_price)}
                     </p>
                   ) : null}
                 </div>
-                <p className="mt-1 text-[11px] text-[#9CA3AF]">
+                <p className="mt-1 text-[11px] text-muted-foreground-light">
                   {mine ? "You" : counterpartName} ·{" "}
                   {new Date(m.created_at).toLocaleString("en-NG")}
                 </p>
@@ -198,8 +198,8 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
       )}
 
       {lastCounterpartOffer && canMessage ? (
-        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] px-3 py-2">
-          <span className="text-sm text-[#A21CAF]">
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-brand-tint bg-brand-tint px-3 py-2">
+          <span className="text-sm text-brand-hover">
             {counterpartName} proposed {formatNaira(lastCounterpartOffer.proposed_price)}
           </span>
           <Button
@@ -219,13 +219,13 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
       ) : null}
 
       {isOrganiser && awaitingDeposit ? (
-        <div className="mt-4 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] px-3 py-2">
+        <div className="mt-4 rounded-lg border border-brand-tint bg-brand-tint px-3 py-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-[#111827]">
+              <p className="text-sm font-semibold text-foreground">
                 Deposit due: {formatNaira(booking.deposit_amount)}
               </p>
-              <p className="text-xs text-[#6B7280]">
+              <p className="text-xs text-muted-foreground">
                 Pay the deposit to confirm this booking and unlock the artist's contact details.
               </p>
             </div>
@@ -247,13 +247,13 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
       ) : null}
 
       {isOrganiser && balanceDue ? (
-        <div className="mt-4 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] px-3 py-2">
+        <div className="mt-4 rounded-lg border border-brand-tint bg-brand-tint px-3 py-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-[#111827]">
+              <p className="text-sm font-semibold text-foreground">
                 Balance due: {formatNaira(booking.balance_amount)}
               </p>
-              <p className="text-xs text-[#6B7280]">
+              <p className="text-xs text-muted-foreground">
                 Pay the remaining balance to complete this booking.
               </p>
             </div>
@@ -301,7 +301,7 @@ export function BookingThread({ booking, counterpartName, onChanged }: Props) {
           </div>
         </div>
       ) : (
-        <p className="mt-4 text-xs text-[#6B7280]">
+        <p className="mt-4 text-xs text-muted-foreground">
           This conversation is closed for new messages.
         </p>
       )}

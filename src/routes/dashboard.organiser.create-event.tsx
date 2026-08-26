@@ -234,10 +234,10 @@ function CreateEventPage() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB]">
+      <div className="bg-muted">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
           <div className="mb-6 flex items-center justify-between">
-            <Link to="/dashboard/organiser" className="text-sm text-[#6B7280] hover:text-[#111827]">
+            <Link to="/dashboard/organiser" className="text-sm text-muted-foreground hover:text-foreground">
               ← Back to dashboard
             </Link>
           </div>
@@ -266,7 +266,7 @@ function CreateEventPage() {
               )}
 
               {error ? (
-                <p className="mt-4 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
+                <p className="mt-4 rounded-md border border-destructive-strong bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
                   {error}
                 </p>
               ) : null}
@@ -322,9 +322,9 @@ function StepIndicator({ step }: { step: Step }) {
               <div
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold",
-                  active && "bg-[#D946EF] text-white",
-                  done && "bg-[#A21CAF] text-white",
-                  !active && !done && "bg-[#E5E7EB] text-[#6B7280]",
+                  active && "bg-primary text-white",
+                  done && "bg-brand-hover text-white",
+                  !active && !done && "bg-border text-muted-foreground",
                 )}
               >
                 {s.n}
@@ -332,19 +332,19 @@ function StepIndicator({ step }: { step: Step }) {
               <span
                 className={cn(
                   "hidden text-sm font-medium md:inline",
-                  active ? "text-[#111827]" : "text-[#6B7280]",
+                  active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {s.label}
               </span>
             </div>
             {i < steps.length - 1 ? (
-              <div className="h-px w-8 bg-[#E5E7EB] md:w-12" />
+              <div className="h-px w-8 bg-border md:w-12" />
             ) : null}
           </div>
         );
       })}
-      <span className="ml-auto text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+      <span className="ml-auto text-xs font-medium uppercase tracking-wide text-muted-foreground">
         Step {step} of 4
       </span>
     </div>
@@ -354,7 +354,7 @@ function StepIndicator({ step }: { step: Step }) {
 function StepHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2
-      className="text-2xl font-bold text-[#111827]"
+      className="text-2xl font-bold text-foreground"
       style={{ fontFamily: "'Playfair Display', serif" }}
     >
       {children}
@@ -381,7 +381,7 @@ function Step1({
       />
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-[#111827]">
+        <label className="block text-sm font-medium text-foreground">
           Description
         </label>
         <Textarea
@@ -391,7 +391,7 @@ function Step1({
           onChange={(e) => set("description", e.target.value)}
           className="min-h-[120px]"
         />
-        <p className="text-xs text-[#6B7280]">
+        <p className="text-xs text-muted-foreground">
           {form.description.length} / 50 characters minimum
         </p>
       </div>
@@ -430,7 +430,7 @@ function Step1({
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-[#111827]">Event banner</label>
+        <label className="block text-sm font-medium text-foreground">Event banner</label>
         <ImageUpload
           value={form.banner_url}
           onChange={(url) => set("banner_url", url)}
@@ -460,7 +460,7 @@ function Step2({
   return (
     <div className="space-y-5">
       <StepHeading>Set up your ticket types</StepHeading>
-      <p className="text-sm text-[#6B7280]">
+      <p className="text-sm text-muted-foreground">
         Add at least one ticket type. Use ₦0 for free tickets.
       </p>
 
@@ -468,7 +468,7 @@ function Step2({
         {tickets.map((t, i) => (
           <div
             key={i}
-            className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4"
+            className="rounded-xl border border-border bg-muted p-4"
             style={{ borderRadius: 12 }}
           >
             <div className="grid gap-3 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-end">
@@ -528,9 +528,9 @@ function Step3({
     <div className="space-y-5">
       <StepHeading>Review & submit</StepHeading>
 
-      <div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-5" style={{ borderRadius: 12 }}>
-        <h3 className="text-base font-semibold text-[#111827]">{form.title}</h3>
-        <p className="mt-1 text-sm text-[#6B7280]">{form.description}</p>
+      <div className="rounded-xl border border-border bg-muted p-5" style={{ borderRadius: 12 }}>
+        <h3 className="text-base font-semibold text-foreground">{form.title}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{form.description}</p>
 
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <Row label="Category" value={form.category} />
@@ -542,18 +542,18 @@ function Step3({
         </dl>
       </div>
 
-      <div className="rounded-xl border border-[#E5E7EB] bg-white p-5" style={{ borderRadius: 12 }}>
-        <h4 className="text-sm font-semibold text-[#111827]">Artist requests</h4>
+      <div className="rounded-xl border border-border bg-card p-5" style={{ borderRadius: 12 }}>
+        <h4 className="text-sm font-semibold text-foreground">Artist requests</h4>
         {bookings.length === 0 ? (
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <p className="mt-2 text-sm text-muted-foreground">
             No artists selected — you can book any time from Artist Bookings.
           </p>
         ) : (
-          <ul className="mt-3 divide-y divide-[#F3F4F6]">
+          <ul className="mt-3 divide-y divide-accent">
             {bookings.map((b) => (
               <li key={b.artistUserId} className="flex items-center justify-between py-2 text-sm">
-                <span className="font-medium text-[#111827]">{b.stageName}</span>
-                <span className="text-[#6B7280]">
+                <span className="font-medium text-foreground">{b.stageName}</span>
+                <span className="text-muted-foreground">
                   {b.mode === "negotiate" ? "Negotiate" : "Estimated price"} ·{" "}
                   {b.requestedPrice ? `₦${b.requestedPrice.toLocaleString()}` : "TBC"}
                 </span>
@@ -563,13 +563,13 @@ function Step3({
         )}
       </div>
 
-      <div className="rounded-xl border border-[#E5E7EB] bg-white p-5" style={{ borderRadius: 12 }}>
-        <h4 className="text-sm font-semibold text-[#111827]">Tickets</h4>
-        <ul className="mt-3 divide-y divide-[#F3F4F6]">
+      <div className="rounded-xl border border-border bg-card p-5" style={{ borderRadius: 12 }}>
+        <h4 className="text-sm font-semibold text-foreground">Tickets</h4>
+        <ul className="mt-3 divide-y divide-accent">
           {tickets.map((t, i) => (
             <li key={i} className="flex items-center justify-between py-2 text-sm">
-              <span className="font-medium text-[#111827]">{t.name || `Ticket ${i + 1}`}</span>
-              <span className="text-[#6B7280]">
+              <span className="font-medium text-foreground">{t.name || `Ticket ${i + 1}`}</span>
+              <span className="text-muted-foreground">
                 ₦{Number(t.price).toLocaleString()} · {t.quantity} available
               </span>
             </li>
@@ -577,7 +577,7 @@ function Step3({
         </ul>
       </div>
 
-      <p className="rounded-md border border-[#FDE68A] bg-[#FFFBEB] px-4 py-3 text-sm text-[#92400E]">
+      <p className="rounded-md border border-warning-light bg-warning-light px-4 py-3 text-sm text-warning-strong">
         Your event will be reviewed by our team before it appears publicly. This usually takes a few hours.
       </p>
     </div>
@@ -587,8 +587,8 @@ function Step3({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">{label}</dt>
-      <dd className="mt-0.5 truncate text-sm text-[#111827]">{value || "—"}</dd>
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 truncate text-sm text-foreground">{value || "—"}</dd>
     </div>
   );
 }
@@ -608,11 +608,11 @@ function NativeSelect({
 }) {
   return (
     <div className="w-full space-y-1.5">
-      <label className="block text-sm font-medium text-[#111827]">{label}</label>
+      <label className="block text-sm font-medium text-foreground">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex h-11 w-full rounded-md border border-[#E5E7EB] bg-white px-3 py-2 text-sm text-[#111827] shadow-sm focus-visible:outline-none focus-visible:border-[#D946EF] focus-visible:ring-2 focus-visible:ring-[#D946EF]/30"
+        className="flex h-11 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
       >
         <option value="">{placeholder}</option>
         {options.map((o) => (

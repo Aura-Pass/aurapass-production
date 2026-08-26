@@ -20,10 +20,10 @@ function AttendeeSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">
           Settings
         </h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage your account and access.
         </p>
       </div>

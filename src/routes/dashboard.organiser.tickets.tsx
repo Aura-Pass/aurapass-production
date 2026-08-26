@@ -21,12 +21,12 @@ function OrganiserTicketsPage() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB] min-h-screen">
+      <div className="bg-muted min-h-screen">
         <div className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Tickets</h1>
-              <p className="mt-1 text-sm text-[#6B7280]">
+              <h1 className="text-2xl font-bold text-foreground md:text-3xl">My Tickets</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Tickets you've purchased as an attendee. Tap an event to reveal QR codes.
               </p>
             </div>

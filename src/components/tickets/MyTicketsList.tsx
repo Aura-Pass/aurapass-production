@@ -33,12 +33,12 @@ export function MyTicketsList({ tickets, loading, emptyCta }: Props) {
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center gap-4 rounded-xl border border-[#E5E7EB] bg-white p-4"
+            className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
           >
-            <div className="h-16 w-16 shrink-0 animate-pulse rounded-lg bg-[#F3F4F6]" />
+            <div className="h-16 w-16 shrink-0 animate-pulse rounded-lg bg-accent" />
             <div className="flex-1 space-y-2">
-              <div className="h-4 w-2/3 animate-pulse rounded bg-[#F3F4F6]" />
-              <div className="h-3 w-1/2 animate-pulse rounded bg-[#F3F4F6]" />
+              <div className="h-4 w-2/3 animate-pulse rounded bg-accent" />
+              <div className="h-3 w-1/2 animate-pulse rounded bg-accent" />
             </div>
           </div>
         ))}
@@ -49,8 +49,8 @@ export function MyTicketsList({ tickets, loading, emptyCta }: Props) {
   if (groups.length === 0) {
     return (
       <Card className="p-8 text-center" style={{ borderRadius: 12 }}>
-        <TicketIcon className="mx-auto h-10 w-10 text-[#D1D5DB]" />
-        <p className="mt-3 text-sm text-[#6B7280]">You haven't booked any events yet</p>
+        <TicketIcon className="mx-auto h-10 w-10 text-border-strong" />
+        <p className="mt-3 text-sm text-muted-foreground">You haven't booked any events yet</p>
         {emptyCta ? <div className="mt-4">{emptyCta}</div> : null}
       </Card>
     );
@@ -75,19 +75,19 @@ function EventTicketGroup({ group }: { group: { event: MyTicket["event"]; ticket
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-4 p-4 text-left transition-colors hover:bg-[#FAFAFA]"
+        className="flex w-full items-center gap-4 p-4 text-left transition-colors hover:bg-muted"
         aria-expanded={open}
       >
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[#F3F4F6] flex items-center justify-center">
+        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-accent flex items-center justify-center">
           {event?.banner_url ? (
             <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" />
           ) : (
-            <ImageIcon className="h-6 w-6 text-[#D1D5DB]" />
+            <ImageIcon className="h-6 w-6 text-border-strong" />
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-semibold text-[#111827]">{event?.title ?? "Event"}</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#6B7280]">
+          <h3 className="truncate text-sm font-semibold text-foreground">{event?.title ?? "Event"}</h3>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             {event?.event_date && (
               <span className="inline-flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
@@ -105,7 +105,7 @@ function EventTicketGroup({ group }: { group: { event: MyTicket["event"]; ticket
         <div className="flex items-center gap-2 shrink-0">
           <Badge variant="outline">{count} {count === 1 ? "ticket" : "tickets"}</Badge>
           <ChevronDown
-            className={cn("h-4 w-4 text-[#6B7280] transition-transform", open && "rotate-180")}
+            className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
           />
         </div>
       </button>
@@ -118,7 +118,7 @@ function EventTicketGroup({ group }: { group: { event: MyTicket["event"]; ticket
           byType.get(key)!.push(t);
         }
         return (
-          <div className="grid gap-4 border-t border-[#E5E7EB] bg-[#FAFAFA] p-5 sm:grid-cols-2">
+          <div className="grid gap-4 border-t border-border bg-muted p-5 sm:grid-cols-2">
             {Array.from(byType.entries()).flatMap(([typeName, list]) =>
               list.map((t, idx) => (
                 <TicketTile
@@ -161,9 +161,9 @@ function TicketTile({
   }
 
   return (
-    <div className="flex flex-col items-center rounded-xl border border-[#E5E7EB] bg-white p-4">
+    <div className="flex flex-col items-center rounded-xl border border-border bg-card p-4">
       <div className="flex w-full flex-col gap-1">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#D946EF]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
           {typeName}
           {total > 1 ? ` — Ticket ${index + 1} of ${total}` : ""}
         </span>
@@ -180,7 +180,7 @@ function TicketTile({
       <div className="mt-3">
         <TicketQRCode value={ticket.qr_code} size={160} />
       </div>
-      <p className="mt-2 break-all text-center font-mono text-[10px] text-[#6B7280]">{ticket.qr_code}</p>
+      <p className="mt-2 break-all text-center font-mono text-[10px] text-muted-foreground">{ticket.qr_code}</p>
       <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={handleDownload}>
         <Download className="h-4 w-4" />
         Download QR

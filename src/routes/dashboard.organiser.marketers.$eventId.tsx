@@ -190,8 +190,8 @@ function MarketersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Marketers</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">Marketers</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {eventTitle
               ? `People promoting “${eventTitle}” with a tracked referral link.`
               : "People promoting this event with a tracked referral link."}
@@ -207,7 +207,7 @@ function MarketersPage() {
       <Card className="space-y-4 p-5" style={{ borderRadius: 12 }}>
         <form className="flex flex-wrap items-end gap-3" onSubmit={handleAssign}>
           <div className="min-w-[220px] flex-1">
-            <label className="text-sm font-medium text-[#111827]" htmlFor="marketer-username">
+            <label className="text-sm font-medium text-foreground" htmlFor="marketer-username">
               Assign a marketer
             </label>
             <Input
@@ -222,38 +222,38 @@ function MarketersPage() {
             Assign
           </Button>
         </form>
-        <p className="text-xs text-[#6B7280]">
+        <p className="text-xs text-muted-foreground">
           Each marketer gets a unique referral link. Orders placed through it are credited to them.
         </p>
       </Card>
 
       <Card className="p-5" style={{ borderRadius: 12 }}>
-        <h2 className="text-sm font-semibold text-[#111827]">Assigned marketers</h2>
+        <h2 className="text-sm font-semibold text-foreground">Assigned marketers</h2>
         {loading ? (
           <div className="flex justify-center py-8">
             <Spinner className="h-5 w-5" />
           </div>
         ) : rows.length === 0 ? (
           <div className="py-8 text-center">
-            <Megaphone className="mx-auto h-7 w-7 text-[#D1D5DB]" />
-            <p className="mt-2 text-sm text-[#6B7280]">No marketers assigned yet.</p>
+            <Megaphone className="mx-auto h-7 w-7 text-border-strong" />
+            <p className="mt-2 text-sm text-muted-foreground">No marketers assigned yet.</p>
           </div>
         ) : (
-          <ul className="mt-3 divide-y divide-[#E5E7EB] rounded-md border border-[#E5E7EB]">
+          <ul className="mt-3 divide-y divide-border rounded-md border border-border">
             {rows.map((r) => (
               <li key={r.event_marketer_id} className="space-y-3 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-[#111827]">
+                    <p className="truncate text-sm font-semibold text-foreground">
                       {r.full_name || r.username || "Unknown"}
                     </p>
-                    <p className="text-xs text-[#6B7280]">@{r.username ?? "user"}</p>
-                    <p className="mt-1 break-all text-xs text-[#6B7280]">
+                    <p className="text-xs text-muted-foreground">@{r.username ?? "user"}</p>
+                    <p className="mt-1 break-all text-xs text-muted-foreground">
                       {referralLink(r.referral_code)}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="text-xs text-[#6B7280]">Code:</span>
-                      <code className="rounded bg-[#F3F4F6] px-1.5 py-0.5 font-mono text-xs text-[#111827]">
+                      <span className="text-xs text-muted-foreground">Code:</span>
+                      <code className="rounded bg-accent px-1.5 py-0.5 font-mono text-xs text-foreground">
                         {r.referral_code}
                       </code>
                       <Button
@@ -317,19 +317,19 @@ function MarketersPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-md bg-[#F9FAFB] px-2 py-2">
-                    <p className="text-sm font-semibold text-[#111827]">{r.order_count}</p>
-                    <p className="text-[11px] text-[#6B7280]">Orders</p>
+                  <div className="rounded-md bg-muted px-2 py-2">
+                    <p className="text-sm font-semibold text-foreground">{r.order_count}</p>
+                    <p className="text-[11px] text-muted-foreground">Orders</p>
                   </div>
-                  <div className="rounded-md bg-[#F9FAFB] px-2 py-2">
-                    <p className="text-sm font-semibold text-[#111827]">{r.tickets_sold}</p>
-                    <p className="text-[11px] text-[#6B7280]">Tickets</p>
+                  <div className="rounded-md bg-muted px-2 py-2">
+                    <p className="text-sm font-semibold text-foreground">{r.tickets_sold}</p>
+                    <p className="text-[11px] text-muted-foreground">Tickets</p>
                   </div>
-                  <div className="rounded-md bg-[#F9FAFB] px-2 py-2">
-                    <p className="text-sm font-semibold text-[#111827]">
+                  <div className="rounded-md bg-muted px-2 py-2">
+                    <p className="text-sm font-semibold text-foreground">
                       {formatCurrency(r.gross_revenue)}
                     </p>
-                    <p className="text-[11px] text-[#6B7280]">Revenue</p>
+                    <p className="text-[11px] text-muted-foreground">Revenue</p>
                   </div>
                 </div>
               </li>
