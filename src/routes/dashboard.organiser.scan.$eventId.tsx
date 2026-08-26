@@ -425,12 +425,12 @@ function ScanPage() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB] min-h-screen">
+      <div className="bg-muted min-h-screen">
         <div className="mx-auto max-w-3xl px-4 py-6 md:py-10">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs uppercase tracking-wide text-[#6B7280]">Scanning</p>
-              <h1 className="truncate text-xl font-bold text-[#111827] md:text-2xl">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Scanning</p>
+              <h1 className="truncate text-xl font-bold text-foreground md:text-2xl">
                 {eventTitle || "Event"}
               </h1>
             </div>
@@ -440,9 +440,9 @@ function ScanPage() {
           </div>
 
           <Card className="mt-4 p-4" style={{ borderRadius: 12 }}>
-            <p className="text-sm text-[#6B7280]">
-              <span className="font-semibold text-[#111827]">{visibleCheckedIn}</span> checked in /{" "}
-              <span className="font-semibold text-[#111827]">{total}</span> total tickets
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{visibleCheckedIn}</span> checked in /{" "}
+              <span className="font-semibold text-foreground">{total}</span> total tickets
             </p>
           </Card>
 
@@ -473,7 +473,7 @@ function ScanPage() {
                 type="button"
                 onClick={dismissResult}
                 className={`absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center transition-opacity ${
-                  isSuccess ? "bg-[#047857]/95 text-white" : "bg-[#B91C1C]/95 text-white"
+                  isSuccess ? "bg-success-strong/95 text-white" : "bg-destructive-strong/95 text-white"
                 }`}
               >
                 <div className="text-5xl" aria-hidden>
@@ -490,9 +490,9 @@ function ScanPage() {
             )}
 
             {!showOverlay && (
-              <div className="p-4 text-center text-sm font-medium text-[#6B7280] bg-white">
+              <div className="p-4 text-center text-sm font-medium text-muted-foreground bg-card">
                 {cameraError ? (
-                  <span className="text-[#B91C1C]">Camera: {cameraError}</span>
+                  <span className="text-destructive-strong">Camera: {cameraError}</span>
                 ) : (
                   "Point camera at a ticket QR code"
                 )}
@@ -501,7 +501,7 @@ function ScanPage() {
           </Card>
 
           <Card className="mt-6 p-4" style={{ borderRadius: 12 }}>
-            <h2 className="text-sm font-semibold text-[#111827]">Or search by name/email</h2>
+            <h2 className="text-sm font-semibold text-foreground">Or search by name/email</h2>
             <div className="mt-2 flex gap-2">
               <Input
                 placeholder="Buyer name or email"
@@ -518,20 +518,20 @@ function ScanPage() {
                 {searchResults.map((t) => (
                   <div
                     key={t.id}
-                    className="flex items-center justify-between rounded-md border border-[#E5E7EB] p-3"
+                    className="flex items-center justify-between rounded-md border border-border p-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-[#111827]">
+                      <p className="truncate text-sm font-semibold text-foreground">
                         {t.order?.buyer_name ?? "—"}
                       </p>
-                      <p className="truncate text-xs text-[#6B7280]">
+                      <p className="truncate text-xs text-muted-foreground">
                         {t.order?.buyer_email} · {t.ticket_type?.name}
                       </p>
                     </div>
                     {t.status === "used" ? (
-                      <span className="text-xs font-semibold text-[#B91C1C]">Checked in</span>
+                      <span className="text-xs font-semibold text-destructive-strong">Checked in</span>
                     ) : t.status === "voided" ? (
-                      <span className="text-xs font-semibold text-[#6B7280]">Voided</span>
+                      <span className="text-xs font-semibold text-muted-foreground">Voided</span>
                     ) : (
                       <Button
                         size="sm"
@@ -545,16 +545,16 @@ function ScanPage() {
                 ))}
               </div>
             ) : searchTerm && !searching ? (
-              <p className="mt-3 text-xs text-[#6B7280]">No matching tickets.</p>
+              <p className="mt-3 text-xs text-muted-foreground">No matching tickets.</p>
             ) : null}
           </Card>
 
           <Card className="mt-6 p-4" style={{ borderRadius: 12 }}>
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-sm font-semibold text-[#111827]">
+              <h2 className="text-sm font-semibold text-foreground">
                 Checkin List
               </h2>
-              <span className="text-xs text-[#6B7280]">
+              <span className="text-xs text-muted-foreground">
                 {tickets.filter((t) => t.status === "used").length} checked in
               </span>
             </div>
@@ -565,7 +565,7 @@ function ScanPage() {
                 value={ticketSearch}
                 onChange={(e) => setTicketSearch(e.target.value)}
                 placeholder="Search by Ticket ID (e.g. AURAPASS-...)"
-                className="w-full rounded-lg border border-[#E5E7EB] px-4 py-2.5 text-sm focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+                className="w-full rounded-lg border border-border px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
@@ -573,29 +573,29 @@ function ScanPage() {
               {filteredTickets.map((ticket) => (
                 <div
                   key={ticket.id}
-                  className="rounded-md border border-[#E5E7EB] p-3"
+                  className="rounded-md border border-border p-3"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-[#111827]">
+                      <p className="truncate text-sm font-semibold text-foreground">
                         {ticket.order?.buyer_name ?? "—"}
                       </p>
-                      <p className="truncate text-xs text-[#6B7280]">
+                      <p className="truncate text-xs text-muted-foreground">
                         {ticket.ticket_type?.name} · {ticket.qr_code}
                       </p>
                     </div>
                     <span
                       className={`shrink-0 text-xs font-semibold ${
                         ticket.status === "used"
-                          ? "text-[#047857]"
-                          : "text-[#6B7280]"
+                          ? "text-success-strong"
+                          : "text-muted-foreground"
                       }`}
                     >
                       {ticket.status === "used" ? "✓ Checked In" : "Not Yet"}
                     </span>
                   </div>
                   {ticket.checked_in_at ? (
-                    <p className="mt-1 text-[11px] text-[#6B7280]">
+                    <p className="mt-1 text-[11px] text-muted-foreground">
                       {new Date(ticket.checked_in_at).toLocaleTimeString("en-NG", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -605,7 +605,7 @@ function ScanPage() {
                 </div>
               ))}
               {filteredTickets.length === 0 ? (
-                <p className="text-xs text-[#6B7280]">
+                <p className="text-xs text-muted-foreground">
                   {ticketSearch ? "No tickets match your search." : "No tickets yet."}
                 </p>
               ) : null}

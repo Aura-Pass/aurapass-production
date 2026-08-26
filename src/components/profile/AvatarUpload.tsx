@@ -93,7 +93,7 @@ export function AvatarUpload({
         onClick={() => inputRef.current?.click()}
         disabled={uploading || !user}
         aria-label="Change profile photo"
-        className="group relative flex-shrink-0 overflow-hidden rounded-full bg-[#FDF4FF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
+        className="group relative flex-shrink-0 overflow-hidden rounded-full bg-brand-tint focus:outline-none focus:ring-2 focus:ring-primary"
         style={{ height: size, width: size }}
       >
         {current ? (
@@ -103,7 +103,7 @@ export function AvatarUpload({
             className="h-full w-full rounded-full object-cover"
           />
         ) : (
-          <span className="flex h-full w-full items-center justify-center text-xl font-bold text-[#A21CAF]">
+          <span className="flex h-full w-full items-center justify-center text-xl font-bold text-brand-hover">
             {initials}
           </span>
         )}
@@ -122,19 +122,19 @@ export function AvatarUpload({
       </button>
 
       <div className="min-w-0">
-        <p className="text-sm font-medium text-[#111827]">Profile photo</p>
-        <p className="mt-0.5 text-xs text-[#6B7280]">
+        <p className="text-sm font-medium text-foreground">Profile photo</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">
           JPG, PNG or WEBP. Max 5MB.
         </p>
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading || !user}
-          className="mt-2 text-sm font-semibold text-[#A21CAF] hover:underline disabled:opacity-60"
+          className="mt-2 text-sm font-semibold text-brand-hover hover:underline disabled:opacity-60"
         >
           {uploading ? "Uploading..." : current ? "Change photo" : "Upload photo"}
         </button>
-        {error ? <p className="mt-1 text-xs text-[#DC2626]">{error}</p> : null}
+        {error ? <p className="mt-1 text-xs text-destructive">{error}</p> : null}
       </div>
 
       <input

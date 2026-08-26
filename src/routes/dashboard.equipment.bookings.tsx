@@ -34,8 +34,8 @@ function EquipmentListerBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Booking Requests</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Booking Requests</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Accept, decline or negotiate the price for each equipment request.
         </p>
       </div>

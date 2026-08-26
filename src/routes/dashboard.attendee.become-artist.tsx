@@ -60,26 +60,26 @@ function BecomeArtistPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Become an Artist</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Become an Artist</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Get listed in the AuraPass artist directory so organisers can discover and book you.
         </p>
       </div>
 
       {application?.status === "pending_review" ? (
         <Card className="p-6" style={{ borderRadius: 12 }}>
-          <h2 className="text-lg font-semibold text-[#111827]">
+          <h2 className="text-lg font-semibold text-foreground">
             Your application is under review.
           </h2>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <p className="mt-1 text-sm text-muted-foreground">
             We'll let you know as soon as an admin has looked at{" "}
-            <span className="font-medium text-[#111827]">{application.stage_name}</span>.
+            <span className="font-medium text-foreground">{application.stage_name}</span>.
           </p>
         </Card>
       ) : application?.status === "approved" ? (
         <Card className="p-6" style={{ borderRadius: 12 }}>
-          <h2 className="text-lg font-semibold text-[#111827]">You're an approved artist 🎉</h2>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <h2 className="text-lg font-semibold text-foreground">You're an approved artist 🎉</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Your profile is live in the public directory.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -96,11 +96,11 @@ function BecomeArtistPage() {
       ) : application?.status === "rejected" ? (
         <>
           <Card className="p-6" style={{ borderRadius: 12 }}>
-            <h2 className="text-lg font-semibold text-[#B91C1C]">Application rejected</h2>
-            <p className="mt-2 whitespace-pre-wrap rounded-md bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
+            <h2 className="text-lg font-semibold text-destructive-strong">Application rejected</h2>
+            <p className="mt-2 whitespace-pre-wrap rounded-md bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
               {application.rejection_reason ?? "No reason was provided."}
             </p>
-            <p className="mt-3 text-sm text-[#6B7280]">
+            <p className="mt-3 text-sm text-muted-foreground">
               Update your details below, then resubmit for review.
             </p>
           </Card>
@@ -111,7 +111,7 @@ function BecomeArtistPage() {
               submitLabel="Save changes"
               onSaved={refetch}
             />
-            <div className="mt-4 border-t border-[#E5E7EB] pt-4">
+            <div className="mt-4 border-t border-border pt-4">
               <Button type="button" variant="primary" onClick={resubmit}>
                 Resubmit for review
               </Button>

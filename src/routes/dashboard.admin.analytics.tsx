@@ -55,8 +55,8 @@ function PlatformAnalytics() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Platform Analytics</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">A live snapshot of AuraPass activity.</p>
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Platform Analytics</h1>
+        <p className="mt-1 text-sm text-muted-foreground">A live snapshot of AuraPass activity.</p>
       </div>
 
       {loading || !stats ? (
@@ -80,8 +80,8 @@ function PlatformAnalytics() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="p-5" style={{ borderRadius: 12 }}>
-      <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-[#111827]">{value}</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-foreground">{value}</p>
     </Card>
   );
 }

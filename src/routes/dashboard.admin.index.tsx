@@ -157,8 +157,8 @@ function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Admin Panel</h1>
-      <p className="mt-1 text-sm text-[#6B7280]">
+      <h1 className="text-2xl font-bold text-foreground md:text-3xl">Admin Panel</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
         Review organiser submissions and moderate events.
       </p>
 
@@ -168,18 +168,18 @@ function AdminDashboard() {
         <Stat label="Rejected" value={counts.rejected} accent="red" />
         <Link to="/dashboard/admin/tickets" className="group block">
           <Card
-            className="p-5 border border-[#E5E7EB] transition-all hover:border-[#D946EF] hover:-translate-y-0.5 hover:shadow-md"
+            className="p-5 border border-border transition-all hover:border-primary hover:-translate-y-0.5 hover:shadow-md"
             style={{ borderRadius: 12 }}
           >
-            <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               My Tickets
             </p>
-            <p className="mt-2 text-2xl font-bold text-[#111827]">{tickets.length}</p>
+            <p className="mt-2 text-2xl font-bold text-foreground">{tickets.length}</p>
           </Card>
         </Link>
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-2 border-b border-[#E5E7EB]">
+      <div className="mt-8 flex flex-wrap gap-2 border-b border-border">
         <TabButton active={tab === "pending_review"} onClick={() => setTab("pending_review")}>
           Pending ({counts.pending_review})
         </TabButton>
@@ -219,7 +219,7 @@ function AdminDashboard() {
         </div>
       ) : filtered.length === 0 ? (
         <Card className="mt-8 p-10 text-center" style={{ borderRadius: 12 }}>
-          <p className="text-[#6B7280]">
+          <p className="text-muted-foreground">
             {tab === "pending_review"
               ? "No events waiting for review. You're all caught up."
               : tab === "published"
@@ -260,28 +260,28 @@ function AdminDashboard() {
           if (!open) closeRejectModal();
         }}
       >
-        <DialogContent className="bg-white sm:max-w-lg" style={{ borderRadius: 12 }}>
+        <DialogContent className="bg-card sm:max-w-lg" style={{ borderRadius: 12 }}>
           <DialogHeader>
-            <DialogTitle className="text-[#111827]">Reject this event</DialogTitle>
-            <DialogDescription className="text-[#6B7280]">
+            <DialogTitle className="text-foreground">Reject this event</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Provide feedback so the organiser understands why their event was rejected.
               The reason will be shown on their dashboard.
             </DialogDescription>
           </DialogHeader>
 
           {rejectTarget ? (
-            <div className="rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
+            <div className="rounded-md border border-border bg-muted px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
                 Event
               </p>
-              <p className="mt-1 text-sm font-medium text-[#111827]">{rejectTarget.title}</p>
+              <p className="mt-1 text-sm font-medium text-foreground">{rejectTarget.title}</p>
             </div>
           ) : null}
 
           <div className="space-y-1.5">
             <label
               htmlFor="rejection-reason"
-              className="block text-sm font-medium text-[#111827]"
+              className="block text-sm font-medium text-foreground"
             >
               Reason for rejection
             </label>
@@ -293,7 +293,7 @@ function AdminDashboard() {
               placeholder="e.g. Event details are incomplete, banner image is inappropriate, description is misleading..."
               className="min-h-[120px]"
             />
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-xs text-muted-foreground">
               {rejectReason.trim().length} / 20 characters minimum
             </p>
           </div>
@@ -311,7 +311,7 @@ function AdminDashboard() {
               type="button"
               onClick={confirmReject}
               disabled={rejectSubmitting || rejectReason.trim().length < 20}
-              className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+              className="bg-destructive text-white hover:bg-destructive"
             >
               {rejectSubmitting ? (
                 <span className="flex items-center gap-2">
@@ -331,14 +331,14 @@ function AdminDashboard() {
           if (!open) closeCancelAction();
         }}
       >
-        <DialogContent className="bg-white sm:max-w-lg" style={{ borderRadius: 12 }}>
+        <DialogContent className="bg-card sm:max-w-lg" style={{ borderRadius: 12 }}>
           <DialogHeader>
-            <DialogTitle className="text-[#111827]">
+            <DialogTitle className="text-foreground">
               {cancelAction?.action === "approve"
                 ? "Approve cancellation"
                 : "Decline cancellation"}
             </DialogTitle>
-            <DialogDescription className="text-[#6B7280]">
+            <DialogDescription className="text-muted-foreground">
               {cancelAction?.action === "approve"
                 ? "This will mark the event as ended, issue Paystack refunds for every confirmed paid order, and email each buyer."
                 : "The organiser will see your remark on their dashboard and the event will remain published."}
@@ -346,19 +346,19 @@ function AdminDashboard() {
           </DialogHeader>
 
           {cancelAction ? (
-            <div className="rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#D946EF]">
+            <div className="rounded-md border border-border bg-muted px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
                 Event
               </p>
-              <p className="mt-1 text-sm font-medium text-[#111827]">
+              <p className="mt-1 text-sm font-medium text-foreground">
                 {cancelAction.event.title}
               </p>
               {cancelAction.event.cancellation_request_reason ? (
                 <>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Organiser reason
                   </p>
-                  <p className="mt-1 text-sm text-[#374151] whitespace-pre-wrap">
+                  <p className="mt-1 text-sm text-foreground-secondary whitespace-pre-wrap">
                     {cancelAction.event.cancellation_request_reason}
                   </p>
                 </>
@@ -367,7 +367,7 @@ function AdminDashboard() {
           ) : null}
 
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-[#111827]">
+            <label className="block text-sm font-medium text-foreground">
               Admin remark
             </label>
             <Textarea
@@ -381,7 +381,7 @@ function AdminDashboard() {
               }
               className="min-h-[100px]"
             />
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-xs text-muted-foreground">
               {cancelRemark.trim().length} / 10 characters minimum
             </p>
           </div>
@@ -401,8 +401,8 @@ function AdminDashboard() {
               disabled={cancelSubmitting || cancelRemark.trim().length < 10}
               className={
                 cancelAction?.action === "approve"
-                  ? "bg-[#EF4444] text-white hover:bg-[#DC2626]"
-                  : "bg-[#111827] text-white hover:bg-[#374151]"
+                  ? "bg-destructive text-white hover:bg-destructive"
+                  : "bg-foreground text-white hover:bg-foreground-secondary"
               }
             >
               {cancelSubmitting ? (
@@ -434,7 +434,7 @@ function CancellationRequestCard({
   return (
     <Card className="overflow-hidden" style={{ borderRadius: 12 }}>
       <div className="flex flex-col gap-4 p-5 md:flex-row">
-        <div className="flex h-32 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#F3F4F6] md:h-28 md:w-44">
+        <div className="flex h-32 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-accent md:h-28 md:w-44">
           {event.banner_url ? (
             <img
               src={event.banner_url}
@@ -442,28 +442,28 @@ function CancellationRequestCard({
               className="h-full w-full object-cover"
             />
           ) : (
-            <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
+            <ImageIcon className="h-8 w-8 text-muted-foreground-light" />
           )}
         </div>
 
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-[#111827]">{event.title}</h3>
-            <Badge className="bg-[#FFFBEB] text-[#B45309]">Cancellation requested</Badge>
+            <h3 className="text-base font-semibold text-foreground">{event.title}</h3>
+            <Badge className="bg-warning-light text-warning-strong">Cancellation requested</Badge>
           </div>
-          <p className="text-sm text-[#6B7280]">
-            by <span className="font-medium text-[#111827]">{event.organiser_name}</span>
+          <p className="text-sm text-muted-foreground">
+            by <span className="font-medium text-foreground">{event.organiser_name}</span>
             {event.organiser_email ? ` · ${event.organiser_email}` : ""}
           </p>
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-sm text-muted-foreground">
             {formatDate(event.event_date)} · {event.venue}, {event.city}
           </p>
           {event.cancellation_request_reason ? (
-            <div className="mt-2 rounded-md border border-[#FDE68A] bg-[#FFFBEB] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#B45309]">
+            <div className="mt-2 rounded-md border border-warning-light bg-warning-light px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-warning-strong">
                 Organiser reason
               </p>
-              <p className="mt-1 text-sm text-[#78350F] whitespace-pre-wrap">
+              <p className="mt-1 text-sm text-warning-strong whitespace-pre-wrap">
                 {event.cancellation_request_reason}
               </p>
             </div>
@@ -474,7 +474,7 @@ function CancellationRequestCard({
           <Button
             type="button"
             onClick={onApprove}
-            className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+            className="bg-destructive text-white hover:bg-destructive"
           >
             Approve & Refund
           </Button>
@@ -501,13 +501,13 @@ function Stat({
   accent: "amber" | "green" | "red";
 }) {
   const colors = {
-    amber: "text-[#B45309]",
-    green: "text-[#047857]",
-    red: "text-[#B91C1C]",
+    amber: "text-warning-strong",
+    green: "text-success-strong",
+    red: "text-destructive-strong",
   }[accent];
   return (
     <Card className="p-5" style={{ borderRadius: 12 }}>
-      <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">{label}</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className={`mt-2 text-2xl font-bold ${colors}`}>{value}</p>
     </Card>
   );
@@ -528,8 +528,8 @@ function TabButton({
       onClick={onClick}
       className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${
         active
-          ? "border-[#D946EF] text-[#D946EF]"
-          : "border-transparent text-[#6B7280] hover:text-[#111827]"
+          ? "border-primary text-primary"
+          : "border-transparent text-muted-foreground hover:text-foreground"
       }`}
     >
       {children}
@@ -540,13 +540,13 @@ function TabButton({
 function statusBadge(status: AdminEvent["status"]) {
   switch (status) {
     case "published":
-      return { className: "bg-[#ECFDF5] text-[#047857]", label: "Published" };
+      return { className: "bg-success-light text-success-strong", label: "Published" };
     case "pending_review":
-      return { className: "bg-[#FFFBEB] text-[#B45309]", label: "Pending review" };
+      return { className: "bg-warning-light text-warning-strong", label: "Pending review" };
     case "rejected":
-      return { className: "bg-[#FEE2E2] text-[#B91C1C]", label: "Rejected" };
+      return { className: "bg-destructive-light text-destructive-strong", label: "Rejected" };
     default:
-      return { className: "bg-[#F3F4F6] text-[#374151]", label: status };
+      return { className: "bg-accent text-foreground-secondary", label: status };
   }
 }
 
@@ -565,23 +565,23 @@ function EventModerationCard({
   return (
     <Card className="overflow-hidden" style={{ borderRadius: 12 }}>
       <div className="flex flex-col gap-4 p-5 md:flex-row">
-        <div className="flex h-32 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#F3F4F6] md:h-28 md:w-44">
+        <div className="flex h-32 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-accent md:h-28 md:w-44">
           {event.banner_url ? (
             <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" />
           ) : (
-            <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
+            <ImageIcon className="h-8 w-8 text-muted-foreground-light" />
           )}
         </div>
 
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-[#111827]">{event.title}</h3>
+            <h3 className="text-base font-semibold text-foreground">{event.title}</h3>
             <Badge className={badge.className}>{badge.label}</Badge>
           </div>
-          <p className="text-sm text-[#6B7280]">
-            by <span className="font-medium text-[#111827]">{event.organiser_name}</span> · {event.category}
+          <p className="text-sm text-muted-foreground">
+            by <span className="font-medium text-foreground">{event.organiser_name}</span> · {event.category}
           </p>
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-sm text-muted-foreground">
             {formatDate(event.event_date)} · {(event.event_time ?? "").slice(0, 5)} · {event.venue}, {event.city}
           </p>
 
@@ -590,7 +590,7 @@ function EventModerationCard({
               {event.ticket_types.map((t) => (
                 <span
                   key={t.id}
-                  className="rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1 text-xs text-[#374151]"
+                  className="rounded-md border border-border bg-muted px-2 py-1 text-xs text-foreground-secondary"
                 >
                   {t.name} · {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))} · {t.quantity} avail
                 </span>
@@ -599,11 +599,11 @@ function EventModerationCard({
           )}
 
           {event.status === "rejected" && event.rejection_reason ? (
-            <div className="mt-3 rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#B91C1C]">
+            <div className="mt-3 rounded-md border border-destructive-strong bg-destructive-light px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-destructive-strong">
                 Reason for rejection
               </p>
-              <p className="mt-1 text-sm text-[#7F1D1D] whitespace-pre-wrap">
+              <p className="mt-1 text-sm text-destructive-strong whitespace-pre-wrap">
                 {event.rejection_reason}
               </p>
             </div>
@@ -622,14 +622,14 @@ function EventModerationCard({
             <Button
               type="button"
               onClick={() => onApprove(event)}
-              className="bg-[#10B981] text-white hover:bg-[#059669]"
+              className="bg-success text-white hover:bg-success-strong"
             >
               Approve
             </Button>
             <Button
               type="button"
               onClick={() => onReject(event)}
-              className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+              className="bg-destructive text-white hover:bg-destructive"
             >
               Reject
             </Button>

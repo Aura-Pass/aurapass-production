@@ -264,8 +264,8 @@ function EditEventPage() {
     return (
       <>
         <div className="mx-auto max-w-2xl px-4 py-24 text-center">
-          <h1 className="text-2xl font-bold text-[#111827]">Event not found</h1>
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground">Event not found</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             You don't have permission to edit this event, or it no longer exists.
           </p>
           <div className="mt-6">
@@ -280,10 +280,10 @@ function EditEventPage() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB]">
+      <div className="bg-muted">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
           <div className="mb-6">
-            <Link to="/dashboard/organiser" className="text-sm text-[#6B7280] hover:text-[#111827]">
+            <Link to="/dashboard/organiser" className="text-sm text-muted-foreground hover:text-foreground">
               ← Back to dashboard
             </Link>
           </div>
@@ -291,7 +291,7 @@ function EditEventPage() {
           <Card className="p-6 md:p-8" style={{ borderRadius: 12 }}>
             <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <h2
-                className="text-2xl font-bold text-[#111827]"
+                className="text-2xl font-bold text-foreground"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Edit event
@@ -305,14 +305,14 @@ function EditEventPage() {
                 />
 
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-[#111827]">Description</label>
+                  <label className="block text-sm font-medium text-foreground">Description</label>
                   <Textarea
                     rows={5}
                     value={form.description}
                     onChange={(e) => setField("description", e.target.value)}
                     className="min-h-[120px]"
                   />
-                  <p className="text-xs text-[#6B7280]">
+                  <p className="text-xs text-muted-foreground">
                     {form.description.length} / 50 characters minimum
                   </p>
                 </div>
@@ -353,7 +353,7 @@ function EditEventPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-[#111827]">Event banner</label>
+                  <label className="block text-sm font-medium text-foreground">Event banner</label>
                   <ImageUpload
                     value={form.banner_url}
                     onChange={(url) => setField("banner_url", url)}
@@ -362,11 +362,11 @@ function EditEventPage() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-base font-semibold text-[#111827]">Ticket types</h3>
+                <h3 className="text-base font-semibold text-foreground">Ticket types</h3>
                 {tickets.map((t, i) => (
                   <div
                     key={t.id ?? `new-${i}`}
-                    className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4"
+                    className="rounded-xl border border-border bg-muted p-4"
                     style={{ borderRadius: 12 }}
                   >
                     <div className="grid gap-3 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-end">
@@ -414,7 +414,7 @@ function EditEventPage() {
                           Remove
                         </Button>
                       ) : (
-                        <div className="text-xs text-[#9CA3AF]">Existing</div>
+                        <div className="text-xs text-muted-foreground-light">Existing</div>
                       )}
                     </div>
                   </div>
@@ -434,7 +434,7 @@ function EditEventPage() {
               </div>
 
               {error ? (
-                <p className="rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
+                <p className="rounded-md border border-destructive-strong bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
                   {error}
                 </p>
               ) : null}
@@ -476,11 +476,11 @@ function NativeSelect({
 }) {
   return (
     <div className="w-full space-y-1.5">
-      <label className="block text-sm font-medium text-[#111827]">{label}</label>
+      <label className="block text-sm font-medium text-foreground">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex h-11 w-full rounded-md border border-[#E5E7EB] bg-white px-3 py-2 text-sm text-[#111827] shadow-sm focus-visible:outline-none focus-visible:border-[#D946EF] focus-visible:ring-2 focus-visible:ring-[#D946EF]/30"
+        className="flex h-11 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
       >
         <option value="">{placeholder}</option>
         {options.map((o) => (

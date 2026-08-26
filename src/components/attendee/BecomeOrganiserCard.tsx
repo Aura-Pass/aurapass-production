@@ -85,14 +85,14 @@ export function BecomeOrganiserCard({ fullName, email, redirectTo, onDone }: Pro
     <>
       <Card className="p-6" style={{ borderRadius: 12 }}>
         <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#FDF4FF] text-[#A21CAF]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-tint text-brand-hover">
             <Megaphone className="h-5 w-5" />
           </div>
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-[#111827]">
+            <h3 className="text-base font-semibold text-foreground">
               Become an Organiser
             </h3>
-            <p className="mt-1 text-sm text-[#6B7280]">
+            <p className="mt-1 text-sm text-muted-foreground">
               Host and sell tickets to your own events on AuraPass. Organiser access
               is instant — you keep your attendee account too.
             </p>
@@ -126,7 +126,7 @@ export function BecomeOrganiserCard({ fullName, email, redirectTo, onDone }: Pro
             rows={5}
             placeholder="e.g. I run monthly afrobeats parties in Ilorin..."
           />
-          <p className="text-xs text-[#6B7280]">
+          <p className="text-xs text-muted-foreground">
             {trimmed.length}/{MIN_LEN} characters minimum
             {fullName || email ? ` · ${fullName || email}` : ""}
           </p>

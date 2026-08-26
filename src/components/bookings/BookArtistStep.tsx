@@ -131,12 +131,12 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
     <div className="space-y-5">
       <div>
         <h2
-          className="text-2xl font-bold text-[#111827]"
+          className="text-2xl font-bold text-foreground"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Book an artist
         </h2>
-        <p className="mt-2 text-sm text-[#6B7280]">
+        <p className="mt-2 text-sm text-muted-foreground">
           Line-ups sell tickets. Booking through AuraPass keeps the whole conversation,
           the agreed fee and the paperwork in one place — no chasing DMs, no surprises on
           show day, and the artist sees your event details up front. This step is optional:
@@ -146,7 +146,7 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
 
       <div className="grid gap-3 sm:grid-cols-[1.5fr_1fr_auto] sm:items-end">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground-light" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -162,12 +162,12 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
           onChange={(e) => setMaxPrice(e.target.value)}
           placeholder="Max budget (₦)"
         />
-        <label className="flex items-center gap-2 text-sm text-[#374151]">
+        <label className="flex items-center gap-2 text-sm text-foreground-secondary">
           <input
             type="checkbox"
             checked={onlyLocal}
             onChange={(e) => setOnlyLocal(e.target.checked)}
-            className="h-4 w-4 accent-[#D946EF]"
+            className="h-4 w-4 accent-primary"
           />
           Available in {city || "my city"}
         </label>
@@ -178,7 +178,7 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
           <Spinner className="h-7 w-7" />
         </div>
       ) : filtered.length === 0 ? (
-        <p className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4 text-sm text-[#6B7280]">
+        <p className="rounded-xl border border-border bg-muted p-4 text-sm text-muted-foreground">
           No approved artists match these filters. Try widening your budget or turning off the
           location filter.
         </p>
@@ -189,12 +189,12 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
             return (
               <li
                 key={a.id}
-                className="rounded-xl border border-[#E5E7EB] bg-white p-4"
+                className="rounded-xl border border-border bg-card p-4"
                 style={{ borderRadius: 12 }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 gap-3">
-                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-[#F3F4F6]">
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-accent">
                       {a.photo_urls?.[0] ? (
                         <img
                           src={a.photo_urls[0]}
@@ -203,23 +203,23 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
                         />
                       ) : (
                         <span className="flex h-full w-full items-center justify-center">
-                          <Music2 className="h-5 w-5 text-[#9CA3AF]" />
+                          <Music2 className="h-5 w-5 text-muted-foreground-light" />
                         </span>
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-[#111827]">{a.stage_name}</p>
+                      <p className="font-semibold text-foreground">{a.stage_name}</p>
                       <div className="mt-1 flex flex-wrap gap-1.5">
                         {(a.genres ?? []).slice(0, 4).map((g) => (
                           <Badge
                             key={g}
-                            className="bg-[#FDF4FF] text-[#A21CAF] hover:bg-[#FDF4FF]"
+                            className="bg-brand-tint text-brand-hover hover:bg-brand-tint"
                           >
                             {g}
                           </Badge>
                         ))}
                       </div>
-                      <p className="mt-1 text-sm text-[#6B7280]">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         Estimated: {formatNaira(a.estimated_rate ?? null)}
                         {a.available_locations?.length
                           ? ` · ${a.available_locations.join(", ")}`
@@ -256,7 +256,7 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
                 </div>
 
                 {negotiateFor === a.id ? (
-                  <div className="mt-3 space-y-2 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] p-3">
+                  <div className="mt-3 space-y-2 rounded-lg border border-brand-tint bg-brand-tint p-3">
                     <Input
                       type="number"
                       min="0"
@@ -284,7 +284,7 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
                 ) : null}
 
                 {selected ? (
-                  <p className="mt-2 text-xs text-[#A21CAF]">
+                  <p className="mt-2 text-xs text-brand-hover">
                     {selected.mode === "negotiate"
                       ? `Negotiating at ${formatNaira(selected.requestedPrice)}`
                       : `Requesting at ${formatNaira(selected.requestedPrice)}`}
@@ -296,7 +296,7 @@ export function BookArtistStep({ city, selections, onChange }: Props) {
         </ul>
       )}
 
-      <p className="text-xs text-[#6B7280]">
+      <p className="text-xs text-muted-foreground">
         Prefer to sort the line-up later? Just continue — nothing is sent until you submit,
         and you can book artists any time from Organiser → Artist Bookings.
       </p>

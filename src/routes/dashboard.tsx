@@ -144,7 +144,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       {visible.map((section, i) => (
         <div key={`${section.label}-${i}`} className="flex flex-col gap-1">
           {section.label ? (
-            <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-[#9CA3AF]">
+            <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground-light">
               {section.label}
             </p>
           ) : null}
@@ -161,8 +161,8 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-[#FDF4FF] text-[#D946EF]"
-                    : "text-[#6B7280] hover:bg-[#FDF4FF] hover:text-[#D946EF]",
+                    ? "bg-brand-tint text-primary"
+                    : "text-muted-foreground hover:bg-brand-tint hover:text-primary",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -200,7 +200,7 @@ function DashboardShell() {
 
   return (
     <PageWrapper>
-      <div className="bg-[#F9FAFB]">
+      <div className="bg-muted">
         <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-10">
           {/* Mobile-only header with hamburger */}
           <div className="mb-4 flex items-center gap-3 md:hidden">
@@ -208,11 +208,11 @@ function DashboardShell() {
               type="button"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open dashboard menu"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#E5E7EB] bg-white text-[#111827]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-card text-foreground"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="text-sm font-semibold text-[#111827]">Dashboard menu</span>
+            <span className="text-sm font-semibold text-foreground">Dashboard menu</span>
           </div>
 
           {/* Sidebar + content wrapper — sticky is scoped to this element so the
@@ -239,14 +239,14 @@ function DashboardShell() {
             onClick={() => setDrawerOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-white p-3 shadow-xl">
+          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-card p-3 shadow-xl">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-semibold text-[#111827]">Dashboard</span>
+              <span className="text-sm font-semibold text-foreground">Dashboard</span>
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
                 aria-label="Close dashboard menu"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#111827] hover:bg-[#F3F4F6]"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-accent"
               >
                 <X className="h-5 w-5" />
               </button>

@@ -97,8 +97,8 @@ function UserManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">User Management</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">User Management</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Grant or revoke roles. Roles live in the user_roles table.
         </p>
       </div>
@@ -122,13 +122,13 @@ function UserManagement() {
               style={{ borderRadius: 12 }}
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111827]">
+                <p className="truncate text-sm font-semibold text-foreground">
                   {u.full_name ?? "Unnamed"}{" "}
                   {u.username ? (
-                    <span className="font-normal text-[#6B7280]">@{u.username}</span>
+                    <span className="font-normal text-muted-foreground">@{u.username}</span>
                   ) : null}
                 </p>
-                <p className="truncate text-xs text-[#6B7280]">{u.email}</p>
+                <p className="truncate text-xs text-muted-foreground">{u.email}</p>
                 <div className="mt-2 flex flex-wrap gap-1">
                   {u.roles.map((r) => (
                     <Badge key={r} variant="outline">

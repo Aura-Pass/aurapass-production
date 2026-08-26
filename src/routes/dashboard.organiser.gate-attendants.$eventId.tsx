@@ -143,8 +143,8 @@ function GateAttendantsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Gate Attendants</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">Gate Attendants</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {eventTitle
               ? `People who can scan tickets for “${eventTitle}”.`
               : "People who can scan tickets for this event."}
@@ -157,7 +157,7 @@ function GateAttendantsPage() {
 
       <Card className="space-y-4 p-5" style={{ borderRadius: 12 }}>
         <div>
-          <label className="text-sm font-medium text-[#111827]" htmlFor="gate-search">
+          <label className="text-sm font-medium text-foreground" htmlFor="gate-search">
             Add an attendant
           </label>
           <Input
@@ -174,7 +174,7 @@ function GateAttendantsPage() {
             <Spinner className="h-5 w-5" />
           </div>
         ) : results.length > 0 ? (
-          <ul className="divide-y divide-[#E5E7EB] rounded-md border border-[#E5E7EB]">
+          <ul className="divide-y divide-border rounded-md border border-border">
             {results.map((r) => (
               <li key={r.user_id} className="flex items-center justify-between gap-3 p-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -185,11 +185,11 @@ function GateAttendantsPage() {
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F4F6] text-xs font-semibold text-[#6B7280]">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-muted-foreground">
                       {(r.username ?? "?").slice(0, 1).toUpperCase()}
                     </div>
                   )}
-                  <span className="truncate text-sm text-[#111827]">
+                  <span className="truncate text-sm text-foreground">
                     @{r.username ?? "user"}
                   </span>
                 </div>
@@ -205,25 +205,25 @@ function GateAttendantsPage() {
             ))}
           </ul>
         ) : query.trim().length >= 2 ? (
-          <p className="text-sm text-[#6B7280]">No users found.</p>
+          <p className="text-sm text-muted-foreground">No users found.</p>
         ) : null}
       </Card>
 
       <Card className="p-5" style={{ borderRadius: 12 }}>
-        <h2 className="text-sm font-semibold text-[#111827]">Active attendants</h2>
+        <h2 className="text-sm font-semibold text-foreground">Active attendants</h2>
         {loading ? (
           <div className="flex justify-center py-8">
             <Spinner className="h-5 w-5" />
           </div>
         ) : assignments.length === 0 ? (
           <div className="py-8 text-center">
-            <Users className="mx-auto h-7 w-7 text-[#D1D5DB]" />
-            <p className="mt-2 text-sm text-[#6B7280]">
+            <Users className="mx-auto h-7 w-7 text-border-strong" />
+            <p className="mt-2 text-sm text-muted-foreground">
               No gate attendants assigned to this event yet.
             </p>
           </div>
         ) : (
-          <ul className="mt-3 divide-y divide-[#E5E7EB]">
+          <ul className="mt-3 divide-y divide-border">
             {assignments.map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-3 py-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -234,11 +234,11 @@ function GateAttendantsPage() {
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F4F6] text-xs font-semibold text-[#6B7280]">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-muted-foreground">
                       {(a.username ?? "?").slice(0, 1).toUpperCase()}
                     </div>
                   )}
-                  <span className="truncate text-sm text-[#111827]">
+                  <span className="truncate text-sm text-foreground">
                     @{a.username ?? "user"}
                   </span>
                 </div>

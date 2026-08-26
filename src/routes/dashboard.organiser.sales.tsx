@@ -36,12 +36,12 @@ function SalesPage() {
 
   return (
     <>
-      <div className="bg-[#F9FAFB] min-h-screen">
+      <div className="bg-muted min-h-screen">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Sales</h1>
-              <p className="mt-1 text-sm text-[#6B7280]">
+              <h1 className="text-2xl font-bold text-foreground md:text-3xl">Sales</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Revenue and ticket sales across all your events.
               </p>
             </div>
@@ -52,24 +52,24 @@ function SalesPage() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <Card className="p-5" style={{ borderRadius: 12 }}>
-              <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Total Tickets Sold
               </p>
-              <p className="mt-2 text-2xl font-bold text-[#111827]">
+              <p className="mt-2 text-2xl font-bold text-foreground">
                 {loading ? "—" : totals.tickets}
               </p>
             </Card>
             <Card className="p-5" style={{ borderRadius: 12 }}>
-              <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Total Revenue
               </p>
-              <p className="mt-2 text-2xl font-bold text-[#111827]">
+              <p className="mt-2 text-2xl font-bold text-foreground">
                 {loading ? "—" : naira(totals.revenue)}
               </p>
             </Card>
           </div>
 
-          <div className="mt-8 flex gap-2 border-b border-[#E5E7EB]">
+          <div className="mt-8 flex gap-2 border-b border-border">
             <TabBtn active={tab === "by_event"} onClick={() => setTab("by_event")}>
               By Event
             </TabBtn>
@@ -84,7 +84,7 @@ function SalesPage() {
             </div>
           ) : sales.length === 0 ? (
             <Card className="mt-8 p-10 text-center" style={{ borderRadius: 12 }}>
-              <p className="text-[#6B7280]">No sales yet.</p>
+              <p className="text-muted-foreground">No sales yet.</p>
             </Card>
           ) : tab === "by_event" ? (
             <ByEvent sales={sales} totals={totals} />
@@ -113,8 +113,8 @@ function TabBtn({
       className={cn(
         "-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors",
         active
-          ? "border-[#D946EF] text-[#D946EF]"
-          : "border-transparent text-[#6B7280] hover:text-[#111827]",
+          ? "border-primary text-primary"
+          : "border-transparent text-muted-foreground hover:text-foreground",
       )}
     >
       {children}
@@ -176,10 +176,10 @@ function ByEvent({
         className="flex flex-col gap-1 p-5 sm:flex-row sm:items-center sm:justify-between"
         style={{ borderRadius: 12 }}
       >
-        <p className="text-sm font-semibold text-[#111827]">Total</p>
-        <p className="text-sm text-[#6B7280]">
-          <span className="font-semibold text-[#111827]">{totals.tickets}</span> tickets ·{" "}
-          <span className="font-semibold text-[#111827]">{naira(totals.revenue)}</span>
+        <p className="text-sm font-semibold text-foreground">Total</p>
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{totals.tickets}</span> tickets ·{" "}
+          <span className="font-semibold text-foreground">{naira(totals.revenue)}</span>
         </p>
       </Card>
     </div>
@@ -205,34 +205,34 @@ function EventRow({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 p-4 text-left hover:bg-[#FAFAFA]"
+        className="flex w-full items-center justify-between gap-3 p-4 text-left hover:bg-muted"
       >
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[#111827]">
+          <p className="truncate text-sm font-semibold text-foreground">
             {group.eventTitle}
           </p>
-          <p className="text-xs text-[#6B7280]">
+          <p className="text-xs text-muted-foreground">
             {formatDate(group.eventDate)} · {group.eventStatus}
           </p>
         </div>
         <div className="flex items-center gap-4 shrink-0">
           <div className="text-right">
-            <p className="text-sm font-semibold text-[#111827]">{naira(group.revenue)}</p>
-            <p className="text-xs text-[#6B7280]">{group.tickets} tickets</p>
+            <p className="text-sm font-semibold text-foreground">{naira(group.revenue)}</p>
+            <p className="text-xs text-muted-foreground">{group.tickets} tickets</p>
           </div>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-[#6B7280] transition-transform",
+              "h-4 w-4 text-muted-foreground transition-transform",
               open && "rotate-180",
             )}
           />
         </div>
       </button>
       {open && (
-        <div className="border-t border-[#E5E7EB] bg-[#FAFAFA] p-4">
+        <div className="border-t border-border bg-muted p-4">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-[#6B7280]">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="py-2">Ticket Type</th>
                 <th className="py-2 text-right">Sold</th>
                 <th className="py-2 text-right">Revenue</th>
@@ -240,10 +240,10 @@ function EventRow({
             </thead>
             <tbody>
               {Array.from(group.byType.values()).map((t) => (
-                <tr key={t.name} className="border-t border-[#E5E7EB]">
-                  <td className="py-2 text-[#111827]">{t.name}</td>
-                  <td className="py-2 text-right text-[#111827]">{t.sold}</td>
-                  <td className="py-2 text-right text-[#111827]">{naira(t.revenue)}</td>
+                <tr key={t.name} className="border-t border-border">
+                  <td className="py-2 text-foreground">{t.name}</td>
+                  <td className="py-2 text-right text-foreground">{t.sold}</td>
+                  <td className="py-2 text-right text-foreground">{naira(t.revenue)}</td>
                 </tr>
               ))}
             </tbody>
@@ -276,8 +276,8 @@ function ByType({ sales }: { sales: SaleRecord[] }) {
     <Card className="mt-6 overflow-hidden" style={{ borderRadius: 12 }}>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[500px] text-sm">
-          <thead className="bg-[#F9FAFB]">
-            <tr className="text-left text-xs uppercase tracking-wide text-[#6B7280]">
+          <thead className="bg-muted">
+            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
               <th className="p-4">Type</th>
               <th className="p-4">Events</th>
               <th className="p-4 text-right">Sold</th>
@@ -286,14 +286,14 @@ function ByType({ sales }: { sales: SaleRecord[] }) {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.name} className="border-t border-[#E5E7EB]">
-                <td className="p-4 font-semibold text-[#111827]">{r.name}</td>
-                <td className="p-4 text-[#6B7280]">
+              <tr key={r.name} className="border-t border-border">
+                <td className="p-4 font-semibold text-foreground">{r.name}</td>
+                <td className="p-4 text-muted-foreground">
                   {Array.from(r.events).slice(0, 3).join(", ")}
                   {r.events.size > 3 ? ` +${r.events.size - 3}` : ""}
                 </td>
-                <td className="p-4 text-right text-[#111827]">{r.sold}</td>
-                <td className="p-4 text-right font-semibold text-[#111827]">
+                <td className="p-4 text-right text-foreground">{r.sold}</td>
+                <td className="p-4 text-right font-semibold text-foreground">
                   {naira(r.revenue)}
                 </td>
               </tr>

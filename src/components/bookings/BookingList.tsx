@@ -53,7 +53,7 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
   if (!bookings.length) {
     return (
       <Card className="p-6" style={{ borderRadius: 12 }}>
-        <p className="text-sm text-[#6B7280]">
+        <p className="text-sm text-muted-foreground">
           {perspective === "artist"
             ? "No booking requests yet. Organisers will find you in the artist directory when they create an event."
             : "You haven't sent any booking requests yet. Add artists while creating your next event."}
@@ -83,8 +83,8 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
           <Card key={b.id} className="p-5" style={{ borderRadius: 12 }}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-base font-semibold text-[#111827]">{title}</h3>
-                <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[#6B7280]">
+                <h3 className="text-base font-semibold text-foreground">{title}</h3>
+                <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <CalendarDays className="h-4 w-4" />
                     {dateLine}
@@ -95,14 +95,14 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
                   </span>
                 </p>
                 {standalone ? (
-                  <p className="mt-1 text-sm text-[#6B7280]">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {b.standalone_event_type ?? "Event"}
                     {b.standalone_expected_attendance
                       ? ` · ~${Number(b.standalone_expected_attendance).toLocaleString("en-NG")} expected`
                       : ""}
                   </p>
                 ) : null}
-                <p className="mt-1 text-sm text-[#374151]">
+                <p className="mt-1 text-sm text-foreground-secondary">
                   {perspective === "artist" ? "From" : "Artist"}:{" "}
                   <span className="font-medium">{counterpart}</span>
                 </p>
@@ -111,11 +111,11 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
                 <Badge className={`${bookingStatusClasses(b.status)} hover:${bookingStatusClasses(b.status)}`}>
                   {BOOKING_STATUS_LABEL[b.status] ?? b.status}
                 </Badge>
-                <p className="mt-2 text-sm font-semibold text-[#111827]">
+                <p className="mt-2 text-sm font-semibold text-foreground">
                   {b.final_price ? "Agreed: " : "Requested: "}
                   {formatNaira(price)}
                 </p>
-                <p className="text-xs text-[#9CA3AF]">
+                <p className="text-xs text-muted-foreground-light">
                   {b.mode === "negotiate" ? "Negotiable" : "Direct request"}
                 </p>
               </div>
@@ -166,7 +166,7 @@ export function BookingList({ perspective }: { perspective: "artist" | "organise
             </div>
 
             {b.status === "pending_event_approval" ? (
-              <p className="mt-3 text-xs text-[#B45309]">
+              <p className="mt-3 text-xs text-warning-strong">
                 This request unlocks once the event is approved by AuraPass.
               </p>
             ) : null}

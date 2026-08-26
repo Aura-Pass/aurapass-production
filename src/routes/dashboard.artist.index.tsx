@@ -42,7 +42,7 @@ function MyArtistProfilePage() {
   if (!application) {
     return (
       <Card className="p-6" style={{ borderRadius: 12 }}>
-        <p className="text-sm text-[#6B7280]">You don't have an artist profile yet.</p>
+        <p className="text-sm text-muted-foreground">You don't have an artist profile yet.</p>
         <Button asChild variant="primary" size="sm" className="mt-4">
           <Link to="/dashboard/attendee/become-artist">Apply now</Link>
         </Button>
@@ -54,8 +54,8 @@ function MyArtistProfilePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Artist Profile</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">My Artist Profile</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Changes go live in the directory immediately.
           </p>
         </div>

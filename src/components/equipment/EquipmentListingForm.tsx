@@ -170,7 +170,7 @@ export function EquipmentListingForm({ existing, mode, onSaved }: Props) {
       </Field>
 
       <Field label="Available locations">
-        <p className="mb-2 text-xs text-[#6B7280]">
+        <p className="mb-2 text-xs text-muted-foreground">
           Organisers filter by where you can deliver. Leave empty to appear everywhere.
         </p>
         <CityMultiSelect values={locations} onChange={setLocations} placeholder="Add a city" />
@@ -196,10 +196,10 @@ export function EquipmentListingForm({ existing, mode, onSaved }: Props) {
               type="button"
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-[#E5E7EB] bg-[#F9FAFB] text-xs text-[#6B7280] hover:border-[#D946EF] hover:bg-[#FDF4FF]"
+              className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-muted text-xs text-muted-foreground hover:border-primary hover:bg-brand-tint"
             >
               {uploading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-[#D946EF]" />
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
               ) : (
                 <Upload className="h-5 w-5" />
               )}
@@ -237,9 +237,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium text-[#111827]">
+      <label className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
-        {required ? <span className="text-[#D946EF]"> *</span> : null}
+        {required ? <span className="text-primary"> *</span> : null}
       </label>
       {children}
     </div>

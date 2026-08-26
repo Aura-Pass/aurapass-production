@@ -74,10 +74,10 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#E5E7EB] bg-[#F9FAFB] text-[#6B7280] transition-colors hover:border-[#D946EF] hover:bg-[#FDF4FF] disabled:opacity-60"
+          className="flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted text-muted-foreground transition-colors hover:border-primary hover:bg-brand-tint disabled:opacity-60"
         >
           {uploading ? (
-            <Loader2 className="h-6 w-6 animate-spin text-[#D946EF]" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
           ) : (
             <Upload className="h-6 w-6" />
           )}
@@ -97,7 +97,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
           if (file) handleFile(file);
         }}
       />
-      {error ? <p className="text-sm text-[#B91C1C]">{error}</p> : null}
+      {error ? <p className="text-sm text-destructive-strong">{error}</p> : null}
     </div>
   );
 }

@@ -61,8 +61,8 @@ function GateScanIndexPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">My Assigned Events</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">My Assigned Events</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Events you've been assigned to as a gate attendant.
         </p>
       </div>
@@ -73,8 +73,8 @@ function GateScanIndexPage() {
         </div>
       ) : events.length === 0 ? (
         <Card className="p-10 text-center" style={{ borderRadius: 12 }}>
-          <ScanLine className="mx-auto h-8 w-8 text-[#D1D5DB]" />
-          <p className="mt-3 text-sm text-[#6B7280]">
+          <ScanLine className="mx-auto h-8 w-8 text-border-strong" />
+          <p className="mt-3 text-sm text-muted-foreground">
             You haven't been assigned to any events yet.
           </p>
         </Card>
@@ -87,8 +87,8 @@ function GateScanIndexPage() {
               style={{ borderRadius: 12 }}
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111827]">{e.title}</p>
-                <p className="text-xs text-[#6B7280]">
+                <p className="truncate text-sm font-semibold text-foreground">{e.title}</p>
+                <p className="text-xs text-muted-foreground">
                   {e.event_date ? formatDate(e.event_date) : ""}
                   {e.venue ? ` · ${e.venue}` : ""}
                 </p>
@@ -96,7 +96,7 @@ function GateScanIndexPage() {
               <Link
                 to="/dashboard/organiser/scan/$eventId"
                 params={{ eventId: e.id }}
-                className="inline-flex items-center gap-2 rounded-md bg-[#D946EF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#C026D3]"
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
               >
                 <ScanLine className="h-4 w-4" />
                 Open Scanner
