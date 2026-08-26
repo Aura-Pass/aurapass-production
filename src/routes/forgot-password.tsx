@@ -30,18 +30,18 @@ function ForgotPasswordPage() {
 
   return (
     <PageWrapper>
-      <div className="flex items-center justify-center bg-[#F9FAFB] px-4 py-16">
+      <div className="flex items-center justify-center bg-muted px-4 py-16">
         <Card className="w-full max-w-md p-8" style={{ borderRadius: 12 }}>
           <div className="flex justify-center">
             <Logo className="text-2xl" />
           </div>
-          <h1 className="mt-6 text-center text-2xl font-bold text-[#111827]">Reset your password</h1>
-          <p className="mt-1 text-center text-sm text-[#6B7280]">
+          <h1 className="mt-6 text-center text-2xl font-bold text-foreground">Reset your password</h1>
+          <p className="mt-1 text-center text-sm text-muted-foreground">
             Enter your email and we'll send you a reset link.
           </p>
 
           {submitted ? (
-            <p className="mt-6 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-center text-sm text-[#111827]">
+            <p className="mt-6 rounded-md border border-border bg-muted px-4 py-3 text-center text-sm text-foreground">
               If an account exists with that email, a reset link has been sent.
             </p>
           ) : (
@@ -60,8 +60,8 @@ function ForgotPasswordPage() {
             </form>
           )}
 
-          <p className="mt-6 text-center text-sm text-[#6B7280]">
-            <Link to="/login" className="font-semibold text-[#D946EF] hover:underline">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            <Link to="/login" className="font-semibold text-primary hover:underline">
               Back to log in
             </Link>
           </p>

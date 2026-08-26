@@ -52,8 +52,8 @@ function EquipmentListingPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-3xl px-4 py-20 text-center md:px-6">
-          <h1 className="text-2xl font-bold text-[#111827]">Listing not found</h1>
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground">Listing not found</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             This listing may have been removed or paused.
           </p>
           <Button asChild variant="primary" size="sm" className="mt-6">
@@ -75,7 +75,7 @@ function EquipmentListingPage() {
     <PageWrapper>
       <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
-          <div className="flex h-56 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F3F4F6] md:h-56 md:w-56">
+          <div className="flex h-56 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent md:h-56 md:w-56">
             {photos[0] ? (
               <button
                 type="button"
@@ -90,27 +90,27 @@ function EquipmentListingPage() {
                 />
               </button>
             ) : (
-              <Speaker className="h-8 w-8 text-[#9CA3AF]" />
+              <Speaker className="h-8 w-8 text-muted-foreground-light" />
             )}
           </div>
 
           <div className="min-w-0">
-            <h1 className="text-3xl font-bold text-[#111827] md:text-4xl">{listing.title}</h1>
+            <h1 className="text-3xl font-bold text-foreground md:text-4xl">{listing.title}</h1>
             {listing.category ? (
               <div className="mt-3">
-                <Badge className="bg-[#FDF4FF] text-[#A21CAF] hover:bg-[#FDF4FF]">
+                <Badge className="bg-brand-tint text-brand-hover hover:bg-brand-tint">
                   {listing.category}
                 </Badge>
               </div>
             ) : null}
-            <p className="mt-4 text-xl font-semibold text-[#111827]">
+            <p className="mt-4 text-xl font-semibold text-foreground">
               {formatNaira(listing.rental_price)}
             </p>
             {listerProfile ? (
               <Link
                 to="/equipment-listers/$id"
                 params={{ id: listerProfile.id }}
-                className="mt-1 inline-block text-sm text-[#A21CAF] hover:underline"
+                className="mt-1 inline-block text-sm text-brand-hover hover:underline"
               >
                 Listed by {listerProfile.business_name}
               </Link>
@@ -123,12 +123,12 @@ function EquipmentListingPage() {
               </Button>
             </div>
             {listing.available_locations?.length ? (
-              <p className="mt-2 text-sm text-[#6B7280]">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Available in {listing.available_locations.join(", ")}
               </p>
             ) : null}
             {listing.description ? (
-              <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[#374151]">
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground-secondary">
                 {listing.description}
               </p>
             ) : null}
@@ -137,14 +137,14 @@ function EquipmentListingPage() {
 
         {photos.length > 1 ? (
           <section className="mt-10">
-            <h2 className="text-xl font-semibold text-[#111827]">Gallery</h2>
+            <h2 className="text-xl font-semibold text-foreground">Gallery</h2>
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {photos.map((url, i) => (
                 <button
                   key={url}
                   type="button"
                   onClick={() => setOpenIndex(i)}
-                  className="overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D946EF]"
+                  className="overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <img
                     src={url}

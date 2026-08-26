@@ -63,7 +63,7 @@ function ForOrganisersPage() {
 
   return (
     <PageWrapper>
-      <section className="relative overflow-hidden bg-white">
+      <section className="relative overflow-hidden bg-background">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
@@ -73,10 +73,10 @@ function ForOrganisersPage() {
           }}
         />
         <div className="relative mx-auto max-w-4xl px-4 py-16 text-center md:px-6 md:py-24">
-          <h1 className="text-3xl font-bold tracking-tight text-[#111827] md:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-5xl">
             Sell tickets to your events in minutes
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-[#6B7280] md:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
             Create an event, set your ticket prices, and get paid. No setup fees.
           </p>
           <div className="mt-8">
@@ -87,30 +87,30 @@ function ForOrganisersPage() {
         </div>
       </section>
 
-      <section className="bg-[#F9FAFB] py-16 md:py-20">
+      <section className="bg-muted py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <div className="grid gap-6 md:grid-cols-3">
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-[#E5E7EB] bg-white p-6"
+                className="rounded-2xl border border-border bg-background p-6"
               >
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#FDF4FF] text-[#D946EF]">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-tint text-primary">
                   <f.icon className="h-5 w-5" />
                 </span>
-                <h3 className="mt-4 text-lg font-semibold text-[#111827]">
+                <h3 className="mt-4 text-lg font-semibold text-foreground">
                   {f.title}
                 </h3>
-                <p className="mt-2 text-sm text-[#6B7280]">{f.body}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{f.body}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 rounded-2xl border-l-4 border-[#D946EF] bg-[#FDF4FF] p-8 text-center md:p-10">
-            <h2 className="text-2xl font-bold text-[#111827] md:text-3xl">
+          <div className="mt-12 rounded-2xl border-l-4 border-primary bg-brand-tint p-8 text-center md:p-10">
+            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Ready to get started?
             </h2>
-            <p className="mt-2 text-sm text-[#6B7280] md:text-base">
+            <p className="mt-2 text-sm text-muted-foreground md:text-base">
               Join organisers running successful events across Nigeria.
             </p>
             <div className="mt-6">

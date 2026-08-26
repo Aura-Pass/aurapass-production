@@ -63,9 +63,9 @@ export const Route = createFileRoute("/help")({
 
 function FAQ({ q, a }: { q: string; a: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
-      <h3 className="font-semibold text-[#111827]">{q}</h3>
-      <div className="mt-2 text-sm text-[#374151]">{a}</div>
+    <div className="rounded-xl border border-border bg-background p-5">
+      <h3 className="font-semibold text-foreground">{q}</h3>
+      <div className="mt-2 text-sm text-foreground-secondary">{a}</div>
     </div>
   );
 }
@@ -73,12 +73,12 @@ function FAQ({ q, a }: { q: string; a: React.ReactNode }) {
 function HelpPage() {
   return (
     <PageWrapper>
-      <div className="bg-white">
+      <div className="bg-background">
         <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-          <h1 className="text-3xl font-bold tracking-tight text-[#111827] md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
             Help Centre
           </h1>
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <p className="mt-2 text-sm text-muted-foreground">
             Quick answers to the most common questions.
           </p>
 
@@ -92,7 +92,7 @@ function HelpPage() {
               a={
                 <>
                   Log in to your account and open{" "}
-                  <Link to="/dashboard/attendee/tickets" className="text-[#D946EF] hover:underline">
+                  <Link to="/dashboard/attendee/tickets" className="text-primary hover:underline">
                     My Tickets
                   </Link>
                   . Every ticket you've purchased is stored there with a scannable QR code.
@@ -109,7 +109,7 @@ function HelpPage() {
                 <>
                   Sign up for an organiser account, then go to your dashboard and click Create
                   Event. Events are reviewed by our team before going live.{" "}
-                  <Link to="/signup" className="text-[#D946EF] hover:underline">
+                  <Link to="/signup" className="text-primary hover:underline">
                     Get started
                   </Link>
                   .
@@ -125,7 +125,7 @@ function HelpPage() {
               a={
                 <>
                   Email us at{" "}
-                  <a href="mailto:support@aurapassticket.com" className="text-[#D946EF] hover:underline">
+                  <a href="mailto:support@aurapassticket.com" className="text-primary hover:underline">
                     support@aurapassticket.com
                   </a>{" "}
                   and we'll get back to you within 24 hours.

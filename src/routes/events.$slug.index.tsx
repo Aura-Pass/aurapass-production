@@ -100,8 +100,8 @@ export const Route = createFileRoute("/events/$slug/")({
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold text-[#111827]">Event not found</h1>
-        <p className="mt-2 text-[#6B7280]">This event may have been removed or never existed.</p>
+        <h1 className="text-2xl font-bold text-foreground">Event not found</h1>
+        <p className="mt-2 text-muted-foreground">This event may have been removed or never existed.</p>
         <div className="mt-6">
           <Button asChild variant="primary">
             <Link to="/events">Back to events</Link>
@@ -113,7 +113,7 @@ export const Route = createFileRoute("/events/$slug/")({
   errorComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold text-[#111827]">Something went wrong</h1>
+        <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
       </div>
     </PageWrapper>
   ),
@@ -283,8 +283,8 @@ function EventDetailPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-3xl px-4 py-24 text-center">
-          <h1 className="text-2xl font-bold text-[#111827]">Event not found</h1>
-          <p className="mt-2 text-[#6B7280]">This event may have been removed or never existed.</p>
+          <h1 className="text-2xl font-bold text-foreground">Event not found</h1>
+          <p className="mt-2 text-muted-foreground">This event may have been removed or never existed.</p>
           <div className="mt-6">
             <Button asChild variant="primary">
               <Link to="/events">Back to events</Link>
@@ -313,9 +313,9 @@ function EventDetailPage() {
 
   return (
     <PageWrapper>
-      <div className="bg-white">
+      <div className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#F3F4F6] md:aspect-[16/9]">
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-accent md:aspect-[16/9]">
             {event.banner_url ? (
               <img
                 src={event.banner_url}
@@ -325,7 +325,7 @@ function EventDetailPage() {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <ImageIcon className="h-14 w-14 text-[#9CA3AF]" />
+                <ImageIcon className="h-14 w-14 text-muted-foreground-light" />
               </div>
             )}
             <div
@@ -341,15 +341,15 @@ function EventDetailPage() {
               </h1>
               <div className="mt-4 grid gap-2 text-sm text-white/90 sm:grid-cols-2">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-[#D946EF]" />
+                  <Calendar className="h-4 w-4 text-primary" />
                   {formatDate(event.event_date)}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-[#D946EF]" />
+                  <Clock className="h-4 w-4 text-primary" />
                   {(event.event_time ?? "").slice(0, 5)}
                 </div>
                 <div className="flex items-center gap-2 sm:col-span-2">
-                  <MapPin className="h-4 w-4 text-[#D946EF]" />
+                  <MapPin className="h-4 w-4 text-primary" />
                   {event.venue}, {event.city}
                 </div>
               </div>
@@ -359,14 +359,14 @@ function EventDetailPage() {
           <div className="mt-8 grid gap-10 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
               <div className="space-y-2">
-                <h2 className="text-lg font-semibold text-[#111827]">About this event</h2>
-                <p className="whitespace-pre-line text-[#6B7280] leading-relaxed">{event.description}</p>
+                <h2 className="text-lg font-semibold text-foreground">About this event</h2>
+                <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{event.description}</p>
               </div>
 
               <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-[#111827]">Tickets</h2>
+                <h2 className="text-lg font-semibold text-foreground">Tickets</h2>
                 {tiers.length === 0 ? (
-                  <p className="text-sm text-[#6B7280]">No ticket types available yet.</p>
+                  <p className="text-sm text-muted-foreground">No ticket types available yet.</p>
                 ) : (
                   <RadioGroup
                     value={selectedTicketId}
@@ -383,15 +383,15 @@ function EventDetailPage() {
                           htmlFor={`tt-${t.id}`}
                           className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition ${
                             selectedTicketId === t.id
-                              ? "border-[#D946EF] bg-[#FDF4FF]"
-                              : "border-[#E5E7EB] bg-white"
+                              ? "border-primary bg-brand-tint"
+                              : "border-border bg-background"
                           } ${soldOut ? "opacity-50" : ""}`}
                         >
                           <div className="flex items-center gap-3">
                             <RadioGroupItem id={`tt-${t.id}`} value={t.id} disabled={soldOut} />
                             <div>
-                              <p className="font-semibold text-[#111827]">{t.name}</p>
-                              <p className="text-sm text-[#6B7280]">
+                              <p className="font-semibold text-foreground">{t.name}</p>
+                              <p className="text-sm text-muted-foreground">
                                 {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
                                 {" · "}
                                 {!av || av.type === "loading" ? (
@@ -416,8 +416,8 @@ function EventDetailPage() {
 
             <aside className="space-y-4">
               <Card className="p-6">
-                <p className="text-sm text-[#6B7280]">Starting from</p>
-                <p className="mt-1 text-2xl font-bold text-[#111827]">{startingFrom}</p>
+                <p className="text-sm text-muted-foreground">Starting from</p>
+                <p className="mt-1 text-2xl font-bold text-foreground">{startingFrom}</p>
                 <Button
                   variant="primary"
                   size="lg"
@@ -432,7 +432,7 @@ function EventDetailPage() {
                   Buy Tickets
                 </Button>
                 {tiers.length > 1 && !selectedTicketId && (
-                  <p className="mt-2 text-xs text-[#6B7280] text-center">
+                  <p className="mt-2 text-xs text-muted-foreground text-center">
                     Select a ticket type above.
                   </p>
                 )}
@@ -441,14 +441,14 @@ function EventDetailPage() {
 
 
               <Card className="p-6">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Organiser
                 </p>
                 {event.organiser_username ? (
                   <Link
                     to="/organisers/$username"
                     params={{ username: event.organiser_username }}
-                    className="mt-3 flex items-center gap-3 rounded-lg -mx-2 px-2 py-2 hover:bg-[#F9FAFB] transition"
+                    className="mt-3 flex items-center gap-3 rounded-lg -mx-2 px-2 py-2 hover:bg-muted transition"
                   >
                     <Avatar>
                       {event.organiser_avatar_url ? (
@@ -458,14 +458,14 @@ function EventDetailPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
+                        <AvatarFallback className="bg-brand-tint text-brand-hover font-semibold">
                           {event.organiser_name.charAt(0)}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
-                      <p className="text-xs text-[#A21CAF]">
+                      <p className="font-semibold text-foreground">{event.organiser_name}</p>
+                      <p className="text-xs text-brand-hover">
                         @{event.organiser_username} · View profile →
                       </p>
                     </div>
@@ -473,13 +473,13 @@ function EventDetailPage() {
                 ) : (
                   <div className="mt-3 flex items-center gap-3">
                     <Avatar>
-                      <AvatarFallback className="bg-[#FDF4FF] text-[#A21CAF] font-semibold">
+                      <AvatarFallback className="bg-brand-tint text-brand-hover font-semibold">
                         {event.organiser_name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold text-[#111827]">{event.organiser_name}</p>
-                      <p className="text-xs text-[#6B7280]">Verified organiser</p>
+                      <p className="font-semibold text-foreground">{event.organiser_name}</p>
+                      <p className="text-xs text-muted-foreground">Verified organiser</p>
                     </div>
                   </div>
                 )}

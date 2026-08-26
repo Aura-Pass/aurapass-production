@@ -27,8 +27,8 @@ export const Route = createFileRoute("/privacy")({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-[#111827]">{title}</h2>
-      <div className="mt-2 text-sm leading-relaxed text-[#374151]">{children}</div>
+      <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+      <div className="mt-2 text-sm leading-relaxed text-foreground-secondary">{children}</div>
     </section>
   );
 }
@@ -36,12 +36,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function PrivacyPage() {
   return (
     <PageWrapper>
-      <div className="bg-white">
+      <div className="bg-background">
         <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-          <h1 className="text-3xl font-bold tracking-tight text-[#111827] md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
             Privacy Policy
           </h1>
-          <p className="mt-2 text-sm text-[#6B7280]">Last updated: July 2026</p>
+          <p className="mt-2 text-sm text-muted-foreground">Last updated: July 2026</p>
 
           <div className="mt-8 space-y-6">
             <Section title="1. Information We Collect">
@@ -72,7 +72,7 @@ function PrivacyPage() {
               data. To exercise these rights email{" "}
               <a
                 href="mailto:support@aurapassticket.com"
-                className="text-[#D946EF] hover:underline"
+                className="text-primary hover:underline"
               >
                 support@aurapassticket.com
               </a>
@@ -96,7 +96,7 @@ function PrivacyPage() {
                 Privacy questions? Email{" "}
                 <a
                   href="mailto:support@aurapassticket.com"
-                  className="text-[#D946EF] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   support@aurapassticket.com
                 </a>

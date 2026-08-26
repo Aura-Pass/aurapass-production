@@ -78,13 +78,13 @@ function LoginPage() {
 
   return (
     <PageWrapper>
-      <div className="flex items-center justify-center bg-[#F9FAFB] px-4 py-16">
+      <div className="flex items-center justify-center bg-muted px-4 py-16">
         <Card className="w-full max-w-md p-8" style={{ borderRadius: 12 }}>
           <div className="flex justify-center">
             <Logo className="text-2xl" />
           </div>
-          <h1 className="mt-6 text-center text-2xl font-bold text-[#111827]">Welcome back</h1>
-          <p className="mt-1 text-center text-sm text-[#6B7280]">
+          <h1 className="mt-6 text-center text-2xl font-bold text-foreground">Welcome back</h1>
+          <p className="mt-1 text-center text-sm text-muted-foreground">
             Log in to continue to your account.
           </p>
 
@@ -110,7 +110,7 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 bottom-0 flex h-11 items-center text-[#6B7280] hover:text-[#111827]"
+                className="absolute right-3 bottom-0 flex h-11 items-center text-muted-foreground hover:text-foreground"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -118,7 +118,7 @@ function LoginPage() {
             </div>
 
             {error ? (
-              <p className="rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
+              <p className="rounded-md border border-destructive-strong bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
                 {error}
               </p>
             ) : null}
@@ -129,18 +129,18 @@ function LoginPage() {
           </form>
 
           <div className="mt-4 text-center">
-            <Link to="/forgot-password" className="text-sm font-medium text-[#D946EF] hover:underline">
+            <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
               Forgot password?
             </Link>
           </div>
 
           <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-[#E5E7EB]" />
-            <span className="text-xs text-[#6B7280]">OR</span>
-            <div className="h-px flex-1 bg-[#E5E7EB]" />
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">OR</span>
+            <div className="h-px flex-1 bg-border" />
           </div>
 
-          <p className="text-center text-sm text-[#6B7280]">
+          <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
             <Link
               to="/signup"
@@ -149,7 +149,7 @@ function LoginPage() {
                 ...(ticketTypeId ? { ticketTypeId } : {}),
                 ...(aref ? { aref } : {}),
               }}
-              className="font-semibold text-[#D946EF] hover:underline"
+              className="font-semibold text-primary hover:underline"
             >
               Sign up
             </Link>

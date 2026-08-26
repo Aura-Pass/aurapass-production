@@ -26,14 +26,14 @@ export const Route = createFileRoute("/events/$slug/checkout")({
   errorComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold text-[#111827]">Something went wrong</h1>
+        <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
       </div>
     </PageWrapper>
   ),
   notFoundComponent: () => (
     <PageWrapper>
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold text-[#111827]">Checkout unavailable</h1>
+        <h1 className="text-2xl font-bold text-foreground">Checkout unavailable</h1>
       </div>
     </PageWrapper>
   ),
@@ -126,7 +126,7 @@ function CheckoutPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-2xl px-4 py-24 text-center">
-          <h1 className="text-2xl font-bold text-[#111827]">Ticket not available</h1>
+          <h1 className="text-2xl font-bold text-foreground">Ticket not available</h1>
           {fetchError && (
             <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
               {fetchError}
@@ -200,17 +200,17 @@ function CheckoutPage() {
   return (
     <PageWrapper>
       <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
-        <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">Checkout</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">{event.title}</p>
+        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Checkout</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{event.title}</p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-6">
             <Card className="p-6 space-y-4">
-              <h2 className="font-semibold text-[#111827]">Ticket</h2>
-              <div className="flex items-center justify-between rounded-lg border border-[#E5E7EB] p-4">
+              <h2 className="font-semibold text-foreground">Ticket</h2>
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
                 <div>
-                  <p className="font-semibold text-[#111827]">{ticket.name}</p>
-                  <p className="text-sm text-[#6B7280]">
+                  <p className="font-semibold text-foreground">{ticket.name}</p>
+                  <p className="text-sm text-muted-foreground">
                     {isFree && quantity === 1 ? "Free" : formatCurrency(price)} · {remaining} left
                   </p>
                 </div>
@@ -239,8 +239,8 @@ function CheckoutPage() {
             </Card>
 
             <Card className="p-6 space-y-3">
-              <h2 className="font-semibold text-[#111827]">Referral code (optional)</h2>
-              <p className="text-xs text-[#6B7280]">
+              <h2 className="font-semibold text-foreground">Referral code (optional)</h2>
+              <p className="text-xs text-muted-foreground">
                 If someone shared this event with you, enter their referral code here.
               </p>
               <Input
@@ -252,7 +252,7 @@ function CheckoutPage() {
             </Card>
 
             <Card className="p-6 space-y-4">
-              <h2 className="font-semibold text-[#111827]">Your details</h2>
+              <h2 className="font-semibold text-foreground">Your details</h2>
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="name">Full name</Label>
@@ -278,26 +278,26 @@ function CheckoutPage() {
 
           <aside className="space-y-4">
             <Card className="p-6">
-              <h2 className="font-semibold text-[#111827]">Order summary</h2>
+              <h2 className="font-semibold text-foreground">Order summary</h2>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#6B7280]">
+                  <span className="text-muted-foreground">
                     {ticket.name} × {quantity}
                   </span>
-                  <span className="text-[#111827]">
+                  <span className="text-foreground">
                     {isFree ? "Free" : formatCurrency(subtotal)}
                   </span>
                 </div>
                 {!isFree && (
                   <div className="flex justify-between">
-                    <span className="text-[#6B7280]">Platform fee (3.5% + ₦100)</span>
-                    <span className="text-[#111827]">{formatCurrency(platformFee)}</span>
+                    <span className="text-muted-foreground">Platform fee (3.5% + ₦100)</span>
+                    <span className="text-foreground">{formatCurrency(platformFee)}</span>
                   </div>
                 )}
-                <div className="my-2 h-px bg-[#E5E7EB]" />
+                <div className="my-2 h-px bg-border" />
                 <div className="flex justify-between text-base font-semibold">
-                  <span className="text-[#111827]">Total</span>
-                  <span className="text-[#111827]">
+                  <span className="text-foreground">Total</span>
+                  <span className="text-foreground">
                     {isFree ? "Free" : formatCurrency(total)}
                   </span>
                 </div>
@@ -313,7 +313,7 @@ function CheckoutPage() {
                 {submitting ? <Spinner className="h-4 w-4" /> : isFree ? "Get Free Ticket" : "Complete Purchase"}
               </Button>
               {remaining < 1 && (
-                <p className="mt-2 text-center text-xs text-[#6B7280]">Sold out</p>
+                <p className="mt-2 text-center text-xs text-muted-foreground">Sold out</p>
               )}
             </Card>
           </aside>

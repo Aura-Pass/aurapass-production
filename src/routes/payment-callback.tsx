@@ -56,13 +56,13 @@ function PaymentCallbackPage() {
         {status === "verifying" ? (
           <>
             <Spinner className="h-10 w-10" />
-            <h1 className="mt-6 text-xl font-semibold text-[#111827]">Confirming your payment…</h1>
-            <p className="mt-1 text-sm text-[#6B7280]">This usually takes a few seconds.</p>
+            <h1 className="mt-6 text-xl font-semibold text-foreground">Confirming your payment…</h1>
+            <p className="mt-1 text-sm text-muted-foreground">This usually takes a few seconds.</p>
           </>
         ) : (
           <>
-            <h1 className="text-xl font-semibold text-[#111827]">Payment could not be confirmed</h1>
-            <p className="mt-1 text-sm text-[#6B7280]">
+            <h1 className="text-xl font-semibold text-foreground">Payment could not be confirmed</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
               Please try again. If you were charged, contact support.
             </p>
             <div className="mt-6 flex gap-2">

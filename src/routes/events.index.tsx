@@ -261,12 +261,12 @@ function EventsPage() {
 
   return (
     <PageWrapper>
-      <section className="bg-white">
+      <section className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-14">
-          <h1 className="text-3xl font-bold tracking-tight text-[#111827] md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
             Discover Events
           </h1>
-          <p className="mt-2 text-sm text-[#6B7280] md:text-base">
+          <p className="mt-2 text-sm text-muted-foreground md:text-base">
             Browse what's happening across Nigeria this season.
           </p>
 
@@ -276,14 +276,14 @@ function EventsPage() {
               value={searchQuery}
               onChange={(e) => handleSearchQueryChange(e.target.value)}
               placeholder="Search events, artists, venues..."
-              className="w-full rounded-xl border border-[#E5E7EB] px-4 py-3 pr-10 text-sm focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+              className="w-full rounded-xl border border-border px-4 py-3 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {searchQuery && (
               <button
                 type="button"
                 aria-label="Clear search"
                 onClick={() => handleSearchQueryChange("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground-light hover:text-foreground"
               >
                 ✕
               </button>
@@ -315,8 +315,8 @@ function EventsPage() {
                   onClick={() => handleDateChange(opt.value)}
                   className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     dateFilter === opt.value
-                      ? "bg-[#D946EF] text-white"
-                      : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
+                      ? "bg-primary text-white"
+                      : "bg-accent text-muted-foreground hover:bg-border"
                   }`}
                 >
                   {opt.label}
@@ -332,8 +332,8 @@ function EventsPage() {
                   onClick={() => handlePriceChange(opt.value)}
                   className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     priceFilter === opt.value
-                      ? "bg-[#D946EF] text-white"
-                      : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
+                      ? "bg-primary text-white"
+                      : "bg-accent text-muted-foreground hover:bg-border"
                   }`}
                 >
                   {opt.label}
@@ -354,20 +354,20 @@ function EventsPage() {
               <button
                 type="button"
                 onClick={() => setShowPast((v) => !v)}
-                className="text-xs text-[#6B7280] hover:text-[#D946EF] underline transition-colors"
+                className="text-xs text-muted-foreground hover:text-primary underline transition-colors"
               >
                 {showPast ? "Hide past events" : "Show past events"}
               </button>
 
               {activeFilterCount > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-[#6B7280]">
+                  <span className="text-xs text-muted-foreground">
                     {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} active
                   </span>
                   <button
                     type="button"
                     onClick={clearAllFilters}
-                    className="text-xs font-semibold text-[#D946EF] hover:underline"
+                    className="text-xs font-semibold text-primary hover:underline"
                   >
                     Clear all
                   </button>
@@ -378,7 +378,7 @@ function EventsPage() {
         </div>
       </section>
 
-      <section className="bg-[#F9FAFB] py-12">
+      <section className="bg-muted py-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           {loading ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -387,8 +387,8 @@ function EventsPage() {
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-[#E5E7EB] bg-white py-16 text-center">
-              <p className="text-sm text-[#6B7280]">
+            <div className="rounded-xl border border-dashed border-border bg-background py-16 text-center">
+              <p className="text-sm text-muted-foreground">
                 {events.length === 0
                   ? "No events right now — check back soon!"
                   : "No events match those filters. Try broadening your search."}
@@ -422,8 +422,8 @@ function CategoryPill({
       onClick={onClick}
       className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
         active
-          ? "bg-[#D946EF] text-white"
-          : "bg-white text-[#6B7280] border border-[#E5E7EB] hover:text-[#111827] hover:border-[#D946EF]"
+          ? "bg-primary text-white"
+          : "bg-background text-muted-foreground border border-border hover:text-foreground hover:border-primary"
       }`}
     >
       {label}
