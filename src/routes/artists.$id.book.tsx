@@ -84,7 +84,7 @@ function BookArtistPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-3xl px-4 py-20 text-center md:px-6">
-          <h1 className="text-2xl font-bold text-[#111827]">Artist not found</h1>
+          <h1 className="text-2xl font-bold text-foreground">Artist not found</h1>
           <Button asChild variant="primary" size="sm" className="mt-6">
             <Link to="/artists">Back to artists</Link>
           </Button>
@@ -97,8 +97,8 @@ function BookArtistPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-md px-4 py-20 text-center md:px-6">
-          <h1 className="text-2xl font-bold text-[#111827]">Sign in to book</h1>
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <h1 className="text-2xl font-bold text-foreground">Sign in to book</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             You need an AuraPass account to send a booking request.
           </p>
           <Button asChild variant="primary" size="md" className="mt-6">
@@ -115,10 +115,10 @@ function BookArtistPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-2xl px-4 py-12 md:px-6">
-          <h1 className="text-2xl font-bold text-[#111827]">
+          <h1 className="text-2xl font-bold text-foreground">
             Become an organiser to book {artist.stage_name}
           </h1>
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <p className="mt-2 text-sm text-muted-foreground">
             Bookings are made by organisers. Access is instant — you keep your attendee
             account too, and we'll bring you straight back here.
           </p>
@@ -213,7 +213,7 @@ function BookArtistPage() {
     <PageWrapper>
       <div className="mx-auto max-w-3xl px-4 py-10 md:px-6">
         <div className="flex items-center gap-4">
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#F3F4F6]">
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-accent">
             {artist.photo_urls?.[0] ? (
               <img
                 src={artist.photo_urls[0]}
@@ -222,21 +222,21 @@ function BookArtistPage() {
               />
             ) : (
               <span className="flex h-full w-full items-center justify-center">
-                <Music2 className="h-6 w-6 text-[#9CA3AF]" />
+                <Music2 className="h-6 w-6 text-muted-foreground-light" />
               </span>
             )}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#111827] md:text-3xl">
+            <h1 className="text-2xl font-bold text-foreground md:text-3xl">
               Book {artist.stage_name}
             </h1>
-            <p className="mt-1 text-sm text-[#6B7280]">
+            <p className="mt-1 text-sm text-muted-foreground">
               Estimated fee: {formatNaira(artist.estimated_rate)}
             </p>
           </div>
         </div>
 
-        <p className="mt-6 text-sm text-[#6B7280]">
+        <p className="mt-6 text-sm text-muted-foreground">
           Booking through AuraPass keeps the whole conversation, the agreed fee and the
           paperwork in one place — no chasing DMs, no surprises on show day, and the
           artist sees your event details up front.
@@ -244,7 +244,7 @@ function BookArtistPage() {
 
         <Card className="mt-6 space-y-4 p-6" style={{ borderRadius: 12 }}>
           <div>
-            <label className="text-sm font-medium text-[#374151]">Event name *</label>
+            <label className="text-sm font-medium text-foreground-secondary">Event name *</label>
             <Input
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
@@ -255,7 +255,7 @@ function BookArtistPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-[#374151]">Event date *</label>
+              <label className="text-sm font-medium text-foreground-secondary">Event date *</label>
               <Input
                 type="date"
                 value={eventDate}
@@ -264,11 +264,11 @@ function BookArtistPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#374151]">Event type</label>
+              <label className="text-sm font-medium text-foreground-secondary">Event type</label>
               <select
                 value={eventType}
                 onChange={(e) => setEventType(e.target.value)}
-                className="mt-1 h-10 w-full rounded-md border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] focus:border-[#D946EF] focus:outline-none"
+                className="mt-1 h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none"
               >
                 {EVENT_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -280,7 +280,7 @@ function BookArtistPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#374151]">Venue / location *</label>
+            <label className="text-sm font-medium text-foreground-secondary">Venue / location *</label>
             <Input
               value={venue}
               onChange={(e) => setVenue(e.target.value)}
@@ -290,7 +290,7 @@ function BookArtistPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#374151]">
+            <label className="text-sm font-medium text-foreground-secondary">
               Expected attendance (optional)
             </label>
             <Input
@@ -324,13 +324,13 @@ function BookArtistPage() {
             </Button>
           </div>
           {artist.estimated_rate === null ? (
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-xs text-muted-foreground">
               This artist hasn't published an estimated rate — use Negotiate to make an offer.
             </p>
           ) : null}
 
           {negotiating ? (
-            <div className="space-y-2 rounded-lg border border-[#F5D0FE] bg-[#FDF4FF] p-3">
+            <div className="space-y-2 rounded-lg border border-brand-tint bg-brand-tint p-3">
               <Input
                 type="number"
                 min="0"

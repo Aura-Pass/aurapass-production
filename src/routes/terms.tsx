@@ -26,8 +26,8 @@ export const Route = createFileRoute("/terms")({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-[#111827]">{title}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-[#374151]">{children}</p>
+      <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-foreground-secondary">{children}</p>
     </section>
   );
 }
@@ -35,12 +35,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function TermsPage() {
   return (
     <PageWrapper>
-      <div className="bg-white">
+      <div className="bg-background">
         <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-          <h1 className="text-3xl font-bold tracking-tight text-[#111827] md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
             Terms of Service
           </h1>
-          <p className="mt-2 text-sm text-[#6B7280]">Last updated: July 2026</p>
+          <p className="mt-2 text-sm text-muted-foreground">Last updated: July 2026</p>
 
           <div className="mt-8 space-y-6">
             <Section title="1. Acceptance of Terms">
@@ -89,12 +89,12 @@ function TermsPage() {
               disputes shall be resolved in the competent courts of Lagos State, Nigeria.
             </Section>
             <section>
-              <h2 className="text-xl font-semibold text-[#111827]">9. Contact</h2>
-              <p className="mt-2 text-sm leading-relaxed text-[#374151]">
+              <h2 className="text-xl font-semibold text-foreground">9. Contact</h2>
+              <p className="mt-2 text-sm leading-relaxed text-foreground-secondary">
                 For questions about these terms, contact us at{" "}
                 <a
                   href="mailto:support@aurapassticket.com"
-                  className="text-[#D946EF] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   support@aurapassticket.com
                 </a>

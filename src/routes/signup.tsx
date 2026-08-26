@@ -144,30 +144,30 @@ function SignUpPage() {
 
   return (
     <PageWrapper>
-      <div className="flex items-center justify-center bg-[#F9FAFB] px-4 py-16">
+      <div className="flex items-center justify-center bg-muted px-4 py-16">
         <Card className="w-full max-w-lg p-8" style={{ borderRadius: 12 }}>
           {success ? (
-            <div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-6 text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#D946EF]/10">
+            <div className="rounded-xl border border-border bg-muted p-6 text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                 <span className="text-2xl">📩</span>
               </div>
-              <h3 className="font-semibold text-[#111827]">Check your email</h3>
-              <p className="mt-1 text-sm text-[#6B7280]">
+              <h3 className="font-semibold text-foreground">Check your email</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
                 We sent a confirmation link to <strong>{email}</strong>. 
                 Click it to activate your AuraPass account.
               </p>
-              <p className="mt-3 text-xs text-[#9CA3AF]">
+              <p className="mt-3 text-xs text-muted-foreground-light">
                 Didn't receive it? Check your spam folder or{" "}
                 <button
                   type="button"
                   onClick={() => setSuccess(false)}
-                  className="text-[#D946EF] underline"
+                  className="text-primary underline"
                 >
                   try again
                 </button>
                 .
               </p>
-              <p className="mt-4 text-sm text-[#6B7280]">
+              <p className="mt-4 text-sm text-muted-foreground">
                 Already confirmed your email?{" "}
                 <Link
                   to="/login"
@@ -176,7 +176,7 @@ function SignUpPage() {
                     ...(ticketTypeId ? { ticketTypeId } : {}),
                     ...(aref ? { aref } : {}),
                   }}
-                  className="font-semibold text-[#D946EF] hover:underline"
+                  className="font-semibold text-primary hover:underline"
                 >
                   Continue to Login
                 </Link>
@@ -184,10 +184,10 @@ function SignUpPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-center text-2xl font-bold text-[#111827]">
+              <h1 className="text-center text-2xl font-bold text-foreground">
                 Create your account
               </h1>
-              <p className="mt-1 text-center text-sm text-[#6B7280]">
+              <p className="mt-1 text-center text-sm text-muted-foreground">
                 Join AuraPass and start accessing the moment.
               </p>
 
@@ -200,11 +200,11 @@ function SignUpPage() {
                   required
                 />
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[#111827]">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     Username
                   </label>
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF]">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground-light">
                       @
                     </span>
                     <input
@@ -217,11 +217,11 @@ function SignUpPage() {
                       }
                       placeholder="yourname"
                       maxLength={30}
-                      className="w-full rounded-lg border border-[#E5E7EB] px-4 py-3 pl-8 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#D946EF] focus:outline-none focus:ring-2 focus:ring-[#D946EF]/20"
+                      className="w-full rounded-lg border border-border px-4 py-3 pl-8 text-sm text-foreground placeholder:text-muted-foreground-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
-                  <p className="mt-1 text-xs text-[#6B7280]">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Letters, numbers, and underscores only. This is how others will see you.
                   </p>
                 </div>
@@ -254,7 +254,7 @@ function SignUpPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 bottom-0 flex h-11 items-center text-[#6B7280] hover:text-[#111827]"
+                    className="absolute right-3 bottom-0 flex h-11 items-center text-muted-foreground hover:text-foreground"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -262,7 +262,7 @@ function SignUpPage() {
                 </div>
 
                 <div>
-                  <p className="mb-2 text-sm font-medium text-[#111827]">
+                  <p className="mb-2 text-sm font-medium text-foreground">
                     I'm signing up as a...
                   </p>
                   <div className="grid grid-cols-2 gap-3">
@@ -284,7 +284,7 @@ function SignUpPage() {
                 </div>
 
                 {error ? (
-                  <p className="rounded-md border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2 text-sm text-[#B91C1C]">
+                  <p className="rounded-md border border-destructive-strong bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
                     {typeof error === "string"
                       ? error
                       : (error as { message?: string })?.message
@@ -292,14 +292,14 @@ function SignUpPage() {
                   </p>
                 ) : null}
 
-                <p className="text-xs leading-relaxed text-[#6B7280]">
+                <p className="text-xs leading-relaxed text-muted-foreground">
                   By continuing, you acknowledge that you have read and agree to
                   AuraPass's{" "}
-                  <Link to="/terms" className="text-[#D946EF] hover:underline">
+                  <Link to="/terms" className="text-primary hover:underline">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-[#D946EF] hover:underline">
+                  <Link to="/privacy" className="text-primary hover:underline">
                     Privacy Policy
                   </Link>
                   . Tickets are non-refundable except where an event is cancelled.
@@ -317,7 +317,7 @@ function SignUpPage() {
 
               </form>
 
-              <p className="mt-6 text-center text-sm text-[#6B7280]">
+              <p className="mt-6 text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link
                   to="/login"
@@ -326,7 +326,7 @@ function SignUpPage() {
                     ...(ticketTypeId ? { ticketTypeId } : {}),
                     ...(aref ? { aref } : {}),
                   }}
-                  className="font-semibold text-[#D946EF] hover:underline"
+                  className="font-semibold text-primary hover:underline"
                 >
                   Log in
                 </Link>
@@ -359,20 +359,20 @@ function RoleCard({
       className={cn(
         "rounded-xl border p-4 text-left transition-all duration-200",
         active
-          ? "border-[#D946EF] bg-[#FDF4FF] ring-2 ring-[#D946EF]/20"
-          : "border-[#E5E7EB] bg-white hover:border-[#D946EF]/60",
+          ? "border-primary bg-brand-tint ring-2 ring-primary/20"
+          : "border-border bg-background hover:border-primary/60",
       )}
     >
       <div
         className={cn(
           "inline-flex h-9 w-9 items-center justify-center rounded-md",
-          active ? "bg-[#D946EF] text-white" : "bg-[#F3F4F6] text-[#6B7280]",
+          active ? "bg-primary text-white" : "bg-accent text-muted-foreground",
         )}
       >
         {icon}
       </div>
-      <p className="mt-3 text-sm font-semibold text-[#111827]">{title}</p>
-      <p className="text-xs text-[#6B7280]">{desc}</p>
+      <p className="mt-3 text-sm font-semibold text-foreground">{title}</p>
+      <p className="text-xs text-muted-foreground">{desc}</p>
     </button>
   );
 }

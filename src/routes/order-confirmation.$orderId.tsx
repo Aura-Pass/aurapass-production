@@ -91,7 +91,7 @@ function OrderConfirmationPage() {
     return (
       <PageWrapper>
         <div className="mx-auto max-w-md px-4 py-24 text-center">
-          <h1 className="text-xl font-semibold text-[#111827]">Order not found</h1>
+          <h1 className="text-xl font-semibold text-foreground">Order not found</h1>
           <div className="mt-6">
             <Button asChild variant="primary">
               <Link to="/">Back to home</Link>
@@ -108,13 +108,13 @@ function OrderConfirmationPage() {
     <PageWrapper>
       <div className="mx-auto max-w-xl px-4 py-12">
         <Card className="p-8 text-center">
-          <CheckCircle2 className="mx-auto h-14 w-14 text-[#22C55E]" />
-          <h1 className="mt-4 text-2xl font-bold text-[#111827]">You're all set!</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <CheckCircle2 className="mx-auto h-14 w-14 text-success" />
+          <h1 className="mt-4 text-2xl font-bold text-foreground">You're all set!</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             A confirmation has been sent to {order.buyer_email}.
           </p>
 
-          <div className="mt-8 space-y-3 rounded-xl bg-[#F9FAFB] p-5 text-left text-sm">
+          <div className="mt-8 space-y-3 rounded-xl bg-muted p-5 text-left text-sm">
             <Row label="Event" value={order.events?.title ?? "—"} />
             <Row label="Ticket" value={order.ticket_types?.name ?? "—"} />
             <Row label="Quantity" value={String(order.quantity)} />
@@ -128,7 +128,7 @@ function OrderConfirmationPage() {
 
           {tickets.length > 0 && (
             <div className="mt-8 space-y-4">
-              <h2 className="text-left text-base font-semibold text-[#111827]">
+              <h2 className="text-left text-base font-semibold text-foreground">
                 Your tickets
               </h2>
               {tickets.map((ticket, idx) => (
@@ -177,14 +177,14 @@ function TicketCard({
   }
 
   return (
-    <div className="rounded-xl border border-[#E5E7EB] bg-white p-5 flex flex-col items-center">
-      <p className="text-sm font-medium text-[#6B7280]">
+    <div className="rounded-xl border border-border bg-background p-5 flex flex-col items-center">
+      <p className="text-sm font-medium text-muted-foreground">
         Ticket {index + 1} of {total}
       </p>
       <div className="mt-3">
         <TicketQRCode value={ticket.qr_code} size={180} />
       </div>
-      <p className="mt-2 text-xs font-mono text-[#6B7280] break-all">{ticket.qr_code}</p>
+      <p className="mt-2 text-xs font-mono text-muted-foreground break-all">{ticket.qr_code}</p>
       <Button
         type="button"
         variant="secondary"
@@ -203,8 +203,8 @@ function TicketCard({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-[#6B7280]">{label}</span>
-      <span className="font-medium text-[#111827] text-right">{value}</span>
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-foreground text-right">{value}</span>
     </div>
   );
 }

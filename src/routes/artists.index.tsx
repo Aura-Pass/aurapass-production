@@ -36,8 +36,8 @@ function ArtistsDirectory() {
   return (
     <PageWrapper>
       <div className="mx-auto max-w-7xl px-4 py-10 md:px-6">
-        <h1 className="text-3xl font-bold text-[#111827] md:text-4xl">Artists</h1>
-        <p className="mt-2 text-sm text-[#6B7280]">
+        <h1 className="text-3xl font-bold text-foreground md:text-4xl">Artists</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Verified performers on AuraPass — discover and book acts for your next event.
         </p>
 
@@ -47,17 +47,17 @@ function ArtistsDirectory() {
           </div>
         ) : artists.length === 0 ? (
           <Card className="mt-8 p-10 text-center" style={{ borderRadius: 12 }}>
-            <p className="text-[#6B7280]">No artists listed yet. Check back soon.</p>
+            <p className="text-muted-foreground">No artists listed yet. Check back soon.</p>
           </Card>
         ) : (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {artists.map((a) => (
               <Link key={a.id} to="/artists/$id" params={{ id: a.id }} className="group block">
                 <Card
-                  className="overflow-hidden border border-[#E5E7EB] transition-all group-hover:-translate-y-0.5 group-hover:border-[#D946EF] group-hover:shadow-md"
+                  className="overflow-hidden border border-border transition-all group-hover:-translate-y-0.5 group-hover:border-primary group-hover:shadow-md"
                   style={{ borderRadius: 12 }}
                 >
-                  <div className="flex h-48 items-center justify-center bg-[#F3F4F6]">
+                  <div className="flex h-48 items-center justify-center bg-accent">
                     {a.photo_urls[0] ? (
                       <img
                         src={a.photo_urls[0]}
@@ -66,16 +66,16 @@ function ArtistsDirectory() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <Music2 className="h-8 w-8 text-[#9CA3AF]" />
+                      <Music2 className="h-8 w-8 text-muted-foreground-light" />
                     )}
                   </div>
                   <div className="p-4">
-                    <h2 className="text-lg font-semibold text-[#111827]">{a.stage_name}</h2>
+                    <h2 className="text-lg font-semibold text-foreground">{a.stage_name}</h2>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {a.genres.slice(0, 4).map((g) => (
                         <Badge
                           key={g}
-                          className="bg-[#FDF4FF] text-[#A21CAF] hover:bg-[#FDF4FF]"
+                          className="bg-brand-tint text-brand-hover hover:bg-brand-tint"
                         >
                           {g}
                         </Badge>

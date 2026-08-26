@@ -47,20 +47,20 @@ function ResetPasswordPage() {
 
   return (
     <PageWrapper>
-      <div className="flex items-center justify-center bg-[#F9FAFB] px-4 py-16">
+      <div className="flex items-center justify-center bg-muted px-4 py-16">
         <Card className="w-full max-w-md p-8" style={{ borderRadius: 12 }}>
           <div className="flex justify-center">
             <Logo className="text-2xl" />
           </div>
-          <h1 className="mt-6 text-center text-2xl font-bold text-[#111827]">
+          <h1 className="mt-6 text-center text-2xl font-bold text-foreground">
             Set new password
           </h1>
-          <p className="mt-1 text-center text-sm text-[#6B7280]">
+          <p className="mt-1 text-center text-sm text-muted-foreground">
             Choose a strong password for your account.
           </p>
 
           {success ? (
-            <p className="mt-6 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-center text-sm text-[#111827]">
+            <p className="mt-6 rounded-md border border-border bg-muted px-4 py-3 text-center text-sm text-foreground">
               Password updated! Redirecting you to log in...
             </p>
           ) : (
@@ -78,7 +78,7 @@ function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 bottom-0 flex h-11 items-center text-[#6B7280] hover:text-[#111827]"
+                  className="absolute right-3 bottom-0 flex h-11 items-center text-muted-foreground hover:text-foreground"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -97,7 +97,7 @@ function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute right-3 bottom-0 flex h-11 items-center text-[#6B7280] hover:text-[#111827]"
+                  className="absolute right-3 bottom-0 flex h-11 items-center text-muted-foreground hover:text-foreground"
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -120,8 +120,8 @@ function ResetPasswordPage() {
             </form>
           )}
 
-          <p className="mt-6 text-center text-sm text-[#6B7280]">
-            <Link to="/login" className="font-semibold text-[#D946EF] hover:underline">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            <Link to="/login" className="font-semibold text-primary hover:underline">
               Back to log in
             </Link>
           </p>
