@@ -3,13 +3,13 @@ import { EVENT_CATEGORIES } from "@/constants";
 
 export function EventCategories() {
   return (
-    <section className="bg-[#F9FAFB] py-16 md:py-20">
+    <section className="bg-muted py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight text-[#111827] md:text-3xl">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             Browse by Category
           </h2>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Find your scene — whatever you're into.
           </p>
         </div>

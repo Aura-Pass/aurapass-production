@@ -35,8 +35,8 @@ export function FollowButton({ organiserId, size = "md" }: FollowButtonProps) {
       disabled={loading}
       className={`inline-flex items-center gap-1.5 rounded-lg font-semibold transition-all disabled:opacity-60 ${sizeClasses} ${
         isFollowing
-          ? "border border-[#D946EF] bg-white text-[#D946EF] hover:bg-[#FDF4FF]"
-          : "bg-[#D946EF] text-white hover:bg-[#C026D3]"
+          ? "border border-primary bg-background text-primary hover:bg-brand-tint"
+          : "bg-primary text-primary-foreground hover:bg-brand-hover"
       }`}
     >
       {isFollowing ? (
@@ -51,7 +51,7 @@ export function FollowButton({ organiserId, size = "md" }: FollowButtonProps) {
       {followerCount > 0 && (
         <span
           className={`ml-1 rounded-full px-1.5 py-0.5 text-xs ${
-            isFollowing ? "bg-[#FDF4FF] text-[#D946EF]" : "bg-white/20 text-white"
+            isFollowing ? "bg-brand-tint text-primary" : "bg-white/20 text-primary-foreground"
           }`}
         >
           {followerCount}

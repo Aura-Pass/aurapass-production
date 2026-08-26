@@ -6,22 +6,22 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold cursor-pointer transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D946EF] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold cursor-pointer transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-[#D946EF] text-white shadow-sm hover:bg-[#C026D3] active:bg-[#A21CAF]",
+          "bg-primary text-primary-foreground shadow-sm hover:bg-brand-hover active:bg-brand-hover",
         primary:
-          "bg-[#D946EF] text-white shadow-sm hover:bg-[#C026D3] active:bg-[#A21CAF]",
+          "bg-primary text-primary-foreground shadow-sm hover:bg-brand-hover active:bg-brand-hover",
         secondary:
-          "bg-white text-[#D946EF] border border-[#D946EF] hover:bg-[#FDF4FF]",
+          "bg-background text-primary border border-primary hover:bg-brand-tint",
         outline:
-          "border border-[#E5E7EB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
-        ghost: "bg-transparent text-[#111827] hover:bg-[#F3F4F6]",
-        link: "text-[#D946EF] underline-offset-4 hover:underline",
+          "border border-border bg-background text-foreground hover:bg-muted",
+        ghost: "bg-transparent text-foreground hover:bg-accent",
+        link: "text-primary underline-offset-4 hover:underline",
         destructive:
-          "bg-[#EF4444] text-white shadow-sm hover:bg-[#DC2626]",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
       },
       size: {
         default: "h-10 px-5 py-2",
