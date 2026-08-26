@@ -10,7 +10,7 @@ export function PageWrapper({
   showChrome?: boolean;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-background">
       {showChrome ? <Navbar /> : null}
       <main className="flex-1">{children}</main>
       {showChrome ? <Footer /> : null}
