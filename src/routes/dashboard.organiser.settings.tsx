@@ -230,12 +230,17 @@ function PayoutAccountSettings() {
           bankName: bank.name,
         },
       });
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
       setMessage(`Verified: ${res.accountName} — saved`);
       setSaved({
         bank_name: bank.name,
         account_number: accountNumber,
         account_name: res.accountName,
       });
+
       setAccountNumber("");
       setBankCode("");
     } catch (err) {
