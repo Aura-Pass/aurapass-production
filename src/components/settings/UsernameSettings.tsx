@@ -75,7 +75,7 @@ export function UsernameSettings() {
         </p>
       ) : null}
       {message ? (
-        <p className="mt-3 rounded-md border border-[#86EFAC] bg-[#F0FDF4] px-3 py-2 text-sm text-[#166534]">
+        <p className="mt-3 rounded-md border border-success-strong bg-success-light px-3 py-2 text-sm text-success-strong">
           {message}
         </p>
       ) : null}
