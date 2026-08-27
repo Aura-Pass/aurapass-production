@@ -162,3 +162,150 @@ function OrganiserProfileSettings() {
     </Card>
   );
 }
+
+interface SavedAccount {
+  bank_name: string;
+  account_number: string;
+  account_name: string;
+}
+
+function PayoutAccountSettings() {
+  const { user } = useAuth();
+  const fetchBanks = useServerFn(getBankList);
+  const verifyAndSave = useServerFn(verifyAndSaveBankAccount);
+
+  const [banks, setBanks] = useState<Array<{ name: string; code: string }>>([]);
+  const [bankCode, setBankCode] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [saved, setSaved] = useState<SavedAccount | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const list = await fetchBanks();
+        if (active) setBanks(list);
+      } catch {
+        // bank list failure is non-fatal; select stays empty
+      }
+      if (user?.id) {
+        const { data } = await (supabase as any)
+          .from("organiser_bank_accounts")
+          .select("bank_name, account_number, account_name")
+          .eq("organiser_id", user.id)
+          .maybeSingle();
+        if (active && data) setSaved(data as SavedAccount);
+      }
+      if (active) setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
+  async function handleSubmit() {
+    if (!user?.id) return;
+    const bank = banks.find((b) => b.code === bankCode);
+    if (!bank) {
+      setError("Please select a bank.");
+      return;
+    }
+    if (!/^\d{10}$/.test(accountNumber)) {
+      setError("Account number must be exactly 10 digits.");
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const res = await verifyAndSave({
+        data: {
+          organiserId: user.id,
+          accountNumber,
+          bankCode: bank.code,
+          bankName: bank.name,
+        },
+      });
+      setMessage(`Verified: ${res.accountName} — saved`);
+      setSaved({
+        bank_name: bank.name,
+        account_number: accountNumber,
+        account_name: res.accountName,
+      });
+      setAccountNumber("");
+      setBankCode("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Verification failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <Card className="p-6 space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">Payout Account</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          The verified bank account your event earnings will be paid into. Account details
+          are verified with your bank before saving.
+        </p>
+      </div>
+
+      {loading ? (
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      ) : (
+        <>
+          {saved && (
+            <div className="rounded-lg border border-border bg-muted p-4 text-sm space-y-1">
+              <p className="font-medium text-foreground">{saved.bank_name}</p>
+              <p className="text-muted-foreground">
+                ••••••{saved.account_number.slice(-4)}
+              </p>
+              <p className="text-success-strong">{saved.account_name}</p>
+            </div>
+          )}
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-foreground">Bank</label>
+            <select
+              value={bankCode}
+              onChange={(e) => setBankCode(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="">Select your bank</option>
+              {banks.map((b) => (
+                <option key={b.code} value={b.code}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-foreground">
+              Account Number
+            </label>
+            <Input
+              inputMode="numeric"
+              maxLength={10}
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
+              placeholder="10-digit account number"
+            />
+          </div>
+
+          {message && <p className="text-sm text-success-strong">{message}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
+
+          <Button onClick={handleSubmit} disabled={submitting || !bankCode || !accountNumber}>
+            {submitting ? "Verifying..." : "Verify & Save"}
+          </Button>
+        </>
+      )}
+    </Card>
+  );
+}
