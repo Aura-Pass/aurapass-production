@@ -34,40 +34,53 @@ export const verifyAndSaveBankAccount = createServerFn({ method: "POST" })
       return d;
     },
   )
-  .handler(async ({ data }) => {
-    const secret = process.env.PAYSTACK_SECRET_KEY;
-    if (!secret) throw new Error("Payment provider not configured");
+  .handler(
+    async ({
+      data,
+    }): Promise<{ ok: true; accountName: string } | { ok: false; error: string }> => {
+      const secret = process.env.PAYSTACK_SECRET_KEY;
+      if (!secret) return { ok: false, error: "Payment provider not configured" };
 
-    const resolveRes = await fetch(
-      `https://api.paystack.co/bank/resolve?account_number=${data.accountNumber}&bank_code=${data.bankCode}`,
-      { headers: { Authorization: `Bearer ${secret}` } },
-    );
-    const resolveData = (await resolveRes.json()) as any;
+      let resolveData: any;
+      try {
+        const resolveRes = await fetch(
+          `https://api.paystack.co/bank/resolve?account_number=${encodeURIComponent(
+            data.accountNumber,
+          )}&bank_code=${encodeURIComponent(data.bankCode)}`,
+          { headers: { Authorization: `Bearer ${secret}` } },
+        );
+        resolveData = await resolveRes.json();
+      } catch {
+        return { ok: false, error: "Could not reach the bank verification service. Try again." };
+      }
 
-    if (!resolveData?.status || !resolveData?.data?.account_name) {
-      throw new Error(
-        resolveData?.message ||
-          "Could not verify this account number. Double-check the details and try again.",
+      if (!resolveData?.status || !resolveData?.data?.account_name) {
+        const raw = String(resolveData?.message ?? "");
+        const friendly = /could not resolve account name/i.test(raw)
+          ? "We couldn't verify this account. Make sure the 10-digit account number matches the selected bank. (Account verification only works with a live Paystack key.)"
+          : raw || "Could not verify this account number. Double-check the details and try again.";
+        return { ok: false, error: friendly };
+      }
+
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const sb = supabaseAdmin as any;
+
+      const { error } = await sb.from("organiser_bank_accounts").upsert(
+        {
+          organiser_id: data.organiserId,
+          bank_name: data.bankName,
+          bank_code: data.bankCode,
+          account_number: data.accountNumber,
+          account_name: resolveData.data.account_name,
+          verified_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "organiser_id" },
       );
-    }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const sb = supabaseAdmin as any;
+      if (error) return { ok: false, error: error.message };
 
-    const { error } = await sb.from("organiser_bank_accounts").upsert(
-      {
-        organiser_id: data.organiserId,
-        bank_name: data.bankName,
-        bank_code: data.bankCode,
-        account_number: data.accountNumber,
-        account_name: resolveData.data.account_name,
-        verified_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "organiser_id" },
-    );
+      return { ok: true, accountName: resolveData.data.account_name as string };
+    },
+  );
 
-    if (error) throw new Error(error.message);
-
-    return { accountName: resolveData.data.account_name as string };
-  });
