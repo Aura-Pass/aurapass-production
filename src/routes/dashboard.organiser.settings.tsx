@@ -287,18 +287,42 @@ function PayoutAccountSettings() {
 
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Bank</label>
-            <select
-              value={bankCode}
-              onChange={(e) => setBankCode(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            >
-              <option value="">Select your bank</option>
-              {banks.map((b) => (
-                <option key={b.code} value={b.code}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
+            <Popover open={bankPickerOpen} onOpenChange={setBankPickerOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                  {bankCode ? banks.find((b) => b.code === bankCode)?.name : "Select your bank"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search bank..." />
+                  <CommandList>
+                    <CommandEmpty>No bank found.</CommandEmpty>
+                    <CommandGroup>
+                      {banks.map((b) => (
+                        <CommandItem
+                          key={b.code}
+                          value={b.name}
+                          onSelect={() => {
+                            setBankCode(b.code);
+                            setBankPickerOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={`mr-2 h-4 w-4 ${bankCode === b.code ? "opacity-100" : "opacity-0"}`}
+                          />
+                          {b.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div>
