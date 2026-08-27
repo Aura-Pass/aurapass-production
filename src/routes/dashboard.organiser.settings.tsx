@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UsernameSettings } from "@/components/settings/UsernameSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { getBankList, verifyAndSaveBankAccount } from "@/lib/payouts.functions";
 
 export const Route = createFileRoute("/dashboard/organiser/settings")({
   head: () => ({ meta: [{ title: "Settings | AuraPass" }] }),
@@ -30,6 +34,7 @@ function OrganiserSettingsPage() {
             </p>
           </div>
           <OrganiserProfileSettings />
+          <PayoutAccountSettings />
           <UsernameSettings />
         </div>
       </div>
