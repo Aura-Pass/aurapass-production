@@ -186,6 +186,7 @@ function PayoutAccountSettings() {
 
   const [banks, setBanks] = useState<Array<{ name: string; code: string }>>([]);
   const [bankCode, setBankCode] = useState("");
+  const [bankPickerOpen, setBankPickerOpen] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
   const [saved, setSaved] = useState<SavedAccount | null>(null);
   const [loading, setLoading] = useState(true);
