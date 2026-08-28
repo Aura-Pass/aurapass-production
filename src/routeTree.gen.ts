@@ -51,6 +51,7 @@ import { Route as ArtistsIdIndexRouteImport } from './routes/artists.$id.index'
 import { Route as ArtistsIdBookRouteImport } from './routes/artists.$id.book'
 import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
+import { Route as DashboardAdminFundRequestsRouteImport } from './routes/dashboard.admin.fund-requests'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
 import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
 import { Route as DashboardArtistIndexRouteImport } from './routes/dashboard.artist.index'
@@ -79,6 +80,7 @@ import { Route as EventsSlugIndexRouteImport } from './routes/events.$slug.index
 import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.checkout'
 import { Route as DashboardGateScanIndexRouteImport } from './routes/dashboard.gate.scan.index'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
+import { Route as DashboardOrganiserFundRequestsEventIdRouteImport } from './routes/dashboard.organiser.fund-requests.$eventId'
 import { Route as DashboardOrganiserGateAttendantsEventIdRouteImport } from './routes/dashboard.organiser.gate-attendants.$eventId'
 import { Route as DashboardOrganiserMarketersEventIdRouteImport } from './routes/dashboard.organiser.marketers.$eventId'
 import { Route as DashboardOrganiserScanIndexRouteImport } from './routes/dashboard.organiser.scan.index'
@@ -298,6 +300,12 @@ const DashboardAdminAnalyticsRoute = DashboardAdminAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardAdminFundRequestsRoute =
+  DashboardAdminFundRequestsRouteImport.update({
+    id: '/fund-requests',
+    path: '/fund-requests',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
 const DashboardAdminTicketsRoute = DashboardAdminTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
@@ -451,6 +459,12 @@ const DashboardOrganiserEditEventEventIdRoute =
     path: '/edit-event/$eventId',
     getParentRoute: () => DashboardOrganiserRoute,
   } as any)
+const DashboardOrganiserFundRequestsEventIdRoute =
+  DashboardOrganiserFundRequestsEventIdRouteImport.update({
+    id: '/fund-requests/$eventId',
+    path: '/fund-requests/$eventId',
+    getParentRoute: () => DashboardOrganiserRoute,
+  } as any)
 const DashboardOrganiserGateAttendantsEventIdRoute =
   DashboardOrganiserGateAttendantsEventIdRouteImport.update({
     id: '/gate-attendants/$eventId',
@@ -517,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
+  '/dashboard/admin/fund-requests': typeof DashboardAdminFundRequestsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
@@ -546,6 +561,7 @@ export interface FileRoutesByFullPath {
   '/equipment/$id/': typeof EquipmentIdIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
+  '/dashboard/organiser/fund-requests/$eventId': typeof DashboardOrganiserFundRequestsEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
   '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
@@ -585,6 +601,7 @@ export interface FileRoutesByTo {
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
+  '/dashboard/admin/fund-requests': typeof DashboardAdminFundRequestsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
@@ -614,6 +631,7 @@ export interface FileRoutesByTo {
   '/equipment/$id': typeof EquipmentIdIndexRoute
   '/events/$slug': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
+  '/dashboard/organiser/fund-requests/$eventId': typeof DashboardOrganiserFundRequestsEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
   '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
@@ -662,6 +680,7 @@ export interface FileRoutesById {
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
+  '/dashboard/admin/fund-requests': typeof DashboardAdminFundRequestsRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/artist/bookings': typeof DashboardArtistBookingsRoute
@@ -691,6 +710,7 @@ export interface FileRoutesById {
   '/equipment/$id/': typeof EquipmentIdIndexRoute
   '/events/$slug/': typeof EventsSlugIndexRoute
   '/dashboard/organiser/edit-event/$eventId': typeof DashboardOrganiserEditEventEventIdRoute
+  '/dashboard/organiser/fund-requests/$eventId': typeof DashboardOrganiserFundRequestsEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
   '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
@@ -740,6 +760,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
     | '/dashboard/admin/analytics'
+    | '/dashboard/admin/fund-requests'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
     | '/dashboard/artist/bookings'
@@ -769,6 +790,7 @@ export interface FileRouteTypes {
     | '/equipment/$id/'
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
+    | '/dashboard/organiser/fund-requests/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
     | '/dashboard/organiser/marketers/$eventId'
     | '/dashboard/organiser/scan/$eventId'
@@ -808,6 +830,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
     | '/dashboard/admin/analytics'
+    | '/dashboard/admin/fund-requests'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
     | '/dashboard/artist/bookings'
@@ -837,6 +860,7 @@ export interface FileRouteTypes {
     | '/equipment/$id'
     | '/events/$slug'
     | '/dashboard/organiser/edit-event/$eventId'
+    | '/dashboard/organiser/fund-requests/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
     | '/dashboard/organiser/marketers/$eventId'
     | '/dashboard/organiser/scan/$eventId'
@@ -884,6 +908,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
     | '/dashboard/admin/analytics'
+    | '/dashboard/admin/fund-requests'
     | '/dashboard/admin/tickets'
     | '/dashboard/admin/users'
     | '/dashboard/artist/bookings'
@@ -913,6 +938,7 @@ export interface FileRouteTypes {
     | '/equipment/$id/'
     | '/events/$slug/'
     | '/dashboard/organiser/edit-event/$eventId'
+    | '/dashboard/organiser/fund-requests/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
     | '/dashboard/organiser/marketers/$eventId'
     | '/dashboard/organiser/scan/$eventId'
@@ -1254,6 +1280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminAnalyticsRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/admin/fund-requests': {
+      id: '/dashboard/admin/fund-requests'
+      path: '/fund-requests'
+      fullPath: '/dashboard/admin/fund-requests'
+      preLoaderRoute: typeof DashboardAdminFundRequestsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/tickets': {
       id: '/dashboard/admin/tickets'
       path: '/tickets'
@@ -1450,6 +1483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserEditEventEventIdRouteImport
       parentRoute: typeof DashboardOrganiserRoute
     }
+    '/dashboard/organiser/fund-requests/$eventId': {
+      id: '/dashboard/organiser/fund-requests/$eventId'
+      path: '/fund-requests/$eventId'
+      fullPath: '/dashboard/organiser/fund-requests/$eventId'
+      preLoaderRoute: typeof DashboardOrganiserFundRequestsEventIdRouteImport
+      parentRoute: typeof DashboardOrganiserRoute
+    }
     '/dashboard/organiser/gate-attendants/$eventId': {
       id: '/dashboard/organiser/gate-attendants/$eventId'
       path: '/gate-attendants/$eventId'
@@ -1483,6 +1523,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardAdminRouteChildren {
   DashboardAdminAnalyticsRoute: typeof DashboardAdminAnalyticsRoute
+  DashboardAdminFundRequestsRoute: typeof DashboardAdminFundRequestsRoute
   DashboardAdminTicketsRoute: typeof DashboardAdminTicketsRoute
   DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute
   DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
@@ -1490,6 +1531,7 @@ interface DashboardAdminRouteChildren {
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminAnalyticsRoute: DashboardAdminAnalyticsRoute,
+  DashboardAdminFundRequestsRoute: DashboardAdminFundRequestsRoute,
   DashboardAdminTicketsRoute: DashboardAdminTicketsRoute,
   DashboardAdminUsersRoute: DashboardAdminUsersRoute,
   DashboardAdminIndexRoute: DashboardAdminIndexRoute,
@@ -1547,6 +1589,7 @@ interface DashboardOrganiserRouteChildren {
   DashboardOrganiserTicketsRoute: typeof DashboardOrganiserTicketsRoute
   DashboardOrganiserIndexRoute: typeof DashboardOrganiserIndexRoute
   DashboardOrganiserEditEventEventIdRoute: typeof DashboardOrganiserEditEventEventIdRoute
+  DashboardOrganiserFundRequestsEventIdRoute: typeof DashboardOrganiserFundRequestsEventIdRoute
   DashboardOrganiserGateAttendantsEventIdRoute: typeof DashboardOrganiserGateAttendantsEventIdRoute
   DashboardOrganiserMarketersEventIdRoute: typeof DashboardOrganiserMarketersEventIdRoute
   DashboardOrganiserScanEventIdRoute: typeof DashboardOrganiserScanEventIdRoute
@@ -1565,6 +1608,8 @@ const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
   DashboardOrganiserIndexRoute: DashboardOrganiserIndexRoute,
   DashboardOrganiserEditEventEventIdRoute:
     DashboardOrganiserEditEventEventIdRoute,
+  DashboardOrganiserFundRequestsEventIdRoute:
+    DashboardOrganiserFundRequestsEventIdRoute,
   DashboardOrganiserGateAttendantsEventIdRoute:
     DashboardOrganiserGateAttendantsEventIdRoute,
   DashboardOrganiserMarketersEventIdRoute:

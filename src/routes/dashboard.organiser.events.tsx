@@ -333,6 +333,14 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
               Marketers
             </Link>
           </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/dashboard/organiser/fund-requests/$eventId"
+              params={{ eventId: event.id }}
+            >
+              Request Funds
+            </Link>
+          </Button>
         </div>
       </div>
     </Card>

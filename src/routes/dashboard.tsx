@@ -127,6 +127,7 @@ const SECTIONS: NavSection[] = [
       { to: "/dashboard/admin", label: "Moderation Queue", icon: ClipboardList, exact: true },
       { to: "/dashboard/admin/analytics", label: "Platform Analytics", icon: BarChart3 },
       { to: "/dashboard/admin/users", label: "User Management", icon: ShieldCheck },
+      { to: "/dashboard/admin/fund-requests", label: "Fund Requests", icon: WalletCards },
     ],
   },
 ];
