@@ -274,7 +274,7 @@ function AdminFundRequestsPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {r.status === "pending" && (
+                    {r.status === "pending" && !r.is_final_settlement && (
                       <>
                         <Button
                           variant="primary"
