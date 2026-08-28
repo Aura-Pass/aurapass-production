@@ -48,6 +48,7 @@ interface FundRequest {
   amount: number;
   status: string;
   admin_note: string | null;
+  is_final_settlement: boolean;
   created_at: string | null;
   reviewed_at: string | null;
   paid_at: string | null;
@@ -86,10 +87,25 @@ function fmtDate(v: string | null) {
   return new Date(v).toLocaleString();
 }
 
+function isEventConcluded(eventDate: string | null, eventTime: string | null) {
+  if (!eventDate) return false;
+  const date = new Date(eventDate);
+  if (Number.isNaN(date.getTime())) return false;
+  if (eventTime) {
+    const [h, m] = eventTime.split(":").map(Number);
+    if (typeof h === "number" && !Number.isNaN(h)) date.setHours(h, Number.isFinite(m) ? m : 0, 0, 0);
+  } else {
+    date.setHours(23, 59, 59, 999);
+  }
+  return date.getTime() < Date.now();
+}
+
 function FundRequestsPage() {
   const { eventId } = Route.useParams();
   const { user } = useAuth();
   const [eventTitle, setEventTitle] = useState("");
+  const [eventDate, setEventDate] = useState<string | null>(null);
+  const [eventTime, setEventTime] = useState<string | null>(null);
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState<SavedAccount | null>(null);
   const [requests, setRequests] = useState<FundRequest[]>([]);
@@ -97,6 +113,12 @@ function FundRequestsPage() {
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const concluded = isEventConcluded(eventDate, eventTime);
+  const requestsUsed = requests.filter(
+    (r) => !r.is_final_settlement && ["pending", "approved", "paid"].includes(r.status),
+  ).length;
+  const requestsRemaining = Math.max(0, 2 - requestsUsed);
 
   const loadBalanceAndHistory = useCallback(async () => {
     const [balRes, histRes] = await Promise.all([
@@ -126,6 +148,7 @@ function FundRequestsPage() {
         amount: Number(r.amount ?? 0),
         status: String(r.status ?? "pending"),
         admin_note: r.admin_note ?? r.admin_notes ?? null,
+        is_final_settlement: Boolean(r.is_final_settlement ?? false),
         created_at: r.created_at ?? r.requested_at ?? null,
         reviewed_at: r.reviewed_at ?? null,
         paid_at: r.paid_at ?? null,
@@ -138,7 +161,11 @@ function FundRequestsPage() {
     (async () => {
       setLoading(true);
       const [{ data: evt }, { data: acct }] = await Promise.all([
-        (supabase as any).from("events").select("title").eq("id", eventId).maybeSingle(),
+        (supabase as any)
+          .from("events")
+          .select("title, event_date, event_time")
+          .eq("id", eventId)
+          .maybeSingle(),
         user?.id
           ? (supabase as any)
               .from("organiser_bank_accounts")
@@ -149,7 +176,10 @@ function FundRequestsPage() {
       ]);
       await loadBalanceAndHistory();
       if (!active) return;
-      setEventTitle((evt as { title?: string } | null)?.title ?? "");
+      const event = evt as { title?: string; event_date?: string | null; event_time?: string | null } | null;
+      setEventTitle(event?.title ?? "");
+      setEventDate(event?.event_date ?? null);
+      setEventTime(event?.event_time ?? null);
       setAccount((acct as SavedAccount | null) ?? null);
       setLoading(false);
     })();
@@ -235,9 +265,33 @@ function FundRequestsPage() {
             <Link to="/dashboard/organiser/settings">Go to Settings</Link>
           </Button>
         </Card>
+      ) : concluded ? (
+        <Card className="p-6" style={{ borderRadius: 12 }}>
+          <p className="text-sm font-medium text-foreground">Event concluded</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            This event has concluded. Your remaining balance will be released as a final
+            settlement automatically.
+          </p>
+        </Card>
       ) : (
         <Card className="p-6" style={{ borderRadius: 12 }}>
           <h2 className="text-lg font-semibold text-foreground">New request</h2>
+
+          <div className="mt-3 rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Fund request policy</p>
+            <p className="mt-1">
+              You can request funds up to 2 times before your event, for a combined total of up
+              to 80% of your available balance.
+            </p>
+            <p className="mt-1">
+              The remaining balance is automatically released as a final settlement once your
+              event concludes — no action needed from you.
+            </p>
+            <p className="mt-2 font-medium text-foreground">
+              {requestsUsed} of 2 requests used{requestsRemaining === 0 ? " (no remaining requests)" : ""}
+            </p>
+          </div>
+
           <div className="mt-3 rounded-md border border-border bg-muted px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Paid into
@@ -266,8 +320,13 @@ function FundRequestsPage() {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Amount to request"
               className="sm:max-w-xs"
+              disabled={requestsRemaining === 0}
             />
-            <Button type="submit" variant="primary" disabled={submitting || balance <= 0}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={submitting || balance <= 0 || requestsRemaining === 0}
+            >
               {submitting ? "Submitting..." : "Request funds"}
             </Button>
           </form>

@@ -69,6 +69,7 @@ interface AdminFundRequest {
   amount: number;
   status: string;
   admin_note: string | null;
+  is_final_settlement: boolean;
   created_at: string | null;
   organiser_name: string;
   organiser_username: string | null;
@@ -126,6 +127,7 @@ function AdminFundRequestsPage() {
             amount: Number(r.amount ?? 0),
             status: String(r.status ?? "pending"),
             admin_note: r.admin_note ?? r.admin_notes ?? null,
+            is_final_settlement: Boolean(r.is_final_settlement ?? false),
             created_at: r.created_at ?? r.requested_at ?? null,
             organiser_name: r.organiser_full_name ?? r.full_name ?? "Unknown",
             organiser_username: r.organiser_username ?? r.username ?? null,
@@ -147,7 +149,7 @@ function AdminFundRequestsPage() {
     const { error } = await (supabase as any).rpc("review_fund_request", {
       p_request_id: row.id,
       p_approve: true,
-      p_admin_note: null,
+      p_admin_notes: null,
     });
     setBusyId(null);
     if (error) {
@@ -164,7 +166,7 @@ function AdminFundRequestsPage() {
     const { error } = await (supabase as any).rpc("review_fund_request", {
       p_request_id: rejectTarget.id,
       p_approve: false,
-      p_admin_note: rejectNote.trim() || null,
+      p_admin_notes: rejectNote.trim() || null,
     });
     setBusyId(null);
     if (error) {
@@ -241,6 +243,9 @@ function AdminFundRequestsPage() {
                         {r.event_title || "Event"}
                       </h3>
                       <Badge className={s.className}>{s.label}</Badge>
+                      {r.is_final_settlement && (
+                        <Badge variant="outline">Final Settlement</Badge>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {r.organiser_name}
@@ -263,13 +268,13 @@ function AdminFundRequestsPage() {
                     </div>
                     {r.admin_note && (
                       <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
-                        Admin note: {r.admin_note}
+                        {r.is_final_settlement ? r.admin_note : `Admin note: ${r.admin_note}`}
                       </p>
                     )}
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {r.status === "pending" && (
+                    {r.status === "pending" && !r.is_final_settlement && (
                       <>
                         <Button
                           variant="primary"
