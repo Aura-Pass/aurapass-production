@@ -87,6 +87,19 @@ function fmtDate(v: string | null) {
   return new Date(v).toLocaleString();
 }
 
+function isEventConcluded(eventDate: string | null, eventTime: string | null) {
+  if (!eventDate) return false;
+  const date = new Date(eventDate);
+  if (Number.isNaN(date.getTime())) return false;
+  if (eventTime) {
+    const [h, m] = eventTime.split(":").map(Number);
+    if (typeof h === "number" && !Number.isNaN(h)) date.setHours(h, Number.isFinite(m) ? m : 0, 0, 0);
+  } else {
+    date.setHours(23, 59, 59, 999);
+  }
+  return date.getTime() < Date.now();
+}
+
 function FundRequestsPage() {
   const { eventId } = Route.useParams();
   const { user } = useAuth();
