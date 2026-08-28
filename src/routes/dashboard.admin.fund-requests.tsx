@@ -149,7 +149,7 @@ function AdminFundRequestsPage() {
     const { error } = await (supabase as any).rpc("review_fund_request", {
       p_request_id: row.id,
       p_approve: true,
-      p_admin_note: null,
+      p_admin_notes: null,
     });
     setBusyId(null);
     if (error) {
