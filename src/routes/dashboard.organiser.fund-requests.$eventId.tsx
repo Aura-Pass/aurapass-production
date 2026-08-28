@@ -205,7 +205,7 @@ function FundRequestsPage() {
           </p>
         </div>
         <Button asChild variant="outline" size="sm">
-          <Link to="/dashboard/organiser/events">Back to My Events</Link>
+          <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>Back to My Events</Link>
         </Button>
       </div>
 
