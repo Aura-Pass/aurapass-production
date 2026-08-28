@@ -91,6 +91,8 @@ function FundRequestsPage() {
   const { eventId } = Route.useParams();
   const { user } = useAuth();
   const [eventTitle, setEventTitle] = useState("");
+  const [eventDate, setEventDate] = useState<string | null>(null);
+  const [eventTime, setEventTime] = useState<string | null>(null);
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState<SavedAccount | null>(null);
   const [requests, setRequests] = useState<FundRequest[]>([]);
