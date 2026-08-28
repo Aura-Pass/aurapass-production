@@ -69,6 +69,7 @@ interface AdminFundRequest {
   amount: number;
   status: string;
   admin_note: string | null;
+  is_final_settlement: boolean;
   created_at: string | null;
   organiser_name: string;
   organiser_username: string | null;
