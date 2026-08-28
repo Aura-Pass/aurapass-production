@@ -127,6 +127,7 @@ function AdminFundRequestsPage() {
             amount: Number(r.amount ?? 0),
             status: String(r.status ?? "pending"),
             admin_note: r.admin_note ?? r.admin_notes ?? null,
+            is_final_settlement: Boolean(r.is_final_settlement ?? false),
             created_at: r.created_at ?? r.requested_at ?? null,
             organiser_name: r.organiser_full_name ?? r.full_name ?? "Unknown",
             organiser_username: r.organiser_username ?? r.username ?? null,
