@@ -243,6 +243,9 @@ function AdminFundRequestsPage() {
                         {r.event_title || "Event"}
                       </h3>
                       <Badge className={s.className}>{s.label}</Badge>
+                      {r.is_final_settlement && (
+                        <Badge variant="secondary">Final Settlement</Badge>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {r.organiser_name}
@@ -265,7 +268,7 @@ function AdminFundRequestsPage() {
                     </div>
                     {r.admin_note && (
                       <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
-                        Admin note: {r.admin_note}
+                        {r.is_final_settlement ? r.admin_note : `Admin note: ${r.admin_note}`}
                       </p>
                     )}
                   </div>
