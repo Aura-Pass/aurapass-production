@@ -48,6 +48,7 @@ interface FundRequest {
   amount: number;
   status: string;
   admin_note: string | null;
+  is_final_settlement: boolean;
   created_at: string | null;
   reviewed_at: string | null;
   paid_at: string | null;
