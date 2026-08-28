@@ -114,6 +114,12 @@ function FundRequestsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const concluded = isEventConcluded(eventDate, eventTime);
+  const requestsUsed = requests.filter(
+    (r) => !r.is_final_settlement && ["pending", "approved", "paid"].includes(r.status),
+  ).length;
+  const requestsRemaining = Math.max(0, 2 - requestsUsed);
+
   const loadBalanceAndHistory = useCallback(async () => {
     const [balRes, histRes] = await Promise.all([
       (supabase as any).rpc("get_event_payable_balance", { p_event_id: eventId }),
