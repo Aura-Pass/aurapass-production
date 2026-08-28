@@ -142,7 +142,11 @@ function FundRequestsPage() {
     (async () => {
       setLoading(true);
       const [{ data: evt }, { data: acct }] = await Promise.all([
-        (supabase as any).from("events").select("title").eq("id", eventId).maybeSingle(),
+        (supabase as any)
+          .from("events")
+          .select("title, event_date, event_time")
+          .eq("id", eventId)
+          .maybeSingle(),
         user?.id
           ? (supabase as any)
               .from("organiser_bank_accounts")
@@ -153,7 +157,10 @@ function FundRequestsPage() {
       ]);
       await loadBalanceAndHistory();
       if (!active) return;
-      setEventTitle((evt as { title?: string } | null)?.title ?? "");
+      const event = evt as { title?: string; event_date?: string | null; event_time?: string | null } | null;
+      setEventTitle(event?.title ?? "");
+      setEventDate(event?.event_date ?? null);
+      setEventTime(event?.event_time ?? null);
       setAccount((acct as SavedAccount | null) ?? null);
       setLoading(false);
     })();
