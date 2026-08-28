@@ -244,7 +244,7 @@ function AdminFundRequestsPage() {
                       </h3>
                       <Badge className={s.className}>{s.label}</Badge>
                       {r.is_final_settlement && (
-                        <Badge variant="secondary">Final Settlement</Badge>
+                        <Badge variant="outline">Final Settlement</Badge>
                       )}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
