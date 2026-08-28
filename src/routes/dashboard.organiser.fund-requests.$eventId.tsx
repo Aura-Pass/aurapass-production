@@ -127,6 +127,7 @@ function FundRequestsPage() {
         amount: Number(r.amount ?? 0),
         status: String(r.status ?? "pending"),
         admin_note: r.admin_note ?? r.admin_notes ?? null,
+        is_final_settlement: Boolean(r.is_final_settlement ?? false),
         created_at: r.created_at ?? r.requested_at ?? null,
         reviewed_at: r.reviewed_at ?? null,
         paid_at: r.paid_at ?? null,
