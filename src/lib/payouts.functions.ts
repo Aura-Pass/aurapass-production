@@ -84,3 +84,32 @@ export const verifyAndSaveBankAccount = createServerFn({ method: "POST" })
     },
   );
 
+export const notifyAdminFundRequest = createServerFn({ method: "POST" })
+  .inputValidator(
+    (d: {
+      eventTitle: string;
+      organiserName: string;
+      organiserUsername: string;
+      amountRequested: number;
+      isFinalSettlement: boolean;
+      fundRequestId: string;
+    }) => {
+      if (
+        !d ||
+        typeof d.eventTitle !== "string" ||
+        typeof d.organiserName !== "string" ||
+        typeof d.organiserUsername !== "string" ||
+        typeof d.amountRequested !== "number" ||
+        typeof d.isFinalSettlement !== "boolean" ||
+        typeof d.fundRequestId !== "string"
+      ) {
+        throw new Error("Invalid input");
+      }
+      return d;
+    },
+  )
+  .handler(async ({ data }) => {
+    const { sendAdminFundRequestEmail } = await import("@/lib/email.server");
+    await sendAdminFundRequestEmail(data);
+    return { sent: true };
+  });
