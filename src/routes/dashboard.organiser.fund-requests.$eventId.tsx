@@ -224,7 +224,7 @@ function FundRequestsPage() {
         isFinalSettlement: false,
         fundRequestId: createdRows?.[0]?.id ?? "",
       },
-    }).catch((err) => console.error("Failed to notify admin:", err));
+    }).catch((err: unknown) => console.error("Failed to notify admin:", err));
 
     await loadBalanceAndHistory();
   }
