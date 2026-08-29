@@ -17,6 +17,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
+import { notifyAdminFundRequest } from "@/lib/payouts.functions";
 import { formatCurrency } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/organiser/fund-requests/$eventId")({
@@ -102,7 +103,7 @@ function isEventConcluded(eventDate: string | null, eventTime: string | null) {
 
 function FundRequestsPage() {
   const { eventId } = Route.useParams();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [eventTitle, setEventTitle] = useState("");
   const [eventDate, setEventDate] = useState<string | null>(null);
   const [eventTime, setEventTime] = useState<string | null>(null);
@@ -127,7 +128,7 @@ function FundRequestsPage() {
         .from("organiser_fund_requests")
         .select("*")
         .eq("event_id", eventId)
-        .order("created_at", { ascending: false }),
+        .order("requested_at", { ascending: false }),
     ]);
 
     const raw = Array.isArray(balRes.data) ? balRes.data[0] : balRes.data;
@@ -149,7 +150,7 @@ function FundRequestsPage() {
         status: String(r.status ?? "pending"),
         admin_note: r.admin_note ?? r.admin_notes ?? null,
         is_final_settlement: Boolean(r.is_final_settlement ?? false),
-        created_at: r.created_at ?? r.requested_at ?? null,
+        created_at: r.requested_at ?? r.created_at ?? null,
         reviewed_at: r.reviewed_at ?? null,
         paid_at: r.paid_at ?? null,
       })),
@@ -201,7 +202,7 @@ function FundRequestsPage() {
       return;
     }
     setSubmitting(true);
-    const { error: rpcError } = await (supabase as any).rpc("create_fund_request", {
+    const { data: createdRows, error: rpcError } = await (supabase as any).rpc("create_fund_request", {
       p_event_id: eventId,
       p_amount: value,
     });
@@ -212,6 +213,19 @@ function FundRequestsPage() {
     }
     toast.success("Fund request submitted");
     setAmount("");
+
+    // Notify admin fire-and-forget — don't block the UI on email delivery
+    notifyAdminFundRequest({
+      data: {
+        eventTitle,
+        organiserName: profile?.full_name ?? profile?.username ?? user?.email ?? "",
+        organiserUsername: profile?.username ?? "",
+        amountRequested: value,
+        isFinalSettlement: false,
+        fundRequestId: createdRows?.[0]?.id ?? "",
+      },
+    }).catch((err: unknown) => console.error("Failed to notify admin:", err));
+
     await loadBalanceAndHistory();
   }
 
