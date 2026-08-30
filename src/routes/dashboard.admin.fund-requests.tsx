@@ -123,25 +123,44 @@ function AdminFundRequestsPage() {
       p_status: tab === "all" ? null : tab,
     });
     if (error) toast.error(error.message);
-    setRows(
-      error
-        ? []
-        : ((data as any[]) ?? []).map((r) => ({
-            id: r.id ?? r.request_id,
-            event_id: r.event_id ?? "",
-            amount: Number(r.amount ?? r.amount_requested ?? 0),
-            status: String(r.status ?? "pending"),
-            admin_note: r.admin_note ?? r.admin_notes ?? null,
-            is_final_settlement: Boolean(r.is_final_settlement ?? false),
-            created_at: r.created_at ?? r.requested_at ?? null,
-            organiser_name: r.organiser_full_name ?? r.full_name ?? "Unknown",
-            organiser_username: r.organiser_username ?? r.username ?? null,
-            event_title: r.event_title ?? r.title ?? "",
-            bank_name: r.bank_name ?? "",
-            account_number: r.account_number ?? "",
-            account_name: r.account_name ?? "",
-          })),
-    );
+    const mapped = error
+      ? []
+      : ((data as any[]) ?? []).map((r) => ({
+          id: r.id ?? r.request_id,
+          event_id: r.event_id ?? "",
+          amount: Number(r.amount ?? r.amount_requested ?? 0),
+          status: String(r.status ?? "pending"),
+          admin_note: r.admin_note ?? r.admin_notes ?? null,
+          is_final_settlement: Boolean(r.is_final_settlement ?? false),
+          created_at: r.created_at ?? r.requested_at ?? null,
+          organiser_name: r.organiser_full_name ?? r.full_name ?? "Unknown",
+          organiser_username: r.organiser_username ?? r.username ?? null,
+          event_title: r.event_title ?? r.title ?? "",
+          bank_name: r.bank_name ?? "",
+          account_number: r.account_number ?? "",
+          account_name: r.account_name ?? "",
+        }));
+    setRows(mapped);
+
+    const uniqueEventIds = Array.from(new Set(mapped.map((r) => r.event_id).filter(Boolean)));
+    if (uniqueEventIds.length > 0) {
+      const results = await Promise.all(
+        uniqueEventIds.map((id) =>
+          (supabase as any).rpc("get_event_fund_summary", { p_event_id: id }),
+        ),
+      );
+      const map: Record<string, { committed: number; available: number }> = {};
+      uniqueEventIds.forEach((id, i) => {
+        const row = Array.isArray(results[i].data) ? results[i].data[0] : results[i].data;
+        map[id] = {
+          committed: Number(row?.committed ?? 0),
+          available: Number(row?.available ?? 0),
+        };
+      });
+      setEventSummaries(map);
+    } else {
+      setEventSummaries({});
+    }
     setLoading(false);
   }, [tab]);
 
