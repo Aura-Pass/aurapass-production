@@ -18,7 +18,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { notifyAdminFundRequest } from "@/lib/payouts.functions";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatNaira } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/organiser/fund-requests/$eventId")({
   head: () => ({
