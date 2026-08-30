@@ -113,6 +113,9 @@ function AdminFundRequestsPage() {
   const [rejectTarget, setRejectTarget] = useState<AdminFundRequest | null>(null);
   const [rejectNote, setRejectNote] = useState("");
   const [payTarget, setPayTarget] = useState<AdminFundRequest | null>(null);
+  const [eventSummaries, setEventSummaries] = useState<
+    Record<string, { committed: number; available: number }>
+  >({});
 
   const load = useCallback(async () => {
     setLoading(true);
