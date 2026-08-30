@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/lib/supabase";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatNaira } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/admin/fund-requests")({
   head: () => ({
