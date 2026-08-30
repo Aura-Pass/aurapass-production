@@ -14,6 +14,14 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+export function formatNaira(amount: number): string {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
 export function formatDate(dateString: string): string {
   const d = new Date(dateString);
   if (Number.isNaN(d.getTime())) return dateString;
