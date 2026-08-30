@@ -120,6 +120,9 @@ function FundRequestsPage() {
     (r) => !r.is_final_settlement && ["pending", "approved", "paid"].includes(r.status),
   ).length;
   const requestsRemaining = Math.max(0, 2 - requestsUsed);
+  const committed = requests
+    .filter((r) => ["pending", "approved", "paid"].includes(r.status))
+    .reduce((sum, r) => sum + r.amount, 0);
 
   const loadBalanceAndHistory = useCallback(async () => {
     const [balRes, histRes] = await Promise.all([
