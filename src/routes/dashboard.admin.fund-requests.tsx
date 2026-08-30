@@ -125,6 +125,7 @@ function AdminFundRequestsPage() {
         ? []
         : ((data as any[]) ?? []).map((r) => ({
             id: r.id ?? r.request_id,
+            event_id: r.event_id ?? "",
             amount: Number(r.amount ?? r.amount_requested ?? 0),
             status: String(r.status ?? "pending"),
             admin_note: r.admin_note ?? r.admin_notes ?? null,
