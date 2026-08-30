@@ -400,7 +400,7 @@ function AdminFundRequestsPage() {
             <AlertDialogTitle>Mark this request as paid?</AlertDialogTitle>
             <AlertDialogDescription>
               {payTarget
-                ? `Confirm you've completed this transfer of ${formatCurrency(
+                ? `Confirm you've completed this transfer of ${formatNaira(
                     payTarget.amount,
                   )} to ${payTarget.account_name} (${payTarget.bank_name} · ${
                     payTarget.account_number
