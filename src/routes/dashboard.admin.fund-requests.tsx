@@ -66,6 +66,7 @@ const TABS: { key: StatusFilter; label: string }[] = [
 
 interface AdminFundRequest {
   id: string;
+  event_id: string;
   amount: number;
   status: string;
   admin_note: string | null;
