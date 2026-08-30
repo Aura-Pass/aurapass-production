@@ -382,7 +382,7 @@ function FundRequestsPage() {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-semibold text-foreground">
-                      {formatCurrency(r.amount)}
+                      {formatNaira(r.amount)}
                     </p>
                     <Badge className={s.className}>{s.label}</Badge>
                   </div>
