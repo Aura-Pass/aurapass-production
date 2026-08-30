@@ -257,15 +257,29 @@ function FundRequestsPage() {
       </div>
 
       <Card className="p-6" style={{ borderRadius: 12 }}>
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
-            <Banknote className="h-5 w-5 text-primary" />
-          </span>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Available to request
-            </p>
-            <p className="text-2xl font-bold text-foreground">{formatCurrency(balance)}</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+              <Banknote className="h-5 w-5 text-primary" />
+            </span>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Withdrawn so far
+              </p>
+              <p className="text-2xl font-bold text-foreground">{formatNaira(committed)}</p>
+            </div>
+          </div>
+          <div className="hidden h-10 w-px bg-border sm:block" />
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+              <Banknote className="h-5 w-5 text-primary" />
+            </span>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Still available to request
+              </p>
+              <p className="text-2xl font-bold text-foreground">{formatNaira(balance)}</p>
+            </div>
           </div>
         </div>
       </Card>
