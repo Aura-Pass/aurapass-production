@@ -18,7 +18,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { notifyAdminFundRequest } from "@/lib/payouts.functions";
-import { formatCurrency } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/organiser/fund-requests/$eventId")({
   head: () => ({
@@ -120,6 +120,9 @@ function FundRequestsPage() {
     (r) => !r.is_final_settlement && ["pending", "approved", "paid"].includes(r.status),
   ).length;
   const requestsRemaining = Math.max(0, 2 - requestsUsed);
+  const committed = requests
+    .filter((r) => ["pending", "approved", "paid"].includes(r.status))
+    .reduce((sum, r) => sum + r.amount, 0);
 
   const loadBalanceAndHistory = useCallback(async () => {
     const [balRes, histRes] = await Promise.all([
@@ -254,15 +257,29 @@ function FundRequestsPage() {
       </div>
 
       <Card className="p-6" style={{ borderRadius: 12 }}>
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
-            <Banknote className="h-5 w-5 text-primary" />
-          </span>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Available to request
-            </p>
-            <p className="text-2xl font-bold text-foreground">{formatCurrency(balance)}</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+              <Banknote className="h-5 w-5 text-primary" />
+            </span>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Withdrawn so far
+              </p>
+              <p className="text-2xl font-bold text-foreground">{formatNaira(committed)}</p>
+            </div>
+          </div>
+          <div className="hidden h-10 w-px bg-border sm:block" />
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+              <Banknote className="h-5 w-5 text-primary" />
+            </span>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Still available to request
+              </p>
+              <p className="text-2xl font-bold text-foreground">{formatNaira(balance)}</p>
+            </div>
           </div>
         </div>
       </Card>
@@ -365,7 +382,7 @@ function FundRequestsPage() {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-semibold text-foreground">
-                      {formatCurrency(r.amount)}
+                      {formatNaira(r.amount)}
                     </p>
                     <Badge className={s.className}>{s.label}</Badge>
                   </div>
