@@ -277,7 +277,7 @@ function AdminFundRequestsPage() {
                       requested {fmtDate(r.created_at)}
                     </p>
                     <p className="mt-2 text-lg font-bold text-foreground">
-                      {formatCurrency(r.amount)}
+                      {formatNaira(r.amount)}
                     </p>
                     <div className="mt-2 rounded-md border border-border bg-muted px-3 py-2">
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -290,6 +290,12 @@ function AdminFundRequestsPage() {
                         {r.bank_name} · {r.account_number}
                       </p>
                     </div>
+                    {eventSummaries[r.event_id] && (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Event balance — Withdrawn {formatNaira(eventSummaries[r.event_id].committed)} · Available{" "}
+                        {formatNaira(eventSummaries[r.event_id].available)}
+                      </p>
+                    )}
                     {r.admin_note && (
                       <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
                         {r.is_final_settlement ? r.admin_note : `Admin note: ${r.admin_note}`}
