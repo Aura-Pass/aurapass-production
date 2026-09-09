@@ -334,6 +334,18 @@ function MarketersPage() {
                     <p className="text-[11px] text-muted-foreground">Revenue</p>
                   </div>
                 </div>
+                {r.ticket_breakdown.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {r.ticket_breakdown.map((b) => (
+                      <span
+                        key={b.ticket_type_name}
+                        className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-medium text-foreground"
+                      >
+                        {b.ticket_type_name}: {b.quantity}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

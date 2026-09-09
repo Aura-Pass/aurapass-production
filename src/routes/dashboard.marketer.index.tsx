@@ -154,6 +154,18 @@ function MarketerDashboardPage() {
                     )}
                   </Button>
                 </div>
+                {r.ticket_breakdown.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {r.ticket_breakdown.map((b) => (
+                      <span
+                        key={b.ticket_type_name}
+                        className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-medium text-foreground"
+                      >
+                        {b.ticket_type_name}: {b.quantity}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-2 text-center sm:w-auto sm:min-w-[160px]">
                 <div className="rounded-md bg-muted px-2 py-2">
