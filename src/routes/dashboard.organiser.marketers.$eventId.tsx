@@ -62,6 +62,7 @@ interface MarketerStat {
   order_count: number;
   tickets_sold: number;
   gross_revenue: number;
+  ticket_breakdown: { ticket_type_name: string; quantity: number }[];
 }
 
 function MarketersPage() {
@@ -92,6 +93,7 @@ function MarketersPage() {
             order_count: Number(r.confirmed_orders ?? 0),
             tickets_sold: Number(r.tickets_sold ?? 0),
             gross_revenue: Number(r.gross_revenue ?? 0),
+            ticket_breakdown: Array.isArray(r.ticket_breakdown) ? r.ticket_breakdown : [],
           })),
     );
     setLoading(false);
