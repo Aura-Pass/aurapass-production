@@ -45,6 +45,8 @@ function MarketerDashboardPage() {
 
       if (!active) return;
       if (error) {
+        console.error("[marketer dashboard] get_my_marketer_stats failed:", error);
+        toast.error("Could not load your sales — please refresh the page.");
         setRows([]);
       } else {
         const mapped = ((data as any[]) ?? []).map((r) => ({
