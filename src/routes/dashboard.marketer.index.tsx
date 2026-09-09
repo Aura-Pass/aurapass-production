@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/dashboard/marketer")({
+export const Route = createFileRoute("/dashboard/marketer/")({
   head: () => ({ meta: [{ title: "My Sales | AuraPass" }] }),
   component: () => (
     <ProtectedRoute allowedRoles={["marketer"]}>
