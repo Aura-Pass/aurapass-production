@@ -62,6 +62,7 @@ interface MarketerStat {
   order_count: number;
   tickets_sold: number;
   gross_revenue: number;
+  ticket_breakdown: { ticket_type_name: string; quantity: number }[];
 }
 
 function MarketersPage() {
@@ -92,6 +93,7 @@ function MarketersPage() {
             order_count: Number(r.confirmed_orders ?? 0),
             tickets_sold: Number(r.tickets_sold ?? 0),
             gross_revenue: Number(r.gross_revenue ?? 0),
+            ticket_breakdown: Array.isArray(r.ticket_breakdown) ? r.ticket_breakdown : [],
           })),
     );
     setLoading(false);
@@ -332,6 +334,18 @@ function MarketersPage() {
                     <p className="text-[11px] text-muted-foreground">Revenue</p>
                   </div>
                 </div>
+                {r.ticket_breakdown.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {r.ticket_breakdown.map((b) => (
+                      <span
+                        key={b.ticket_type_name}
+                        className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-medium text-foreground"
+                      >
+                        {b.ticket_type_name}: {b.quantity}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
