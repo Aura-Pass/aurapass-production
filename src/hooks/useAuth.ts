@@ -17,7 +17,7 @@ import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types";
 
-export type AppRole = "attendee" | "organiser" | "admin";
+export type AppRole = "attendee" | "organiser" | "admin" | "marketer";
 
 // ---- module-level roles store (shared across all useAuth consumers) ----
 let rolesCache: string[] = [];

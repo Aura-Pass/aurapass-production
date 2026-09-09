@@ -23,6 +23,7 @@ import {
   Inbox,
   Handshake,
   Wrench,
+  Megaphone,
   Menu,
   X,
 } from "lucide-react";
@@ -102,6 +103,13 @@ const SECTIONS: NavSection[] = [
     label: "Gate Duty",
     items: [
       { to: "/dashboard/gate/scan", label: "My Assigned Events", icon: ScanLine, exact: true },
+    ],
+  },
+  {
+    role: "marketer",
+    label: "Marketer",
+    items: [
+      { to: "/dashboard/marketer", label: "My Sales", icon: Megaphone, exact: true },
     ],
   },
   {
