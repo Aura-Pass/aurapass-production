@@ -77,7 +77,7 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
     console.error("[sendTicketConfirmationEmail] failed to fetch tickets", ticketsError);
   }
 
-  const { data: merchOrderItems } = await supabaseAdmin
+  const { data: merchOrderItems } = await (supabaseAdmin as any)
     .from("order_merch_items")
     .select("item_name, quantity, unit_price, subtotal")
     .eq("order_id", data.orderId);
