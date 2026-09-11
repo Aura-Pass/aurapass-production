@@ -261,6 +261,64 @@ function CheckoutPage() {
               </div>
             </Card>
 
+            {merchItems.length > 0 && (
+              <Card className="p-6 space-y-4">
+                <h2 className="font-semibold text-foreground">Merch (optional)</h2>
+                <div className="space-y-3">
+                  {merchItems.map((m) => {
+                    const qty = merchQty[m.id] || 0;
+                    return (
+                      <div
+                        key={m.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-border p-4"
+                      >
+                        <div className="flex min-w-0 items-center gap-3">
+                          {m.image_url ? (
+                            <img
+                              src={m.image_url}
+                              alt={m.name}
+                              className="h-12 w-12 shrink-0 rounded-md object-cover"
+                            />
+                          ) : null}
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-foreground">{m.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {formatCurrency(Number(m.price))}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              setMerchQty((q) => ({ ...q, [m.id]: Math.max(0, (q[m.id] || 0) - 1) }))
+                            }
+                            disabled={qty <= 0}
+                          >
+                            −
+                          </Button>
+                          <span className="w-8 text-center font-medium">{qty}</span>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              setMerchQty((q) => ({ ...q, [m.id]: Math.min(10, (q[m.id] || 0) + 1) }))
+                            }
+                            disabled={qty >= 10}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            )}
+
             <Card className="p-6 space-y-3">
               <h2 className="font-semibold text-foreground">Referral code (optional)</h2>
               <p className="text-xs text-muted-foreground">
