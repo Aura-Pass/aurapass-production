@@ -446,6 +446,19 @@ function CheckoutPage() {
           </aside>
         </div>
       </div>
+
+      <Dialog open={!!previewImage} onOpenChange={(open) => !open && setPreviewImage(null)}>
+        <DialogContent className="max-w-3xl p-0">
+          <DialogTitle className="sr-only">{previewImage?.name ?? "Merch preview"}</DialogTitle>
+          {previewImage && (
+            <img
+              src={previewImage.url}
+              alt={previewImage.name}
+              className="h-auto w-full rounded-lg object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </PageWrapper>
   );
 }
