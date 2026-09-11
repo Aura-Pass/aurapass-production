@@ -29,7 +29,10 @@ export const Route = createFileRoute("/dashboard/organiser/create-event")({
 });
 
 type TicketRow = { name: string; price: string; quantity: string };
+type MerchRow = { name: string; price: string; description: string; image_url: string };
 type Step = 1 | 2 | 3 | 4;
+
+const EMPTY_MERCH: MerchRow = { name: "", price: "", description: "", image_url: "" };
 
 interface EventForm {
   title: string;
@@ -65,6 +68,11 @@ function CreateEventPage() {
 
   const [tickets, setTickets] = useState<TicketRow[]>([{ ...EMPTY_TICKET }]);
   const [bookings, setBookings] = useState<BookingSelection[]>([]);
+
+  const [postSubmit, setPostSubmit] = useState<"prompt" | "merch" | null>(null);
+  const [createdEventId, setCreatedEventId] = useState<string | null>(null);
+  const [merchItems, setMerchItems] = useState<MerchRow[]>([{ ...EMPTY_MERCH }]);
+  const [savingMerch, setSavingMerch] = useState(false);
 
   function set<K extends keyof EventForm>(key: K, value: EventForm[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -223,13 +231,173 @@ function CreateEventPage() {
         console.error("[create-event] admin email failed", emailErr);
       }
 
-      toast.success("Event submitted! We'll review it shortly.");
-      navigate({ to: "/dashboard/organiser" });
+      // Show the post-submit merch prompt instead of navigating immediately.
+      setCreatedEventId(String(eventRow.id));
+      setPostSubmit("prompt");
+      setSubmitting(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong.";
       setError(msg);
       setSubmitting(false);
     }
+  }
+
+  function finishToDashboard() {
+    toast.success("Event submitted! We'll review it shortly.");
+    navigate({ to: "/dashboard/organiser" });
+  }
+
+  async function handleMerchDone() {
+    if (!createdEventId) return;
+    const filled = merchItems.filter((m) => m.name.trim() && m.price.trim() !== "");
+    for (const [i, m] of merchItems.entries()) {
+      if (!m.name.trim() && !m.price.trim() && !m.description.trim() && !m.image_url) continue;
+      if (!m.name.trim()) { setError(`Merch item #${i + 1}: please enter a name.`); return; }
+      const price = Number(m.price);
+      if (m.price.trim() === "" || Number.isNaN(price) || price < 0) {
+        setError(`Merch item #${i + 1}: price must be 0 or greater.`);
+        return;
+      }
+    }
+    setError(null);
+    setSavingMerch(true);
+    try {
+      for (const item of filled) {
+        const { error: merchErr } = await (supabase as any).rpc("upsert_event_merch_item", {
+          p_id: null,
+          p_event_id: createdEventId,
+          p_name: item.name.trim(),
+          p_description: item.description.trim() || null,
+          p_price: Number(item.price),
+          p_image_url: item.image_url || null,
+          p_is_active: true,
+        });
+        if (merchErr) throw new Error(merchErr.message);
+      }
+      finishToDashboard();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save merch items.");
+      setSavingMerch(false);
+    }
+  }
+
+  if (postSubmit) {
+    return (
+      <div className="bg-muted">
+        <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
+          <Card className="p-6 md:p-8" style={{ borderRadius: 12 }}>
+            {postSubmit === "prompt" ? (
+              <div className="space-y-5 text-center">
+                <StepHeading>🎉 Event submitted!</StepHeading>
+                <p className="text-sm text-muted-foreground">
+                  Want to sell merch at this event?
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                  <Button type="button" variant="primary" onClick={() => setPostSubmit("merch")}>
+                    Add merch
+                  </Button>
+                  <Button type="button" variant="outline" onClick={finishToDashboard}>
+                    Skip for now
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-5">
+                <StepHeading>Add merch for this event</StepHeading>
+                <p className="text-sm text-muted-foreground">
+                  Add items attendees can buy at the venue. Name and price are required.
+                </p>
+
+                <div className="space-y-4">
+                  {merchItems.map((m, i) => (
+                    <div
+                      key={i}
+                      className="space-y-3 rounded-xl border border-border bg-muted p-4"
+                      style={{ borderRadius: 12 }}
+                    >
+                      <div className="grid gap-3 md:grid-cols-[1.5fr_1fr_auto] md:items-end">
+                        <Input
+                          label="Item name"
+                          placeholder="e.g. Event T-shirt"
+                          value={m.name}
+                          onChange={(e) =>
+                            setMerchItems((rows) => rows.map((r, idx) => (idx === i ? { ...r, name: e.target.value } : r)))
+                          }
+                        />
+                        <Input
+                          label="Price (₦)"
+                          type="number"
+                          min="0"
+                          step="100"
+                          value={m.price}
+                          onChange={(e) =>
+                            setMerchItems((rows) => rows.map((r, idx) => (idx === i ? { ...r, price: e.target.value } : r)))
+                          }
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setMerchItems((rows) => rows.filter((_, idx) => idx !== i))}
+                          disabled={merchItems.length === 1}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="block text-sm font-medium text-foreground">Description (optional)</label>
+                        <Textarea
+                          rows={2}
+                          placeholder="e.g. Black, sizes M–XXL"
+                          value={m.description}
+                          onChange={(e) =>
+                            setMerchItems((rows) => rows.map((r, idx) => (idx === i ? { ...r, description: e.target.value } : r)))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="block text-sm font-medium text-foreground">Photo (optional)</label>
+                        <ImageUpload
+                          value={m.image_url}
+                          onChange={(url) =>
+                            setMerchItems((rows) => rows.map((r, idx) => (idx === i ? { ...r, image_url: url } : r)))
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Button type="button" variant="secondary" onClick={() => setMerchItems((rows) => [...rows, { ...EMPTY_MERCH }])}>
+                  + Add another item
+                </Button>
+
+                {error ? (
+                  <p className="rounded-md border border-destructive-strong bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
+                    {error}
+                  </p>
+                ) : null}
+
+                <div className="flex items-center justify-between pt-2">
+                  <Button type="button" variant="outline" onClick={finishToDashboard} disabled={savingMerch}>
+                    Skip for now
+                  </Button>
+                  <Button type="button" variant="primary" onClick={handleMerchDone} disabled={savingMerch}>
+                    {savingMerch ? (
+                      <span className="flex items-center gap-2">
+                        <Spinner className="h-4 w-4" /> Saving…
+                      </span>
+                    ) : (
+                      "Done — go to dashboard"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
