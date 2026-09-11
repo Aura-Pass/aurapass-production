@@ -64,6 +64,7 @@ function CheckoutPage() {
   const [manualRefCode, setManualRefCode] = useState(aref || "");
   const [merchItems, setMerchItems] = useState<any[]>([]);
   const [merchQty, setMerchQty] = useState<Record<string, number>>({});
+  const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 
