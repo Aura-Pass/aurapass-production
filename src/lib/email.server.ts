@@ -77,6 +77,29 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
     console.error("[sendTicketConfirmationEmail] failed to fetch tickets", ticketsError);
   }
 
+  const { data: merchOrderItems } = await (supabaseAdmin as any)
+    .from("order_merch_items")
+    .select("item_name, quantity, unit_price, subtotal")
+    .eq("order_id", data.orderId);
+
+  const merchRowsHtml = (merchOrderItems ?? [])
+    .map(
+      (m: { item_name: string; quantity: number; subtotal: number }) => `
+  <tr>
+    <td style="padding:10px 16px;font-size:13px;color:#111827;border-bottom:1px solid #F3F4F6;">${escapeHtml(m.item_name)} × ${m.quantity}</td>
+    <td style="padding:10px 16px;font-size:13px;color:#111827;text-align:right;border-bottom:1px solid #F3F4F6;">₦${Number(m.subtotal).toLocaleString("en-NG")}</td>
+  </tr>`,
+    )
+    .join("");
+
+  const merchSectionHtml = merchRowsHtml
+    ? `<tr><td style="padding:16px 32px 0;">
+         <h2 style="margin:0 0 12px;font-size:16px;font-weight:600;color:#111827;">Your merch</h2>
+         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;">${merchRowsHtml}</table>
+         <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show this email or your ticket QR at the merch table at the event to collect.</p>
+       </td></tr>`
+    : "";
+
   const ticketList = tickets ?? [];
   const totalQuantity = ticketList.length || data.quantity;
 
@@ -164,6 +187,7 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
               </td>
             </tr>
             ${qrHtml}
+            ${merchSectionHtml}
             <tr>
               <td style="padding:24px 32px 8px;text-align:center;">
                 <a href="${confirmationUrl}" style="display:inline-block;background:#111827;color:#FFFFFF;text-decoration:none;padding:14px 24px;border-radius:10px;font-weight:600;font-size:15px;">
