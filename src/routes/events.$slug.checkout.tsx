@@ -57,6 +57,8 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [manualRefCode, setManualRefCode] = useState(aref || "");
+  const [merchItems, setMerchItems] = useState<any[]>([]);
+  const [merchQty, setMerchQty] = useState<Record<string, number>>({});
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -103,6 +105,17 @@ function CheckoutPage() {
     };
   }, [slug, ticketTypeId]);
 
+
+  useEffect(() => {
+    if (!event?.id) return;
+    (async () => {
+      const { data: merch } = await (supabase as any).rpc("get_event_merch_items", {
+        p_event_id: event.id,
+        p_include_inactive: false,
+      });
+      setMerchItems(merch ?? []);
+    })();
+  }, [event?.id]);
 
   useEffect(() => {
     if (profile) {
