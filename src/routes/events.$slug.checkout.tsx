@@ -288,11 +288,18 @@ function CheckoutPage() {
                       >
                         <div className="flex min-w-0 items-center gap-3">
                           {m.image_url ? (
-                            <img
-                              src={m.image_url}
-                              alt={m.name}
-                              className="h-12 w-12 shrink-0 rounded-md object-cover"
-                            />
+                            <button
+                              type="button"
+                              onClick={() => setPreviewImage({ url: m.image_url, name: m.name })}
+                              className="shrink-0 overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                              aria-label={`View ${m.name} image`}
+                            >
+                              <img
+                                src={m.image_url}
+                                alt={m.name}
+                                className="h-12 w-12 object-cover"
+                              />
+                            </button>
                           ) : null}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
