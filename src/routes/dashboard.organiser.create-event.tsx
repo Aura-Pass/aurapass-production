@@ -29,7 +29,10 @@ export const Route = createFileRoute("/dashboard/organiser/create-event")({
 });
 
 type TicketRow = { name: string; price: string; quantity: string };
+type MerchRow = { name: string; price: string; description: string; image_url: string };
 type Step = 1 | 2 | 3 | 4;
+
+const EMPTY_MERCH: MerchRow = { name: "", price: "", description: "", image_url: "" };
 
 interface EventForm {
   title: string;
