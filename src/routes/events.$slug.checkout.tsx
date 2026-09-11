@@ -160,9 +160,14 @@ function CheckoutPage() {
   const maxQty = Math.min(remaining, 10);
   const price = Number(ticket.price);
   const subtotal = price * quantity;
-  const isFree = subtotal === 0;
-  const platformFee = isFree ? 0 : Math.round(subtotal * 0.035 + 100);
-  const total = subtotal + platformFee;
+  const merchSubtotal = merchItems.reduce(
+    (sum, m) => sum + Number(m.price) * (merchQty[m.id] || 0),
+    0,
+  );
+  const combinedSubtotal = subtotal + merchSubtotal;
+  const isFree = combinedSubtotal === 0;
+  const platformFee = isFree ? 0 : Math.round(combinedSubtotal * 0.035 + 100);
+  const total = combinedSubtotal + platformFee;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
