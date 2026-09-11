@@ -267,10 +267,18 @@ function CheckoutPage() {
                 <div className="space-y-3">
                   {merchItems.map((m) => {
                     const qty = merchQty[m.id] || 0;
+                    const merchRemaining =
+                      m.quantity_available == null
+                        ? Infinity
+                        : Math.max(0, Number(m.quantity_available) - Number(m.quantity_sold));
+                    const soldOut = merchRemaining <= 0;
+                    const atCap = !soldOut && qty >= merchRemaining;
                     return (
                       <div
                         key={m.id}
-                        className="flex items-center justify-between gap-3 rounded-lg border border-border p-4"
+                        className={`flex items-center justify-between gap-3 rounded-lg border p-4 ${
+                          soldOut ? "border-border/50 bg-muted/30 opacity-60" : "border-border"
+                        }`}
                       >
                         <div className="flex min-w-0 items-center gap-3">
                           {m.image_url ? (
@@ -281,9 +289,19 @@ function CheckoutPage() {
                             />
                           ) : null}
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-foreground">{m.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="truncate font-semibold text-foreground">{m.name}</p>
+                              {soldOut && (
+                                <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                  Sold out
+                                </span>
+                              )}
+                            </div>
                             <p className="text-sm text-muted-foreground">
                               {formatCurrency(Number(m.price))}
+                              {m.quantity_available != null && !soldOut && (
+                                <span className="ml-2">({merchRemaining} left)</span>
+                              )}
                             </p>
                           </div>
                         </div>
@@ -295,7 +313,7 @@ function CheckoutPage() {
                             onClick={() =>
                               setMerchQty((q) => ({ ...q, [m.id]: Math.max(0, (q[m.id] || 0) - 1) }))
                             }
-                            disabled={qty <= 0}
+                            disabled={qty <= 0 || soldOut}
                           >
                             −
                           </Button>
@@ -305,9 +323,12 @@ function CheckoutPage() {
                             variant="secondary"
                             size="sm"
                             onClick={() =>
-                              setMerchQty((q) => ({ ...q, [m.id]: Math.min(10, (q[m.id] || 0) + 1) }))
+                              setMerchQty((q) => ({
+                                ...q,
+                                [m.id]: Math.min(merchRemaining === Infinity ? 10 : merchRemaining, (q[m.id] || 0) + 1),
+                              }))
                             }
-                            disabled={qty >= 10}
+                            disabled={soldOut || atCap}
                           >
                             +
                           </Button>

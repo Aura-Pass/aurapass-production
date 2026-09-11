@@ -164,7 +164,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       const merchIds = merchSelections.map((m) => m.merchItemId);
       const { data: merchItemsDb, error: merchErr } = await sb
         .from("event_merch_items")
-        .select("id, name, price, is_active, event_id")
+        .select("id, name, price, is_active, event_id, quantity_available, quantity_sold")
         .in("id", merchIds);
 
       if (merchErr) {
@@ -175,6 +175,12 @@ export const initializePayment = createServerFn({ method: "POST" })
         const item = merchItemsDb?.find((m: any) => m.id === sel.merchItemId);
         if (!item || item.event_id !== data.eventId || item.is_active !== true) {
           return { error: "One or more selected merch items are no longer available." as const };
+        }
+        if (item.quantity_available != null) {
+          const remaining = item.quantity_available - item.quantity_sold;
+          if (sel.quantity > remaining) {
+            return { error: `Only ${remaining} left of "${item.name}".` as const };
+          }
         }
         const unitPrice = Number(item.price);
         const rowSubtotal = unitPrice * sel.quantity;
@@ -244,6 +250,20 @@ export const initializePayment = createServerFn({ method: "POST" })
         .from("ticket_types")
         .update({ quantity_sold: ticketType.quantity_sold + data.quantity })
         .eq("id", data.ticketTypeId);
+
+      for (const r of merchRows) {
+        const { data: mi } = await sb
+          .from("event_merch_items")
+          .select("quantity_sold")
+          .eq("id", r.merch_item_id)
+          .single();
+        if (mi) {
+          await sb
+            .from("event_merch_items")
+            .update({ quantity_sold: mi.quantity_sold + r.quantity })
+            .eq("id", r.merch_item_id);
+        }
+      }
 
       await generateTicketsForOrder(sb, {
         id: order.id,
@@ -338,6 +358,24 @@ export const verifyPayment = createServerFn({ method: "POST" })
           .from("ticket_types")
           .update({ quantity_sold: ticketType.quantity_sold + order.quantity })
           .eq("id", order.ticket_type_id);
+      }
+
+      const { data: orderMerch } = await sb
+        .from("order_merch_items")
+        .select("merch_item_id, quantity")
+        .eq("order_id", order.id);
+      for (const om of orderMerch ?? []) {
+        const { data: mi } = await sb
+          .from("event_merch_items")
+          .select("quantity_sold")
+          .eq("id", om.merch_item_id)
+          .single();
+        if (mi) {
+          await sb
+            .from("event_merch_items")
+            .update({ quantity_sold: mi.quantity_sold + om.quantity })
+            .eq("id", om.merch_item_id);
+        }
       }
 
       await sb.from("payments").insert({
