@@ -324,7 +324,7 @@ function CreateEventPage() {
                       className="space-y-3 rounded-xl border border-border bg-muted p-4"
                       style={{ borderRadius: 12 }}
                     >
-                      <div className="grid gap-3 md:grid-cols-[1.5fr_1fr_auto] md:items-end">
+                      <div className="grid gap-3 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-end">
                         <Input
                           label="Item name"
                           placeholder="e.g. Event T-shirt"
@@ -341,6 +341,17 @@ function CreateEventPage() {
                           value={m.price}
                           onChange={(e) =>
                             setMerchItems((rows) => rows.map((r, idx) => (idx === i ? { ...r, price: e.target.value } : r)))
+                          }
+                        />
+                        <Input
+                          label="Quantity available"
+                          type="number"
+                          min="0"
+                          step="1"
+                          placeholder="Unlimited"
+                          value={m.quantityAvailable}
+                          onChange={(e) =>
+                            setMerchItems((rows) => rows.map((r, idx) => (idx === i ? { ...r, quantityAvailable: e.target.value } : r)))
                           }
                         />
                         <Button
