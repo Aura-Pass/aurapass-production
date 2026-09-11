@@ -176,6 +176,12 @@ export const initializePayment = createServerFn({ method: "POST" })
         if (!item || item.event_id !== data.eventId || item.is_active !== true) {
           return { error: "One or more selected merch items are no longer available." as const };
         }
+        if (item.quantity_available != null) {
+          const remaining = item.quantity_available - item.quantity_sold;
+          if (sel.quantity > remaining) {
+            return { error: `Only ${remaining} left of "${item.name}".` as const };
+          }
+        }
         const unitPrice = Number(item.price);
         const rowSubtotal = unitPrice * sel.quantity;
         merchSubtotal += rowSubtotal;
