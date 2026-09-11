@@ -29,10 +29,10 @@ export const Route = createFileRoute("/dashboard/organiser/create-event")({
 });
 
 type TicketRow = { name: string; price: string; quantity: string };
-type MerchRow = { name: string; price: string; description: string; image_url: string };
+type MerchRow = { name: string; price: string; quantityAvailable: string; description: string; image_url: string };
 type Step = 1 | 2 | 3 | 4;
 
-const EMPTY_MERCH: MerchRow = { name: "", price: "", description: "", image_url: "" };
+const EMPTY_MERCH: MerchRow = { name: "", price: "", quantityAvailable: "", description: "", image_url: "" };
 
 interface EventForm {
   title: string;
@@ -259,6 +259,13 @@ function CreateEventPage() {
         setError(`Merch item #${i + 1}: price must be 0 or greater.`);
         return;
       }
+      if (m.quantityAvailable.trim() !== "") {
+        const qty = Number(m.quantityAvailable);
+        if (Number.isNaN(qty) || !Number.isInteger(qty) || qty < 0) {
+          setError(`Merch item #${i + 1}: quantity available must be a whole number of 0 or more.`);
+          return;
+        }
+      }
     }
     setError(null);
     setSavingMerch(true);
@@ -272,6 +279,7 @@ function CreateEventPage() {
           p_price: Number(item.price),
           p_image_url: item.image_url || null,
           p_is_active: true,
+          p_quantity_available: item.quantityAvailable ? Number(item.quantityAvailable) : null,
         });
         if (merchErr) throw new Error(merchErr.message);
       }
