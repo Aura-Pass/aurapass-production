@@ -179,6 +179,10 @@ function CheckoutPage() {
 
     setSubmitting(true);
     try {
+      const selectedMerch = merchItems
+        .filter((m) => (merchQty[m.id] || 0) > 0)
+        .map((m) => ({ merchItemId: m.id, quantity: merchQty[m.id] }));
+
       const result = await initPay({
         data: {
           eventId: event.id,
@@ -189,6 +193,7 @@ function CheckoutPage() {
           buyerPhone: phone.trim(),
           userId: user?.id ?? null,
           referralCode: manualRefCode || null,
+          merchItems: selectedMerch,
           callbackUrl: `${window.location.origin}/payment-callback`,
         },
       });
