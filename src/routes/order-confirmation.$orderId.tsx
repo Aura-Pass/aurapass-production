@@ -25,6 +25,7 @@ function OrderConfirmationPage() {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [merch, setMerch] = useState<any[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -40,7 +41,11 @@ function OrderConfirmationPage() {
         .select("*")
         .eq("order_id", orderId)
         .order("created_at", { ascending: true });
-      return { order: data, tickets: (ticketRows ?? []) as Ticket[] };
+      const { data: merchRows } = await (supabase as any)
+        .from("order_merch_items")
+        .select("*")
+        .eq("order_id", orderId);
+      return { order: data, tickets: (ticketRows ?? []) as Ticket[], merch: merchRows ?? [] };
     };
 
     (async () => {
@@ -69,6 +74,7 @@ function OrderConfirmationPage() {
       if (!active) return;
       setOrder(result.order);
       setTickets(result.tickets);
+      setMerch(result.merch);
       setLoading(false);
     })();
     return () => {
@@ -139,6 +145,21 @@ function OrderConfirmationPage() {
                   total={tickets.length}
                 />
               ))}
+            </div>
+          )}
+
+          {merch.length > 0 && (
+            <div className="mt-8 space-y-3 rounded-xl bg-muted p-5 text-left text-sm">
+              <h2 className="text-base font-semibold text-foreground mb-2">Your merch</h2>
+              {merch.map((m) => (
+                <div key={m.id} className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{m.item_name} × {m.quantity}</span>
+                  <span className="font-medium text-foreground">{formatCurrency(Number(m.subtotal))}</span>
+                </div>
+              ))}
+              <p className="text-xs text-muted-foreground pt-2">
+                Show this page or your ticket QR at the merch table to collect.
+              </p>
             </div>
           )}
 

@@ -476,6 +476,15 @@ export const reconcileOrder = createServerFn({ method: "POST" })
         .eq("id", order.ticket_type_id);
     }
 
+    const { data: orderMerch } = await sb
+      .from("order_merch_items")
+      .select("merch_item_id, quantity")
+      .eq("order_id", order.id);
+    for (const om of orderMerch ?? []) {
+      const { data: mi } = await sb.from("event_merch_items").select("quantity_sold").eq("id", om.merch_item_id).single();
+      if (mi) await sb.from("event_merch_items").update({ quantity_sold: mi.quantity_sold + om.quantity }).eq("id", om.merch_item_id);
+    }
+
     await sb.from("payments").insert({
       order_id: order.id,
       paystack_reference: order.paystack_reference,
