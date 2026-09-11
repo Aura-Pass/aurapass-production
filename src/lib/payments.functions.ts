@@ -77,6 +77,7 @@ interface InitInput {
   userId?: string | null;
   callbackUrl: string;
   merchItems?: MerchSelection[];
+  referralCode?: string | null;
 }
 
 export const initializePayment = createServerFn({ method: "POST" })
