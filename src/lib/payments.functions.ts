@@ -361,3 +361,104 @@ export const verifyPayment = createServerFn({ method: "POST" })
 
     return { success: true as const, orderId: order.id as string };
   });
+
+export const reconcileOrder = createServerFn({ method: "POST" })
+  .inputValidator((data: { orderId: string }) => {
+    if (!data || typeof data.orderId !== "string") throw new Error("Invalid input");
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const sb = supabaseAdmin as any;
+
+    const { data: order } = await sb
+      .from("orders")
+      .select(
+        "id, status, quantity, event_id, ticket_type_id, paystack_reference, total_amount",
+      )
+      .eq("id", data.orderId)
+      .maybeSingle();
+
+    if (!order) return { success: false as const, error: "Order not found" };
+
+    if (order.status === "confirmed") {
+      const { data: existingTickets } = await sb
+        .from("tickets")
+        .select("id")
+        .eq("order_id", order.id);
+      const missing = Number(order.quantity) - (existingTickets?.length ?? 0);
+      if (missing > 0) {
+        await generateTicketsForOrder(sb, {
+          id: order.id,
+          event_id: order.event_id,
+          ticket_type_id: order.ticket_type_id,
+          quantity: missing,
+        });
+      }
+      return {
+        success: true as const,
+        orderId: order.id as string,
+        fulfilledNow: false,
+      };
+    }
+
+    if (!order.paystack_reference) {
+      return { success: false as const, error: "No payment reference on this order" };
+    }
+
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+    if (!secret) return { success: false as const, error: "Payment provider not configured" };
+
+    const verifyRes = await fetch(
+      `https://api.paystack.co/transaction/verify/${encodeURIComponent(order.paystack_reference)}`,
+      { headers: { Authorization: `Bearer ${secret}` } },
+    );
+    const verifyData = (await verifyRes.json()) as any;
+
+    if (!verifyData?.status || verifyData.data?.status !== "success") {
+      await sb
+        .from("orders")
+        .update({ status: "failed" })
+        .eq("paystack_reference", order.paystack_reference);
+      return { success: false as const };
+    }
+
+    await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
+
+    const { data: ticketType } = await sb
+      .from("ticket_types")
+      .select("quantity_sold")
+      .eq("id", order.ticket_type_id)
+      .single();
+
+    if (ticketType) {
+      await sb
+        .from("ticket_types")
+        .update({ quantity_sold: ticketType.quantity_sold + order.quantity })
+        .eq("id", order.ticket_type_id);
+    }
+
+    await sb.from("payments").insert({
+      order_id: order.id,
+      paystack_reference: order.paystack_reference,
+      amount: order.total_amount,
+      status: "success",
+      paid_at: new Date().toISOString(),
+      raw_response: verifyData.data,
+    });
+
+    await generateTicketsForOrder(sb, {
+      id: order.id,
+      event_id: order.event_id,
+      ticket_type_id: order.ticket_type_id,
+      quantity: order.quantity,
+    });
+
+    await sendConfirmationEmailSafely(sb, order.id);
+
+    return {
+      success: true as const,
+      orderId: order.id as string,
+      fulfilledNow: true,
+    };
+  });
