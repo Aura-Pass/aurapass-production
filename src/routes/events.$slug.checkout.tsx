@@ -366,9 +366,21 @@ function CheckoutPage() {
                     {ticket.name} × {quantity}
                   </span>
                   <span className="text-foreground">
-                    {isFree ? "Free" : formatCurrency(subtotal)}
+                    {price === 0 ? "Free" : formatCurrency(subtotal)}
                   </span>
                 </div>
+                {merchItems
+                  .filter((m) => (merchQty[m.id] || 0) > 0)
+                  .map((m) => (
+                    <div key={m.id} className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        {m.name} × {merchQty[m.id]}
+                      </span>
+                      <span className="text-foreground">
+                        {formatCurrency(Number(m.price) * (merchQty[m.id] || 0))}
+                      </span>
+                    </div>
+                  ))}
                 {!isFree && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Platform fee (3.5% + ₦100)</span>
