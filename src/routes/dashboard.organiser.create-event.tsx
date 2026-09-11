@@ -231,8 +231,11 @@ function CreateEventPage() {
         console.error("[create-event] admin email failed", emailErr);
       }
 
-      toast.success("Event submitted! We'll review it shortly.");
-      navigate({ to: "/dashboard/organiser" });
+      // Show the post-submit merch prompt instead of navigating immediately.
+      setCreatedEventId(String(eventRow.id));
+      setPostSubmit("prompt");
+      setSubmitting(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong.";
       setError(msg);
