@@ -251,6 +251,20 @@ export const initializePayment = createServerFn({ method: "POST" })
         .update({ quantity_sold: ticketType.quantity_sold + data.quantity })
         .eq("id", data.ticketTypeId);
 
+      for (const r of merchRows) {
+        const { data: mi } = await sb
+          .from("event_merch_items")
+          .select("quantity_sold")
+          .eq("id", r.merch_item_id)
+          .single();
+        if (mi) {
+          await sb
+            .from("event_merch_items")
+            .update({ quantity_sold: mi.quantity_sold + r.quantity })
+            .eq("id", r.merch_item_id);
+        }
+      }
+
       await generateTicketsForOrder(sb, {
         id: order.id,
         event_id: data.eventId,
