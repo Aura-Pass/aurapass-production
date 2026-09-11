@@ -15,6 +15,11 @@ import { createServerFn } from "@tanstack/react-start";
 
 
 
+interface MerchSelection {
+  merchItemId: string;
+  quantity: number;
+}
+
 interface InitInput {
   eventId: string;
   ticketTypeId: string;
@@ -24,6 +29,7 @@ interface InitInput {
   buyerPhone: string;
   userId?: string | null;
   referralCode?: string | null;
+  merchItems?: MerchSelection[];
   callbackUrl: string;
 }
 
