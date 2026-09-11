@@ -57,6 +57,8 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [manualRefCode, setManualRefCode] = useState(aref || "");
+  const [merchItems, setMerchItems] = useState<any[]>([]);
+  const [merchQty, setMerchQty] = useState<Record<string, number>>({});
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -105,6 +107,17 @@ function CheckoutPage() {
 
 
   useEffect(() => {
+    if (!event?.id) return;
+    (async () => {
+      const { data: merch } = await (supabase as any).rpc("get_event_merch_items", {
+        p_event_id: event.id,
+        p_include_inactive: false,
+      });
+      setMerchItems(merch ?? []);
+    })();
+  }, [event?.id]);
+
+  useEffect(() => {
     if (profile) {
       setFullName((n) => n || profile.full_name || "");
       setEmail((e) => e || profile.email || "");
@@ -147,9 +160,14 @@ function CheckoutPage() {
   const maxQty = Math.min(remaining, 10);
   const price = Number(ticket.price);
   const subtotal = price * quantity;
-  const isFree = subtotal === 0;
-  const platformFee = isFree ? 0 : Math.round(subtotal * 0.035 + 100);
-  const total = subtotal + platformFee;
+  const merchSubtotal = merchItems.reduce(
+    (sum, m) => sum + Number(m.price) * (merchQty[m.id] || 0),
+    0,
+  );
+  const combinedSubtotal = subtotal + merchSubtotal;
+  const isFree = combinedSubtotal === 0;
+  const platformFee = isFree ? 0 : Math.round(combinedSubtotal * 0.035 + 100);
+  const total = combinedSubtotal + platformFee;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -161,6 +179,10 @@ function CheckoutPage() {
 
     setSubmitting(true);
     try {
+      const selectedMerch = merchItems
+        .filter((m) => (merchQty[m.id] || 0) > 0)
+        .map((m) => ({ merchItemId: m.id, quantity: merchQty[m.id] }));
+
       const result = await initPay({
         data: {
           eventId: event.id,
@@ -171,6 +193,7 @@ function CheckoutPage() {
           buyerPhone: phone.trim(),
           userId: user?.id ?? null,
           referralCode: manualRefCode || null,
+          merchItems: selectedMerch,
           callbackUrl: `${window.location.origin}/payment-callback`,
         },
       });
@@ -238,6 +261,64 @@ function CheckoutPage() {
               </div>
             </Card>
 
+            {merchItems.length > 0 && (
+              <Card className="p-6 space-y-4">
+                <h2 className="font-semibold text-foreground">Merch (optional)</h2>
+                <div className="space-y-3">
+                  {merchItems.map((m) => {
+                    const qty = merchQty[m.id] || 0;
+                    return (
+                      <div
+                        key={m.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-border p-4"
+                      >
+                        <div className="flex min-w-0 items-center gap-3">
+                          {m.image_url ? (
+                            <img
+                              src={m.image_url}
+                              alt={m.name}
+                              className="h-12 w-12 shrink-0 rounded-md object-cover"
+                            />
+                          ) : null}
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-foreground">{m.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {formatCurrency(Number(m.price))}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              setMerchQty((q) => ({ ...q, [m.id]: Math.max(0, (q[m.id] || 0) - 1) }))
+                            }
+                            disabled={qty <= 0}
+                          >
+                            −
+                          </Button>
+                          <span className="w-8 text-center font-medium">{qty}</span>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              setMerchQty((q) => ({ ...q, [m.id]: Math.min(10, (q[m.id] || 0) + 1) }))
+                            }
+                            disabled={qty >= 10}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            )}
+
             <Card className="p-6 space-y-3">
               <h2 className="font-semibold text-foreground">Referral code (optional)</h2>
               <p className="text-xs text-muted-foreground">
@@ -285,9 +366,21 @@ function CheckoutPage() {
                     {ticket.name} × {quantity}
                   </span>
                   <span className="text-foreground">
-                    {isFree ? "Free" : formatCurrency(subtotal)}
+                    {price === 0 ? "Free" : formatCurrency(subtotal)}
                   </span>
                 </div>
+                {merchItems
+                  .filter((m) => (merchQty[m.id] || 0) > 0)
+                  .map((m) => (
+                    <div key={m.id} className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        {m.name} × {merchQty[m.id]}
+                      </span>
+                      <span className="text-foreground">
+                        {formatCurrency(Number(m.price) * (merchQty[m.id] || 0))}
+                      </span>
+                    </div>
+                  ))}
                 {!isFree && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Platform fee (3.5% + ₦100)</span>

@@ -15,6 +15,11 @@ import { createServerFn } from "@tanstack/react-start";
 
 
 
+interface MerchSelection {
+  merchItemId: string;
+  quantity: number;
+}
+
 interface InitInput {
   eventId: string;
   ticketTypeId: string;
@@ -24,6 +29,7 @@ interface InitInput {
   buyerPhone: string;
   userId?: string | null;
   referralCode?: string | null;
+  merchItems?: MerchSelection[];
   callbackUrl: string;
 }
 
@@ -97,7 +103,35 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     const ticketPrice = Number(ticketType.price);
-    const subtotal = ticketPrice * data.quantity;
+    const ticketSubtotal = ticketPrice * data.quantity;
+
+    // Merch: reprice server-side from the DB — never trust client totals.
+    let merchSubtotal = 0;
+    const merchLines: { merch_item_id: string; quantity: number; unit_price: number }[] = [];
+    if (Array.isArray(data.merchItems) && data.merchItems.length > 0) {
+      const ids = data.merchItems
+        .filter((m) => m && typeof m.merchItemId === "string" && Number.isInteger(m.quantity) && m.quantity > 0 && m.quantity <= 10)
+        .map((m) => m.merchItemId);
+      if (ids.length > 0) {
+        const { data: merchRows, error: merchErr } = await sb
+          .from("event_merch_items")
+          .select("id, price, is_active, event_id")
+          .in("id", ids);
+        if (merchErr) return { error: "Could not validate merch items." as const };
+        for (const sel of data.merchItems) {
+          const row = (merchRows ?? []).find((r: any) => r.id === sel.merchItemId);
+          if (!row || row.is_active === false || row.event_id !== data.eventId) {
+            return { error: "One of the selected merch items is not available." as const };
+          }
+          const qty = Math.min(Math.max(1, Math.floor(sel.quantity)), 10);
+          const unit = Number(row.price);
+          merchSubtotal += unit * qty;
+          merchLines.push({ merch_item_id: row.id, quantity: qty, unit_price: unit });
+        }
+      }
+    }
+
+    const subtotal = ticketSubtotal + merchSubtotal;
     const isFree = subtotal === 0;
     const platformFee = isFree ? 0 : Math.round(subtotal * 0.035 + 100);
     const totalAmount = subtotal + platformFee;
