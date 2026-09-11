@@ -164,7 +164,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       const merchIds = merchSelections.map((m) => m.merchItemId);
       const { data: merchItemsDb, error: merchErr } = await sb
         .from("event_merch_items")
-        .select("id, name, price, is_active, event_id")
+        .select("id, name, price, is_active, event_id, quantity_available, quantity_sold")
         .in("id", merchIds);
 
       if (merchErr) {
