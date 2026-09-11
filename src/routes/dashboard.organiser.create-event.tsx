@@ -69,6 +69,11 @@ function CreateEventPage() {
   const [tickets, setTickets] = useState<TicketRow[]>([{ ...EMPTY_TICKET }]);
   const [bookings, setBookings] = useState<BookingSelection[]>([]);
 
+  const [postSubmit, setPostSubmit] = useState<"prompt" | "merch" | null>(null);
+  const [createdEventId, setCreatedEventId] = useState<string | null>(null);
+  const [merchItems, setMerchItems] = useState<MerchRow[]>([{ ...EMPTY_MERCH }]);
+  const [savingMerch, setSavingMerch] = useState(false);
+
   function set<K extends keyof EventForm>(key: K, value: EventForm[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
