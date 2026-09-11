@@ -84,7 +84,7 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
 
   const merchRowsHtml = (merchOrderItems ?? [])
     .map(
-      (m) => `
+      (m: { item_name: string; quantity: number; subtotal: number }) => `
   <tr>
     <td style="padding:10px 16px;font-size:13px;color:#111827;border-bottom:1px solid #F3F4F6;">${escapeHtml(m.item_name)} × ${m.quantity}</td>
     <td style="padding:10px 16px;font-size:13px;color:#111827;text-align:right;border-bottom:1px solid #F3F4F6;">₦${Number(m.subtotal).toLocaleString("en-NG")}</td>
