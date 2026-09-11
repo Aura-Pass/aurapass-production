@@ -7,6 +7,11 @@ import { toast } from "sonner";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
@@ -59,6 +64,7 @@ function CheckoutPage() {
   const [manualRefCode, setManualRefCode] = useState(aref || "");
   const [merchItems, setMerchItems] = useState<any[]>([]);
   const [merchQty, setMerchQty] = useState<Record<string, number>>({});
+  const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
 
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -282,11 +288,18 @@ function CheckoutPage() {
                       >
                         <div className="flex min-w-0 items-center gap-3">
                           {m.image_url ? (
-                            <img
-                              src={m.image_url}
-                              alt={m.name}
-                              className="h-12 w-12 shrink-0 rounded-md object-cover"
-                            />
+                            <button
+                              type="button"
+                              onClick={() => setPreviewImage({ url: m.image_url, name: m.name })}
+                              className="shrink-0 overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                              aria-label={`View ${m.name} image`}
+                            >
+                              <img
+                                src={m.image_url}
+                                alt={m.name}
+                                className="h-12 w-12 object-cover"
+                              />
+                            </button>
                           ) : null}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
@@ -433,6 +446,19 @@ function CheckoutPage() {
           </aside>
         </div>
       </div>
+
+      <Dialog open={!!previewImage} onOpenChange={(open) => !open && setPreviewImage(null)}>
+        <DialogContent className="max-w-3xl p-0">
+          <DialogTitle className="sr-only">{previewImage?.name ?? "Merch preview"}</DialogTitle>
+          {previewImage && (
+            <img
+              src={previewImage.url}
+              alt={previewImage.name}
+              className="h-auto w-full rounded-lg object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </PageWrapper>
   );
 }
