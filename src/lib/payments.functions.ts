@@ -62,6 +62,53 @@ async function generateTicketsForOrder(
   }
 }
 
+/**
+ * Generate tickets with one retry. Never throws: the order is already paid and
+ * confirmed, so a ticket-row failure must not fail the buyer's request. On a
+ * final failure we log loudly and alert admins by email.
+ */
+async function generateTicketsSafely(
+  sb: any,
+  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
+): Promise<boolean> {
+  try {
+    await generateTicketsForOrder(sb, order);
+    return true;
+  } catch (firstErr) {
+    console.error("[generateTicketsSafely] first attempt failed, retrying", firstErr);
+    await new Promise((r) => setTimeout(r, 1500));
+    try {
+      await generateTicketsForOrder(sb, order);
+      console.log("[generateTicketsSafely] retry succeeded for order", order.id);
+      return true;
+    } catch (secondErr) {
+      console.error(
+        "🚨 [generateTicketsSafely] ticket generation FAILED after retry for order",
+        order.id,
+        secondErr,
+      );
+      try {
+        const { data: row } = await sb
+          .from("orders")
+          .select("buyer_email, events(title)")
+          .eq("id", order.id)
+          .maybeSingle();
+        const { sendAdminTicketGenerationFailureEmail } = await import("@/lib/email.server");
+        await sendAdminTicketGenerationFailureEmail({
+          orderId: order.id,
+          eventTitle: row?.events?.title ?? "Unknown event",
+          buyerEmail: row?.buyer_email ?? "unknown",
+          quantity: order.quantity,
+          errorMessage: secondErr instanceof Error ? secondErr.message : String(secondErr),
+        });
+      } catch (alertErr) {
+        console.error("[generateTicketsSafely] admin alert failed", alertErr);
+      }
+      return false;
+    }
+  }
+}
+
 interface MerchSelection {
   merchItemId: string;
   quantity: number;
