@@ -270,7 +270,7 @@ function CheckoutPage() {
             {merchItems.length > 0 && (
               <Card className="p-6 space-y-4">
                 <h2 className="font-semibold text-foreground">Merch (optional)</h2>
-                <div className="space-y-3">
+                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
                   {merchItems.map((m) => {
                     const qty = merchQty[m.id] || 0;
                     const merchRemaining =
@@ -282,43 +282,42 @@ function CheckoutPage() {
                     return (
                       <div
                         key={m.id}
-                        className={`flex items-center justify-between gap-3 rounded-lg border p-4 ${
+                        className={`w-40 shrink-0 snap-start rounded-lg border p-3 flex flex-col ${
                           soldOut ? "border-border/50 bg-muted/30 opacity-60" : "border-border"
                         }`}
                       >
-                        <div className="flex min-w-0 items-center gap-3">
-                          {m.image_url ? (
-                            <button
-                              type="button"
-                              onClick={() => setPreviewImage({ url: m.image_url, name: m.name })}
-                              className="shrink-0 overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                              aria-label={`View ${m.name} image`}
-                            >
-                              <img
-                                src={m.image_url}
-                                alt={m.name}
-                                className="h-12 w-12 object-cover"
-                              />
-                            </button>
-                          ) : null}
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="truncate font-semibold text-foreground">{m.name}</p>
-                              {soldOut && (
-                                <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">
-                                  Sold out
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {formatCurrency(Number(m.price))}
-                              {m.quantity_available != null && !soldOut && (
-                                <span className="ml-2">({merchRemaining} left)</span>
-                              )}
-                            </p>
+                        {m.image_url ? (
+                          <button
+                            type="button"
+                            onClick={() => setPreviewImage({ url: m.image_url, name: m.name })}
+                            className="w-full overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                            aria-label={`View ${m.name} image`}
+                          >
+                            <img
+                              src={m.image_url}
+                              alt={m.name}
+                              className="h-32 w-full object-cover"
+                            />
+                          </button>
+                        ) : (
+                          <div className="flex h-32 w-full items-center justify-center rounded-md bg-muted text-xs text-muted-foreground">
+                            No image
                           </div>
+                        )}
+
+                        <div className="mt-3 min-w-0 space-y-1">
+                          <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatCurrency(Number(m.price))}
+                          </p>
+                          {soldOut ? (
+                            <span className="text-xs font-medium text-destructive">Sold out</span>
+                          ) : m.quantity_available != null ? (
+                            <span className="text-xs text-muted-foreground">{merchRemaining} left</span>
+                          ) : null}
                         </div>
-                        <div className="flex items-center gap-2">
+
+                        <div className="mt-auto flex items-center justify-center gap-2 pt-4">
                           <Button
                             type="button"
                             variant="secondary"
