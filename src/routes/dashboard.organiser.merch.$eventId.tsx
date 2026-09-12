@@ -537,6 +537,7 @@ function MerchPage() {
               form="merch-form"
               variant="primary"
               loading={saving}
+              disabled={!form.imageUrl.trim() || saving}
             >
               {editingItem ? "Save changes" : "Add item"}
             </Button>
