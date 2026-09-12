@@ -232,6 +232,11 @@ function MerchPage() {
       }
     }
 
+    if (!form.imageUrl.trim()) {
+      setImageError("Please upload a photo.");
+      return;
+    }
+
     setSaving(true);
 
     const { error } = await (supabase as any).rpc("upsert_event_merch_item", {
