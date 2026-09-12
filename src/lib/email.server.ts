@@ -558,3 +558,73 @@ export async function sendAdminCancellationRequestEmail({
   }
 }
 
+
+export interface AdminTicketGenerationFailureInput {
+  orderId: string;
+  eventTitle: string;
+  buyerEmail: string;
+  quantity: number;
+  errorMessage: string;
+}
+
+export async function sendAdminTicketGenerationFailureEmail(
+  data: AdminTicketGenerationFailureInput,
+) {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (!resendApiKey) {
+    console.error("[admin-email] RESEND_API_KEY not set");
+    return;
+  }
+
+  const row = (label: string, value: string) => `<tr>
+    <td style="padding:10px 16px;font-size:13px;color:#6B7280;border-bottom:1px solid #F3F4F6;">${escapeHtml(label)}</td>
+    <td style="padding:10px 16px;font-size:13px;color:#111827;text-align:right;font-weight:500;border-bottom:1px solid #F3F4F6;">${escapeHtml(value)}</td>
+  </tr>`;
+
+  const html = `<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>Ticket generation failed</title></head>
+  <body style="margin:0;padding:0;background:#F9FAFB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9FAFB;padding:32px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
+          <tr><td style="padding:20px 32px;background:#111827;color:#FFFFFF;">
+            <div style="font-size:18px;font-weight:700;letter-spacing:-0.02em;">AuraPass</div>
+          </td></tr>
+          <tr><td style="padding:28px 32px 8px;">
+            <h1 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#111827;">Ticket generation failed</h1>
+            <p style="margin:0 0 20px;font-size:14px;color:#6B7280;">An order is confirmed and paid, but ticket rows could not be created after a retry. Manual intervention needed.</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;">
+              ${row("Order ID", data.orderId)}
+              ${row("Event", data.eventTitle)}
+              ${row("Buyer", data.buyerEmail)}
+              ${row("Quantity", String(data.quantity))}
+              ${row("Error", data.errorMessage)}
+            </table>
+          </td></tr>
+        </table>
+        <div style="margin-top:16px;font-size:12px;color:#9CA3AF;text-align:center;">© 2026 AuraPass · aurapassticket.com</div>
+      </td></tr>
+    </table>
+  </body>
+</html>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "AuraPass <noreply@aurapassticket.com>",
+      to: ["support@aurapassticket.com"],
+      subject: `URGENT: Ticket generation failed for order ${data.orderId}`,
+      html,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error("[admin-email] Failed to send ticket-failure alert:", err);
+  }
+}
