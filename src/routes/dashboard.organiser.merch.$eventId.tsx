@@ -205,6 +205,7 @@ function MerchPage() {
     setFormOpen(false);
     setEditingItem(null);
     setForm(EMPTY_FORM);
+    setImageError(null);
   }
 
   async function handleSubmit(e: FormEvent) {
