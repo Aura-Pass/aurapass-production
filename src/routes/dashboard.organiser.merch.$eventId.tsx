@@ -103,6 +103,7 @@ function MerchPage() {
   const [editingItem, setEditingItem] = useState<MerchItem | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const isAdmin = activeRoles.includes("admin");
