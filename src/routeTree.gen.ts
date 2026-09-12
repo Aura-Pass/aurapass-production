@@ -84,6 +84,7 @@ import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes
 import { Route as DashboardOrganiserFundRequestsEventIdRouteImport } from './routes/dashboard.organiser.fund-requests.$eventId'
 import { Route as DashboardOrganiserGateAttendantsEventIdRouteImport } from './routes/dashboard.organiser.gate-attendants.$eventId'
 import { Route as DashboardOrganiserMarketersEventIdRouteImport } from './routes/dashboard.organiser.marketers.$eventId'
+import { Route as DashboardOrganiserMerchEventIdRouteImport } from './routes/dashboard.organiser.merch.$eventId'
 import { Route as DashboardOrganiserScanIndexRouteImport } from './routes/dashboard.organiser.scan.index'
 import { Route as DashboardOrganiserScanEventIdRouteImport } from './routes/dashboard.organiser.scan.$eventId'
 
@@ -483,6 +484,12 @@ const DashboardOrganiserMarketersEventIdRoute =
     path: '/marketers/$eventId',
     getParentRoute: () => DashboardOrganiserRoute,
   } as any)
+const DashboardOrganiserMerchEventIdRoute =
+  DashboardOrganiserMerchEventIdRouteImport.update({
+    id: '/merch/$eventId',
+    path: '/merch/$eventId',
+    getParentRoute: () => DashboardOrganiserRoute,
+  } as any)
 const DashboardOrganiserScanIndexRoute =
   DashboardOrganiserScanIndexRouteImport.update({
     id: '/scan/',
@@ -571,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/fund-requests/$eventId': typeof DashboardOrganiserFundRequestsEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
   '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
+  '/dashboard/organiser/merch/$eventId': typeof DashboardOrganiserMerchEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
   '/dashboard/gate/scan/': typeof DashboardGateScanIndexRoute
   '/dashboard/organiser/scan/': typeof DashboardOrganiserScanIndexRoute
@@ -642,6 +650,7 @@ export interface FileRoutesByTo {
   '/dashboard/organiser/fund-requests/$eventId': typeof DashboardOrganiserFundRequestsEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
   '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
+  '/dashboard/organiser/merch/$eventId': typeof DashboardOrganiserMerchEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
   '/dashboard/gate/scan': typeof DashboardGateScanIndexRoute
   '/dashboard/organiser/scan': typeof DashboardOrganiserScanIndexRoute
@@ -722,6 +731,7 @@ export interface FileRoutesById {
   '/dashboard/organiser/fund-requests/$eventId': typeof DashboardOrganiserFundRequestsEventIdRoute
   '/dashboard/organiser/gate-attendants/$eventId': typeof DashboardOrganiserGateAttendantsEventIdRoute
   '/dashboard/organiser/marketers/$eventId': typeof DashboardOrganiserMarketersEventIdRoute
+  '/dashboard/organiser/merch/$eventId': typeof DashboardOrganiserMerchEventIdRoute
   '/dashboard/organiser/scan/$eventId': typeof DashboardOrganiserScanEventIdRoute
   '/dashboard/gate/scan/': typeof DashboardGateScanIndexRoute
   '/dashboard/organiser/scan/': typeof DashboardOrganiserScanIndexRoute
@@ -803,6 +813,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/fund-requests/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
     | '/dashboard/organiser/marketers/$eventId'
+    | '/dashboard/organiser/merch/$eventId'
     | '/dashboard/organiser/scan/$eventId'
     | '/dashboard/gate/scan/'
     | '/dashboard/organiser/scan/'
@@ -874,6 +885,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/fund-requests/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
     | '/dashboard/organiser/marketers/$eventId'
+    | '/dashboard/organiser/merch/$eventId'
     | '/dashboard/organiser/scan/$eventId'
     | '/dashboard/gate/scan'
     | '/dashboard/organiser/scan'
@@ -953,6 +965,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/fund-requests/$eventId'
     | '/dashboard/organiser/gate-attendants/$eventId'
     | '/dashboard/organiser/marketers/$eventId'
+    | '/dashboard/organiser/merch/$eventId'
     | '/dashboard/organiser/scan/$eventId'
     | '/dashboard/gate/scan/'
     | '/dashboard/organiser/scan/'
@@ -1523,6 +1536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganiserMarketersEventIdRouteImport
       parentRoute: typeof DashboardOrganiserRoute
     }
+    '/dashboard/organiser/merch/$eventId': {
+      id: '/dashboard/organiser/merch/$eventId'
+      path: '/merch/$eventId'
+      fullPath: '/dashboard/organiser/merch/$eventId'
+      preLoaderRoute: typeof DashboardOrganiserMerchEventIdRouteImport
+      parentRoute: typeof DashboardOrganiserRoute
+    }
     '/dashboard/organiser/scan/': {
       id: '/dashboard/organiser/scan/'
       path: '/scan'
@@ -1611,6 +1631,7 @@ interface DashboardOrganiserRouteChildren {
   DashboardOrganiserFundRequestsEventIdRoute: typeof DashboardOrganiserFundRequestsEventIdRoute
   DashboardOrganiserGateAttendantsEventIdRoute: typeof DashboardOrganiserGateAttendantsEventIdRoute
   DashboardOrganiserMarketersEventIdRoute: typeof DashboardOrganiserMarketersEventIdRoute
+  DashboardOrganiserMerchEventIdRoute: typeof DashboardOrganiserMerchEventIdRoute
   DashboardOrganiserScanEventIdRoute: typeof DashboardOrganiserScanEventIdRoute
   DashboardOrganiserScanIndexRoute: typeof DashboardOrganiserScanIndexRoute
 }
@@ -1633,6 +1654,7 @@ const DashboardOrganiserRouteChildren: DashboardOrganiserRouteChildren = {
     DashboardOrganiserGateAttendantsEventIdRoute,
   DashboardOrganiserMarketersEventIdRoute:
     DashboardOrganiserMarketersEventIdRoute,
+  DashboardOrganiserMerchEventIdRoute: DashboardOrganiserMerchEventIdRoute,
   DashboardOrganiserScanEventIdRoute: DashboardOrganiserScanEventIdRoute,
   DashboardOrganiserScanIndexRoute: DashboardOrganiserScanIndexRoute,
 }
