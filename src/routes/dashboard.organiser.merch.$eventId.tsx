@@ -103,6 +103,7 @@ function MerchPage() {
   const [editingItem, setEditingItem] = useState<MerchItem | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const isAdmin = activeRoles.includes("admin");
@@ -204,6 +205,7 @@ function MerchPage() {
     setFormOpen(false);
     setEditingItem(null);
     setForm(EMPTY_FORM);
+    setImageError(null);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -228,6 +230,11 @@ function MerchPage() {
         toast.error("Quantity available must be a whole number of 0 or more");
         return;
       }
+    }
+
+    if (!form.imageUrl.trim()) {
+      setImageError("Please upload a photo.");
+      return;
     }
 
     setSaving(true);
@@ -489,11 +496,19 @@ function MerchPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label>Image</Label>
+                <Label>
+                  Image <span className="text-destructive">*</span>
+                </Label>
                 <ImageUpload
                   value={form.imageUrl}
-                  onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+                  onChange={(url) => {
+                    setForm((f) => ({ ...f, imageUrl: url }));
+                    setImageError(null);
+                  }}
                 />
+                {imageError && (
+                  <p className="text-sm text-destructive">{imageError}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted p-3">
@@ -522,6 +537,7 @@ function MerchPage() {
               form="merch-form"
               variant="primary"
               loading={saving}
+              disabled={!form.imageUrl.trim() || saving}
             >
               {editingItem ? "Save changes" : "Add item"}
             </Button>
