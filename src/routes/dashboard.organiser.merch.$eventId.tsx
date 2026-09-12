@@ -417,7 +417,7 @@ function MerchPage() {
       </Card>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>
               {editingItem ? "Edit merch item" : "Add merch item"}
@@ -429,87 +429,89 @@ function MerchPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <form id="merch-form" onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="merch-name">Name</Label>
-              <Input
-                id="merch-name"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="e.g. AuraPass tee"
-                required
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="merch-description">Description</Label>
-              <Textarea
-                id="merch-description"
-                value={form.description}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, description: e.target.value }))
-                }
-                placeholder="Optional short description"
-                rows={3}
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+          <div className="overflow-y-auto flex-1 px-6">
+            <form id="merch-form" onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="merch-price">Price (₦)</Label>
+                <Label htmlFor="merch-name">Name</Label>
                 <Input
-                  id="merch-price"
-                  type="number"
-                  min={0}
-                  step="any"
-                  value={form.price}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, price: e.target.value }))
-                  }
-                  placeholder="0"
+                  id="merch-name"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="e.g. AuraPass tee"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="merch-quantity">Quantity available</Label>
-                <Input
-                  id="merch-quantity"
-                  type="number"
-                  min={0}
-                  step={1}
-                  value={form.quantityAvailable}
+                <Label htmlFor="merch-description">Description</Label>
+                <Textarea
+                  id="merch-description"
+                  value={form.description}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, quantityAvailable: e.target.value }))
+                    setForm((f) => ({ ...f, description: e.target.value }))
                   }
-                  placeholder="Leave blank for unlimited"
+                  placeholder="Optional short description"
+                  rows={3}
                 />
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <Label>Image</Label>
-              <ImageUpload
-                value={form.imageUrl}
-                onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
-              />
-            </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="merch-price">Price (₦)</Label>
+                  <Input
+                    id="merch-price"
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={form.price}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, price: e.target.value }))
+                    }
+                    placeholder="0"
+                    required
+                  />
+                </div>
 
-            <div className="flex items-center justify-between rounded-lg border border-border bg-muted p-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">Active</p>
-                <p className="text-xs text-muted-foreground">
-                  Inactive items are hidden from buyers.
-                </p>
+                <div className="space-y-1.5">
+                  <Label htmlFor="merch-quantity">Quantity available</Label>
+                  <Input
+                    id="merch-quantity"
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={form.quantityAvailable}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, quantityAvailable: e.target.value }))
+                    }
+                    placeholder="Leave blank for unlimited"
+                  />
+                </div>
               </div>
-              <Switch
-                checked={form.isActive}
-                onCheckedChange={(checked) =>
-                  setForm((f) => ({ ...f, isActive: checked }))
-                }
-              />
-            </div>
-          </form>
+
+              <div className="space-y-1.5">
+                <Label>Image</Label>
+                <ImageUpload
+                  value={form.imageUrl}
+                  onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border border-border bg-muted p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Active</p>
+                  <p className="text-xs text-muted-foreground">
+                    Inactive items are hidden from buyers.
+                  </p>
+                </div>
+                <Switch
+                  checked={form.isActive}
+                  onCheckedChange={(checked) =>
+                    setForm((f) => ({ ...f, isActive: checked }))
+                  }
+                />
+              </div>
+            </form>
+          </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeForm}>
