@@ -496,11 +496,19 @@ function MerchPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label>Image</Label>
+                <Label>
+                  Image <span className="text-destructive">*</span>
+                </Label>
                 <ImageUpload
                   value={form.imageUrl}
-                  onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+                  onChange={(url) => {
+                    setForm((f) => ({ ...f, imageUrl: url }));
+                    setImageError(null);
+                  }}
                 />
+                {imageError && (
+                  <p className="text-sm text-destructive">{imageError}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted p-3">
