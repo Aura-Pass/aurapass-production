@@ -395,6 +395,30 @@ export const verifyPayment = createServerFn({ method: "POST" })
     const verifyData = (await verifyRes.json()) as any;
 
     if (!verifyData?.status || verifyData.data?.status !== "success") {
+      // Release the stock reserved at initializePayment time.
+      const { data: failedOrder } = await sb
+        .from("orders")
+        .select("id, status, ticket_type_id, quantity")
+        .eq("paystack_reference", data.reference)
+        .maybeSingle();
+
+      if (failedOrder && failedOrder.status !== "confirmed" && failedOrder.status !== "failed") {
+        await sb.rpc("release_ticket_stock", {
+          p_ticket_type_id: failedOrder.ticket_type_id,
+          p_quantity: failedOrder.quantity,
+        });
+        const { data: failedMerch } = await sb
+          .from("order_merch_items")
+          .select("merch_item_id, quantity")
+          .eq("order_id", failedOrder.id);
+        for (const om of failedMerch ?? []) {
+          await sb.rpc("release_merch_stock", {
+            p_merch_item_id: om.merch_item_id,
+            p_quantity: om.quantity,
+          });
+        }
+      }
+
       await sb.from("orders").update({ status: "failed" }).eq("paystack_reference", data.reference);
       return { success: false as const };
     }
