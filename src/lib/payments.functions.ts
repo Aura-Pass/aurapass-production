@@ -309,6 +309,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       .single();
 
     if (orderError || !order) {
+      await releaseAll();
       return { error: "Could not create order" as const };
     }
 
