@@ -62,6 +62,39 @@ async function generateTicketsForOrder(
   }
 }
 
+async function generateTicketsSafely(
+  sb: any,
+  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
+) {
+  try {
+    await generateTicketsForOrder(sb, order);
+  } catch (firstErr) {
+    console.error("[generateTicketsSafely] first attempt failed, retrying", firstErr);
+    try {
+      await generateTicketsForOrder(sb, order);
+    } catch (secondErr) {
+      console.error("[generateTicketsSafely] retry failed, alerting admin", secondErr);
+      try {
+        const { data: orderDetails } = await sb
+          .from("orders")
+          .select("buyer_email, events(title)")
+          .eq("id", order.id)
+          .single();
+        const { sendAdminTicketGenerationFailureEmail } = await import("@/lib/email.server");
+        await sendAdminTicketGenerationFailureEmail({
+          orderId: order.id,
+          eventTitle: orderDetails?.events?.title ?? "Unknown event",
+          buyerEmail: orderDetails?.buyer_email ?? "Unknown",
+          quantity: order.quantity,
+          errorMessage: secondErr instanceof Error ? secondErr.message : String(secondErr),
+        });
+      } catch (alertErr) {
+        console.error("[generateTicketsSafely] failed to send admin alert", alertErr);
+      }
+    }
+  }
+}
+
 async function releaseReservation(
   sb: any,
   ticketTypeId: string,
@@ -283,7 +316,7 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     if (isFree) {
-      await generateTicketsForOrder(sb, {
+      await generateTicketsSafely(sb, {
         id: order.id,
         event_id: data.eventId,
         ticket_type_id: data.ticketTypeId,
@@ -383,7 +416,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
         raw_response: verifyData.data,
       });
 
-      await generateTicketsForOrder(sb, {
+      await generateTicketsSafely(sb, {
         id: order.id,
         event_id: order.event_id,
         ticket_type_id: order.ticket_type_id,
@@ -422,7 +455,7 @@ export const reconcileOrder = createServerFn({ method: "POST" })
         .eq("order_id", order.id);
       const missing = Number(order.quantity) - (existingTickets?.length ?? 0);
       if (missing > 0) {
-        await generateTicketsForOrder(sb, {
+        await generateTicketsSafely(sb, {
           id: order.id,
           event_id: order.event_id,
           ticket_type_id: order.ticket_type_id,
@@ -471,7 +504,7 @@ export const reconcileOrder = createServerFn({ method: "POST" })
       raw_response: verifyData.data,
     });
 
-    await generateTicketsForOrder(sb, {
+    await generateTicketsSafely(sb, {
       id: order.id,
       event_id: order.event_id,
       ticket_type_id: order.ticket_type_id,
