@@ -192,9 +192,29 @@ export const initializePayment = createServerFn({ method: "POST" })
       return { error: "Ticket sales are not currently open for this ticket type." as const };
     }
 
-    if (ticketType.quantity - ticketType.quantity_sold < data.quantity) {
+    // --- Atomically reserve ticket stock ---
+    const { data: ticketReserved } = await sb.rpc("reserve_ticket_stock", {
+      p_ticket_type_id: data.ticketTypeId,
+      p_quantity: data.quantity,
+    });
+    if (!ticketReserved) {
       return { error: "Not enough tickets available" as const };
     }
+
+    // Track reservations so we can release them if anything later fails.
+    const reservedMerch: { id: string; quantity: number }[] = [];
+    const releaseAll = async () => {
+      await sb.rpc("release_ticket_stock", {
+        p_ticket_type_id: data.ticketTypeId,
+        p_quantity: data.quantity,
+      });
+      for (const r of reservedMerch) {
+        await sb.rpc("release_merch_stock", {
+          p_merch_item_id: r.id,
+          p_quantity: r.quantity,
+        });
+      }
+    };
 
     // --- Merch: validate selections server-side, never trust client-sent prices ---
     const merchSelections = data.merchItems ?? [];
@@ -215,20 +235,31 @@ export const initializePayment = createServerFn({ method: "POST" })
         .in("id", merchIds);
 
       if (merchErr) {
+        await releaseAll();
         return { error: "Could not load merch items" as const };
       }
 
       for (const sel of merchSelections) {
         const item = merchItemsDb?.find((m: any) => m.id === sel.merchItemId);
         if (!item || item.event_id !== data.eventId || item.is_active !== true) {
+          await releaseAll();
           return { error: "One or more selected merch items are no longer available." as const };
         }
-        if (item.quantity_available != null) {
-          const remaining = item.quantity_available - item.quantity_sold;
-          if (sel.quantity > remaining) {
-            return { error: `Only ${remaining} left of "${item.name}".` as const };
-          }
+
+        const { data: merchReserved } = await sb.rpc("reserve_merch_stock", {
+          p_merch_item_id: item.id,
+          p_quantity: sel.quantity,
+        });
+        if (!merchReserved) {
+          await releaseAll();
+          const remaining =
+            item.quantity_available != null
+              ? Math.max(0, item.quantity_available - item.quantity_sold)
+              : 0;
+          return { error: `Only ${remaining} left of "${item.name}".` as const };
         }
+        reservedMerch.push({ id: item.id, quantity: sel.quantity });
+
         const unitPrice = Number(item.price);
         const rowSubtotal = unitPrice * sel.quantity;
         merchSubtotal += rowSubtotal;
