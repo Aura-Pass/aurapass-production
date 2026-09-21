@@ -514,6 +514,22 @@ export const reconcileOrder = createServerFn({ method: "POST" })
     const verifyData = (await verifyRes.json()) as any;
 
     if (!verifyData?.status || verifyData.data?.status !== "success") {
+      if (order.status !== "failed") {
+        await sb.rpc("release_ticket_stock", {
+          p_ticket_type_id: order.ticket_type_id,
+          p_quantity: order.quantity,
+        });
+        const { data: failedMerch } = await sb
+          .from("order_merch_items")
+          .select("merch_item_id, quantity")
+          .eq("order_id", order.id);
+        for (const om of failedMerch ?? []) {
+          await sb.rpc("release_merch_stock", {
+            p_merch_item_id: om.merch_item_id,
+            p_quantity: om.quantity,
+          });
+        }
+      }
       await sb
         .from("orders")
         .update({ status: "failed" })
