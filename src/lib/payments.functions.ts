@@ -316,7 +316,7 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     if (isFree) {
-      await generateTicketsForOrder(sb, {
+      await generateTicketsSafely(sb, {
         id: order.id,
         event_id: data.eventId,
         ticket_type_id: data.ticketTypeId,
@@ -416,7 +416,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
         raw_response: verifyData.data,
       });
 
-      await generateTicketsForOrder(sb, {
+      await generateTicketsSafely(sb, {
         id: order.id,
         event_id: order.event_id,
         ticket_type_id: order.ticket_type_id,
@@ -455,7 +455,7 @@ export const reconcileOrder = createServerFn({ method: "POST" })
         .eq("order_id", order.id);
       const missing = Number(order.quantity) - (existingTickets?.length ?? 0);
       if (missing > 0) {
-        await generateTicketsForOrder(sb, {
+        await generateTicketsSafely(sb, {
           id: order.id,
           event_id: order.event_id,
           ticket_type_id: order.ticket_type_id,
@@ -504,7 +504,7 @@ export const reconcileOrder = createServerFn({ method: "POST" })
       raw_response: verifyData.data,
     });
 
-    await generateTicketsForOrder(sb, {
+    await generateTicketsSafely(sb, {
       id: order.id,
       event_id: order.event_id,
       ticket_type_id: order.ticket_type_id,
