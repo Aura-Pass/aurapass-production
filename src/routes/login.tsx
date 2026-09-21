@@ -26,6 +26,9 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [unconfirmed, setUnconfirmed] = useState(false);
+  const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -37,6 +40,9 @@ function LoginPage() {
     }
 
     setSubmitting(true);
+    setUnconfirmed(false);
+    setResendStatus("idle");
+    setResendMessage(null);
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
@@ -44,7 +50,15 @@ function LoginPage() {
 
     if (signInError || !data.user) {
       setSubmitting(false);
-      setError("Invalid email or password");
+      const isUnconfirmed =
+        (signInError?.message ?? "").toLowerCase().includes("email not confirmed") ||
+        signInError?.code === "email_not_confirmed";
+      if (isUnconfirmed) {
+        setUnconfirmed(true);
+        setError(null);
+      } else {
+        setError("Invalid email or password");
+      }
       return;
     }
 
@@ -94,7 +108,12 @@ function LoginPage() {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setUnconfirmed(false);
+                setResendStatus("idle");
+                setResendMessage(null);
+              }}
               required
             />
             <div className="relative">
@@ -121,6 +140,50 @@ function LoginPage() {
               <p className="rounded-md border border-destructive-strong bg-destructive-light px-3 py-2 text-sm text-destructive-strong">
                 {error}
               </p>
+            ) : null}
+
+            {unconfirmed ? (
+              <div className="rounded-md border border-border bg-muted px-3 py-3 text-sm">
+                <p className="font-medium text-foreground">
+                  Your email isn&apos;t confirmed yet.
+                </p>
+                <p className="mt-1 text-muted-foreground">
+                  Click below to resend the confirmation link.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 w-full"
+                  loading={resendStatus === "loading"}
+                  onClick={async () => {
+                    setResendStatus("loading");
+                    setResendMessage(null);
+                    const { error: resendError } = await supabase.auth.resend({
+                      type: "signup",
+                      email: email.trim(),
+                    });
+                    if (resendError) {
+                      setResendStatus("error");
+                      setResendMessage(resendError.message || "Could not resend confirmation email. Try again.");
+                    } else {
+                      setResendStatus("sent");
+                      setResendMessage("Confirmation link sent! Check your inbox (and spam folder).");
+                    }
+                  }}
+                >
+                  Resend confirmation link
+                </Button>
+                {resendMessage ? (
+                  <p
+                    className={`mt-2 text-xs ${
+                      resendStatus === "sent" ? "text-green-600 dark:text-green-400" : "text-destructive-strong"
+                    }`}
+                  >
+                    {resendMessage}
+                  </p>
+                ) : null}
+              </div>
             ) : null}
 
             <Button type="submit" variant="primary" size="lg" className="w-full" loading={submitting}>
