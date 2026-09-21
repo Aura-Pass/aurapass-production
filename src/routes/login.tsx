@@ -108,7 +108,12 @@ function LoginPage() {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setUnconfirmed(false);
+                setResendStatus("idle");
+                setResendMessage(null);
+              }}
               required
             />
             <div className="relative">
