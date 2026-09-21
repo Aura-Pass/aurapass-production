@@ -142,6 +142,50 @@ function LoginPage() {
               </p>
             ) : null}
 
+            {unconfirmed ? (
+              <div className="rounded-md border border-border bg-muted px-3 py-3 text-sm">
+                <p className="font-medium text-foreground">
+                  Your email isn&apos;t confirmed yet.
+                </p>
+                <p className="mt-1 text-muted-foreground">
+                  Click below to resend the confirmation link.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 w-full"
+                  loading={resendStatus === "loading"}
+                  onClick={async () => {
+                    setResendStatus("loading");
+                    setResendMessage(null);
+                    const { error: resendError } = await supabase.auth.resend({
+                      type: "signup",
+                      email: email.trim(),
+                    });
+                    if (resendError) {
+                      setResendStatus("error");
+                      setResendMessage(resendError.message || "Could not resend confirmation email. Try again.");
+                    } else {
+                      setResendStatus("sent");
+                      setResendMessage("Confirmation link sent! Check your inbox (and spam folder).");
+                    }
+                  }}
+                >
+                  Resend confirmation link
+                </Button>
+                {resendMessage ? (
+                  <p
+                    className={`mt-2 text-xs ${
+                      resendStatus === "sent" ? "text-green-600 dark:text-green-400" : "text-destructive-strong"
+                    }`}
+                  >
+                    {resendMessage}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
             <Button type="submit" variant="primary" size="lg" className="w-full" loading={submitting}>
               Log In
             </Button>
