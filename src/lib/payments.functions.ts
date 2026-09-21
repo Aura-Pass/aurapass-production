@@ -62,50 +62,19 @@ async function generateTicketsForOrder(
   }
 }
 
-/**
- * Generate tickets with one retry. Never throws: the order is already paid and
- * confirmed, so a ticket-row failure must not fail the buyer's request. On a
- * final failure we log loudly and alert admins by email.
- */
-async function generateTicketsSafely(
+async function releaseReservation(
   sb: any,
-  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
-): Promise<boolean> {
-  try {
-    await generateTicketsForOrder(sb, order);
-    return true;
-  } catch (firstErr) {
-    console.error("[generateTicketsSafely] first attempt failed, retrying", firstErr);
-    await new Promise((r) => setTimeout(r, 1500));
-    try {
-      await generateTicketsForOrder(sb, order);
-      console.log("[generateTicketsSafely] retry succeeded for order", order.id);
-      return true;
-    } catch (secondErr) {
-      console.error(
-        "🚨 [generateTicketsSafely] ticket generation FAILED after retry for order",
-        order.id,
-        secondErr,
-      );
-      try {
-        const { data: row } = await sb
-          .from("orders")
-          .select("buyer_email, events(title)")
-          .eq("id", order.id)
-          .maybeSingle();
-        const { sendAdminTicketGenerationFailureEmail } = await import("@/lib/email.server");
-        await sendAdminTicketGenerationFailureEmail({
-          orderId: order.id,
-          eventTitle: row?.events?.title ?? "Unknown event",
-          buyerEmail: row?.buyer_email ?? "unknown",
-          quantity: order.quantity,
-          errorMessage: secondErr instanceof Error ? secondErr.message : String(secondErr),
-        });
-      } catch (alertErr) {
-        console.error("[generateTicketsSafely] admin alert failed", alertErr);
-      }
-      return false;
-    }
+  ticketTypeId: string,
+  ticketQuantity: number,
+  orderId: string,
+) {
+  await sb.rpc("release_ticket_stock", { p_ticket_type_id: ticketTypeId, p_quantity: ticketQuantity });
+  const { data: orderMerch } = await sb
+    .from("order_merch_items")
+    .select("merch_item_id, quantity")
+    .eq("order_id", orderId);
+  for (const om of orderMerch ?? []) {
+    await sb.rpc("release_merch_stock", { p_merch_item_id: om.merch_item_id, p_quantity: om.quantity });
   }
 }
 
@@ -192,7 +161,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       return { error: "Ticket sales are not currently open for this ticket type." as const };
     }
 
-    // --- Atomically reserve ticket stock ---
+    // --- Atomically reserve ticket stock (replaces the old read-then-write check) ---
     const { data: ticketReserved } = await sb.rpc("reserve_ticket_stock", {
       p_ticket_type_id: data.ticketTypeId,
       p_quantity: data.quantity,
@@ -201,22 +170,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       return { error: "Not enough tickets available" as const };
     }
 
-    // Track reservations so we can release them if anything later fails.
-    const reservedMerch: { id: string; quantity: number }[] = [];
-    const releaseAll = async () => {
-      await sb.rpc("release_ticket_stock", {
-        p_ticket_type_id: data.ticketTypeId,
-        p_quantity: data.quantity,
-      });
-      for (const r of reservedMerch) {
-        await sb.rpc("release_merch_stock", {
-          p_merch_item_id: r.id,
-          p_quantity: r.quantity,
-        });
-      }
-    };
-
-    // --- Merch: validate selections server-side, never trust client-sent prices ---
+    // --- Merch: validate selections server-side, then atomically reserve each ---
     const merchSelections = data.merchItems ?? [];
     let merchSubtotal = 0;
     const merchRows: {
@@ -226,23 +180,27 @@ export const initializePayment = createServerFn({ method: "POST" })
       quantity: number;
       subtotal: number;
     }[] = [];
+    const reservedMerch: { merch_item_id: string; quantity: number }[] = [];
 
     if (merchSelections.length > 0) {
       const merchIds = merchSelections.map((m) => m.merchItemId);
       const { data: merchItemsDb, error: merchErr } = await sb
         .from("event_merch_items")
-        .select("id, name, price, is_active, event_id, quantity_available, quantity_sold")
+        .select("id, name, price, is_active, event_id")
         .in("id", merchIds);
 
       if (merchErr) {
-        await releaseAll();
+        await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
         return { error: "Could not load merch items" as const };
       }
 
       for (const sel of merchSelections) {
         const item = merchItemsDb?.find((m: any) => m.id === sel.merchItemId);
         if (!item || item.event_id !== data.eventId || item.is_active !== true) {
-          await releaseAll();
+          await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+          for (const rm of reservedMerch) {
+            await sb.rpc("release_merch_stock", { p_merch_item_id: rm.merch_item_id, p_quantity: rm.quantity });
+          }
           return { error: "One or more selected merch items are no longer available." as const };
         }
 
@@ -251,14 +209,13 @@ export const initializePayment = createServerFn({ method: "POST" })
           p_quantity: sel.quantity,
         });
         if (!merchReserved) {
-          await releaseAll();
-          const remaining =
-            item.quantity_available != null
-              ? Math.max(0, item.quantity_available - item.quantity_sold)
-              : 0;
-          return { error: `Only ${remaining} left of "${item.name}".` as const };
+          await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+          for (const rm of reservedMerch) {
+            await sb.rpc("release_merch_stock", { p_merch_item_id: rm.merch_item_id, p_quantity: rm.quantity });
+          }
+          return { error: `"${item.name}" no longer has enough stock available.` as const };
         }
-        reservedMerch.push({ id: item.id, quantity: sel.quantity });
+        reservedMerch.push({ merch_item_id: item.id, quantity: sel.quantity });
 
         const unitPrice = Number(item.price);
         const rowSubtotal = unitPrice * sel.quantity;
@@ -309,7 +266,10 @@ export const initializePayment = createServerFn({ method: "POST" })
       .single();
 
     if (orderError || !order) {
-      await releaseAll();
+      await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+      for (const rm of reservedMerch) {
+        await sb.rpc("release_merch_stock", { p_merch_item_id: rm.merch_item_id, p_quantity: rm.quantity });
+      }
       return { error: "Could not create order" as const };
     }
 
@@ -318,17 +278,12 @@ export const initializePayment = createServerFn({ method: "POST" })
         .from("order_merch_items")
         .insert(merchRows.map((r) => ({ ...r, order_id: order.id })));
       if (merchInsertErr) {
-        // Log loudly but don't fail the whole checkout over a line-item record —
-        // the order and payment are the source of truth for money owed.
         console.error("[initializePayment] order_merch_items insert failed", merchInsertErr);
       }
     }
 
     if (isFree) {
-      // Stock was already reserved atomically above — no increment here.
-
-
-      await generateTicketsSafely(sb, {
+      await generateTicketsForOrder(sb, {
         id: order.id,
         event_id: data.eventId,
         ticket_type_id: data.ticketTypeId,
@@ -341,7 +296,11 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     const secret = process.env.PAYSTACK_SECRET_KEY;
-    if (!secret) return { error: "Payment provider not configured" as const };
+    if (!secret) {
+      await releaseReservation(sb, data.ticketTypeId, data.quantity, order.id);
+      await sb.from("orders").update({ status: "failed" }).eq("id", order.id);
+      return { error: "Payment provider not configured" as const };
+    }
 
     const paystackRes = await fetch("https://api.paystack.co/transaction/initialize", {
       method: "POST",
@@ -360,6 +319,8 @@ export const initializePayment = createServerFn({ method: "POST" })
     const paystackData = (await paystackRes.json()) as any;
 
     if (!paystackData?.status) {
+      await releaseReservation(sb, data.ticketTypeId, data.quantity, order.id);
+      await sb.from("orders").update({ status: "failed" }).eq("id", order.id);
       return { error: "Could not initialize payment" as const };
     }
 
@@ -388,41 +349,6 @@ export const verifyPayment = createServerFn({ method: "POST" })
     const secret = process.env.PAYSTACK_SECRET_KEY;
     if (!secret) return { success: false, error: "Payment provider not configured" };
 
-    const verifyRes = await fetch(
-      `https://api.paystack.co/transaction/verify/${encodeURIComponent(data.reference)}`,
-      { headers: { Authorization: `Bearer ${secret}` } },
-    );
-    const verifyData = (await verifyRes.json()) as any;
-
-    if (!verifyData?.status || verifyData.data?.status !== "success") {
-      // Release the stock reserved at initializePayment time.
-      const { data: failedOrder } = await sb
-        .from("orders")
-        .select("id, status, ticket_type_id, quantity")
-        .eq("paystack_reference", data.reference)
-        .maybeSingle();
-
-      if (failedOrder && failedOrder.status !== "confirmed" && failedOrder.status !== "failed") {
-        await sb.rpc("release_ticket_stock", {
-          p_ticket_type_id: failedOrder.ticket_type_id,
-          p_quantity: failedOrder.quantity,
-        });
-        const { data: failedMerch } = await sb
-          .from("order_merch_items")
-          .select("merch_item_id, quantity")
-          .eq("order_id", failedOrder.id);
-        for (const om of failedMerch ?? []) {
-          await sb.rpc("release_merch_stock", {
-            p_merch_item_id: om.merch_item_id,
-            p_quantity: om.quantity,
-          });
-        }
-      }
-
-      await sb.from("orders").update({ status: "failed" }).eq("paystack_reference", data.reference);
-      return { success: false as const };
-    }
-
     const { data: order } = await sb
       .from("orders")
       .select("*")
@@ -431,12 +357,22 @@ export const verifyPayment = createServerFn({ method: "POST" })
 
     if (!order) return { success: false as const, error: "Order not found" };
 
+    const verifyRes = await fetch(
+      `https://api.paystack.co/transaction/verify/${encodeURIComponent(data.reference)}`,
+      { headers: { Authorization: `Bearer ${secret}` } },
+    );
+    const verifyData = (await verifyRes.json()) as any;
+
+    if (!verifyData?.status || verifyData.data?.status !== "success") {
+      if (order.status === "pending") {
+        await releaseReservation(sb, order.ticket_type_id, order.quantity, order.id);
+      }
+      await sb.from("orders").update({ status: "failed" }).eq("id", order.id);
+      return { success: false as const };
+    }
+
     if (order.status !== "confirmed") {
       await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-      // Ticket and merch stock were reserved atomically at initializePayment time.
-
-
 
       await sb.from("payments").insert({
         order_id: order.id,
@@ -447,7 +383,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
         raw_response: verifyData.data,
       });
 
-      await generateTicketsSafely(sb, {
+      await generateTicketsForOrder(sb, {
         id: order.id,
         event_id: order.event_id,
         ticket_type_id: order.ticket_type_id,
@@ -486,7 +422,7 @@ export const reconcileOrder = createServerFn({ method: "POST" })
         .eq("order_id", order.id);
       const missing = Number(order.quantity) - (existingTickets?.length ?? 0);
       if (missing > 0) {
-        await generateTicketsSafely(sb, {
+        await generateTicketsForOrder(sb, {
           id: order.id,
           event_id: order.event_id,
           ticket_type_id: order.ticket_type_id,
@@ -514,34 +450,17 @@ export const reconcileOrder = createServerFn({ method: "POST" })
     const verifyData = (await verifyRes.json()) as any;
 
     if (!verifyData?.status || verifyData.data?.status !== "success") {
-      if (order.status !== "failed") {
-        await sb.rpc("release_ticket_stock", {
-          p_ticket_type_id: order.ticket_type_id,
-          p_quantity: order.quantity,
-        });
-        const { data: failedMerch } = await sb
-          .from("order_merch_items")
-          .select("merch_item_id, quantity")
-          .eq("order_id", order.id);
-        for (const om of failedMerch ?? []) {
-          await sb.rpc("release_merch_stock", {
-            p_merch_item_id: om.merch_item_id,
-            p_quantity: om.quantity,
-          });
-        }
+      if (order.status === "pending") {
+        await releaseReservation(sb, order.ticket_type_id, order.quantity, order.id);
       }
       await sb
         .from("orders")
         .update({ status: "failed" })
-        .eq("paystack_reference", order.paystack_reference);
+        .eq("id", order.id);
       return { success: false as const };
     }
 
     await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-    // Stock was reserved atomically when the order was created — no increment here.
-
-
 
     await sb.from("payments").insert({
       order_id: order.id,
@@ -552,7 +471,7 @@ export const reconcileOrder = createServerFn({ method: "POST" })
       raw_response: verifyData.data,
     });
 
-    await generateTicketsSafely(sb, {
+    await generateTicketsForOrder(sb, {
       id: order.id,
       event_id: order.event_id,
       ticket_type_id: order.ticket_type_id,
