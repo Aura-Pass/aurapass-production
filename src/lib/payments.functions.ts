@@ -325,24 +325,8 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     if (isFree) {
-      await sb
-        .from("ticket_types")
-        .update({ quantity_sold: ticketType.quantity_sold + data.quantity })
-        .eq("id", data.ticketTypeId);
+      // Stock was already reserved atomically above — no increment here.
 
-      for (const r of merchRows) {
-        const { data: mi } = await sb
-          .from("event_merch_items")
-          .select("quantity_sold")
-          .eq("id", r.merch_item_id)
-          .single();
-        if (mi) {
-          await sb
-            .from("event_merch_items")
-            .update({ quantity_sold: mi.quantity_sold + r.quantity })
-            .eq("id", r.merch_item_id);
-        }
-      }
 
       await generateTicketsSafely(sb, {
         id: order.id,
