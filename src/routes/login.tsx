@@ -40,6 +40,9 @@ function LoginPage() {
     }
 
     setSubmitting(true);
+    setUnconfirmed(false);
+    setResendStatus("idle");
+    setResendMessage(null);
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
@@ -47,7 +50,15 @@ function LoginPage() {
 
     if (signInError || !data.user) {
       setSubmitting(false);
-      setError("Invalid email or password");
+      const isUnconfirmed =
+        (signInError?.message ?? "").toLowerCase().includes("email not confirmed") ||
+        signInError?.code === "email_not_confirmed";
+      if (isUnconfirmed) {
+        setUnconfirmed(true);
+        setError(null);
+      } else {
+        setError("Invalid email or password");
+      }
       return;
     }
 
