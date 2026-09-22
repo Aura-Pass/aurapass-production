@@ -409,26 +409,25 @@ export const verifyPayment = createServerFn({ method: "POST" })
       return { success: false as const };
     }
 
-    if (order.status !== "confirmed") {
-      await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-      await sb.from("payments").insert({
-        order_id: order.id,
-        paystack_reference: data.reference,
-        amount: order.total_amount,
-        status: "success",
-        paid_at: new Date().toISOString(),
-        raw_response: verifyData.data,
+    // Single idempotent fulfilment path — shared with the Paystack webhook.
+    // Safe to run twice: order claim, ticket rows and the email are all
+    // claimed atomically, so the webhook landing later is a no-op.
+    const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
+    try {
+      await fulfilPaidOrder(sb, {
+        reference: data.reference,
+        verifiedData: verifyData.data,
+        amount: Number(verifyData.data?.amount ?? 0) / 100 || undefined,
       });
-
+    } catch (err) {
+      console.error("[verifyPayment] fulfilment failed, falling back", order.id, err);
       await generateTicketsSafely(sb, {
         id: order.id,
         event_id: order.event_id,
         ticket_type_id: order.ticket_type_id,
         quantity: order.quantity,
       });
-
-      await sendConfirmationEmailSafely(sb, order.id);
+      await sendConfirmationEmailOnce(sb, order.id);
     }
 
     return { success: true as const, orderId: order.id as string };
