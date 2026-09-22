@@ -45,33 +45,22 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
   }
 }
 
-async function generateTicketsForOrder(
-  sb: any,
-  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
-) {
-  const rows = Array.from({ length: order.quantity }, () => ({
-    order_id: order.id,
-    event_id: order.event_id,
-    ticket_type_id: order.ticket_type_id,
-    qr_code: generateTicketCode(order.id),
-  }));
-  const { error } = await sb.from("tickets").insert(rows);
-  if (error) {
-    console.error("[generateTicketsForOrder] insert failed", error);
-    throw new Error(`Ticket generation failed: ${error.message}`);
-  }
-}
-
+/**
+ * Idempotent ticket generation. Delegates to the shared fulfilment helper,
+ * which upserts on (order_id, ticket_sequence) so repeated calls — browser
+ * callback, webhook, reconcile — never create duplicate ticket rows.
+ */
 async function generateTicketsSafely(
   sb: any,
   order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
 ) {
+  const { ensureTicketsForOrder } = await import("@/lib/fulfilment.server");
   try {
-    await generateTicketsForOrder(sb, order);
+    await ensureTicketsForOrder(sb, order);
   } catch (firstErr) {
     console.error("[generateTicketsSafely] first attempt failed, retrying", firstErr);
     try {
-      await generateTicketsForOrder(sb, order);
+      await ensureTicketsForOrder(sb, order);
     } catch (secondErr) {
       console.error("[generateTicketsSafely] retry failed, alerting admin", secondErr);
       try {
@@ -93,6 +82,22 @@ async function generateTicketsSafely(
       }
     }
   }
+}
+
+/**
+ * Sends the confirmation email at most once per order by atomically claiming
+ * `confirmation_email_sent_at`. Losers of the race send nothing.
+ */
+async function sendConfirmationEmailOnce(sb: any, orderId: string) {
+  const { data: claim } = await sb
+    .from("orders")
+    .update({ confirmation_email_sent_at: new Date().toISOString() })
+    .eq("id", orderId)
+    .is("confirmation_email_sent_at", null)
+    .select("id")
+    .maybeSingle();
+  if (!claim) return;
+  await sendConfirmationEmailSafely(sb, orderId);
 }
 
 async function releaseReservation(
@@ -323,7 +328,7 @@ export const initializePayment = createServerFn({ method: "POST" })
         quantity: data.quantity,
       });
 
-      await sendConfirmationEmailSafely(sb, order.id);
+      await sendConfirmationEmailOnce(sb, order.id);
 
       return { free: true as const, orderId: order.id as string };
     }
@@ -404,26 +409,25 @@ export const verifyPayment = createServerFn({ method: "POST" })
       return { success: false as const };
     }
 
-    if (order.status !== "confirmed") {
-      await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-      await sb.from("payments").insert({
-        order_id: order.id,
-        paystack_reference: data.reference,
-        amount: order.total_amount,
-        status: "success",
-        paid_at: new Date().toISOString(),
-        raw_response: verifyData.data,
+    // Single idempotent fulfilment path — shared with the Paystack webhook.
+    // Safe to run twice: order claim, ticket rows and the email are all
+    // claimed atomically, so the webhook landing later is a no-op.
+    const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
+    try {
+      await fulfilPaidOrder(sb, {
+        reference: data.reference,
+        verifiedData: verifyData.data,
+        amount: Number(verifyData.data?.amount ?? 0) / 100 || undefined,
       });
-
+    } catch (err) {
+      console.error("[verifyPayment] fulfilment failed, falling back", order.id, err);
       await generateTicketsSafely(sb, {
         id: order.id,
         event_id: order.event_id,
         ticket_type_id: order.ticket_type_id,
         quantity: order.quantity,
       });
-
-      await sendConfirmationEmailSafely(sb, order.id);
+      await sendConfirmationEmailOnce(sb, order.id);
     }
 
     return { success: true as const, orderId: order.id as string };
@@ -455,11 +459,13 @@ export const reconcileOrder = createServerFn({ method: "POST" })
         .eq("order_id", order.id);
       const missing = Number(order.quantity) - (existingTickets?.length ?? 0);
       if (missing > 0) {
+        // Always pass the full quantity — generation is keyed by
+        // (order_id, ticket_sequence), so only the missing rows are created.
         await generateTicketsSafely(sb, {
           id: order.id,
           event_id: order.event_id,
           ticket_type_id: order.ticket_type_id,
-          quantity: missing,
+          quantity: Number(order.quantity),
         });
       }
       return {
@@ -493,25 +499,24 @@ export const reconcileOrder = createServerFn({ method: "POST" })
       return { success: false as const };
     }
 
-    await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-    await sb.from("payments").insert({
-      order_id: order.id,
-      paystack_reference: order.paystack_reference,
-      amount: order.total_amount,
-      status: "success",
-      paid_at: new Date().toISOString(),
-      raw_response: verifyData.data,
-    });
-
-    await generateTicketsSafely(sb, {
-      id: order.id,
-      event_id: order.event_id,
-      ticket_type_id: order.ticket_type_id,
-      quantity: order.quantity,
-    });
-
-    await sendConfirmationEmailSafely(sb, order.id);
+    // Same single idempotent fulfilment path as the webhook and callback.
+    const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
+    try {
+      await fulfilPaidOrder(sb, {
+        reference: order.paystack_reference,
+        verifiedData: verifyData.data,
+        amount: Number(verifyData.data?.amount ?? 0) / 100 || undefined,
+      });
+    } catch (err) {
+      console.error("[reconcileOrder] fulfilment failed, falling back", order.id, err);
+      await generateTicketsSafely(sb, {
+        id: order.id,
+        event_id: order.event_id,
+        ticket_type_id: order.ticket_type_id,
+        quantity: Number(order.quantity),
+      });
+      await sendConfirmationEmailOnce(sb, order.id);
+    }
 
     return {
       success: true as const,
