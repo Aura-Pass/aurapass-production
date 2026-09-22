@@ -142,14 +142,11 @@ export async function fulfilPaidOrder(
   const fulfilledNow = Boolean(claimed);
 
   if (fulfilledNow) {
-    // Atomic single-statement increment — no read-then-write race.
-    const { error: incError } = await sb.rpc("increment_ticket_type_sold", {
-      _ticket_type_id: order.ticket_type_id,
-      _by: order.quantity,
-    });
-    if (incError) {
-      console.error("[fulfilment] stock increment failed", incError);
-    }
+    // NOTE: stock is reserved atomically at order creation
+    // (reserve_ticket_stock in initializePayment), so no increment here —
+    // incrementing again would double-count sold tickets.
+
+
 
     // paystack_reference is UNIQUE — a duplicate here just means another
     // path already recorded the payment, which is fine.
