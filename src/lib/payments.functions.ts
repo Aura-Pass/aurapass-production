@@ -45,33 +45,22 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
   }
 }
 
-async function generateTicketsForOrder(
-  sb: any,
-  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
-) {
-  const rows = Array.from({ length: order.quantity }, () => ({
-    order_id: order.id,
-    event_id: order.event_id,
-    ticket_type_id: order.ticket_type_id,
-    qr_code: generateTicketCode(order.id),
-  }));
-  const { error } = await sb.from("tickets").insert(rows);
-  if (error) {
-    console.error("[generateTicketsForOrder] insert failed", error);
-    throw new Error(`Ticket generation failed: ${error.message}`);
-  }
-}
-
+/**
+ * Idempotent ticket generation. Delegates to the shared fulfilment helper,
+ * which upserts on (order_id, ticket_sequence) so repeated calls — browser
+ * callback, webhook, reconcile — never create duplicate ticket rows.
+ */
 async function generateTicketsSafely(
   sb: any,
   order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
 ) {
+  const { ensureTicketsForOrder } = await import("@/lib/fulfilment.server");
   try {
-    await generateTicketsForOrder(sb, order);
+    await ensureTicketsForOrder(sb, order);
   } catch (firstErr) {
     console.error("[generateTicketsSafely] first attempt failed, retrying", firstErr);
     try {
-      await generateTicketsForOrder(sb, order);
+      await ensureTicketsForOrder(sb, order);
     } catch (secondErr) {
       console.error("[generateTicketsSafely] retry failed, alerting admin", secondErr);
       try {
@@ -93,6 +82,22 @@ async function generateTicketsSafely(
       }
     }
   }
+}
+
+/**
+ * Sends the confirmation email at most once per order by atomically claiming
+ * `confirmation_email_sent_at`. Losers of the race send nothing.
+ */
+async function sendConfirmationEmailOnce(sb: any, orderId: string) {
+  const { data: claim } = await sb
+    .from("orders")
+    .update({ confirmation_email_sent_at: new Date().toISOString() })
+    .eq("id", orderId)
+    .is("confirmation_email_sent_at", null)
+    .select("id")
+    .maybeSingle();
+  if (!claim) return;
+  await sendConfirmationEmailSafely(sb, orderId);
 }
 
 async function releaseReservation(
