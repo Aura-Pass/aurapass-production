@@ -459,11 +459,13 @@ export const reconcileOrder = createServerFn({ method: "POST" })
         .eq("order_id", order.id);
       const missing = Number(order.quantity) - (existingTickets?.length ?? 0);
       if (missing > 0) {
+        // Always pass the full quantity — generation is keyed by
+        // (order_id, ticket_sequence), so only the missing rows are created.
         await generateTicketsSafely(sb, {
           id: order.id,
           event_id: order.event_id,
           ticket_type_id: order.ticket_type_id,
-          quantity: missing,
+          quantity: Number(order.quantity),
         });
       }
       return {
@@ -497,25 +499,24 @@ export const reconcileOrder = createServerFn({ method: "POST" })
       return { success: false as const };
     }
 
-    await sb.from("orders").update({ status: "confirmed" }).eq("id", order.id);
-
-    await sb.from("payments").insert({
-      order_id: order.id,
-      paystack_reference: order.paystack_reference,
-      amount: order.total_amount,
-      status: "success",
-      paid_at: new Date().toISOString(),
-      raw_response: verifyData.data,
-    });
-
-    await generateTicketsSafely(sb, {
-      id: order.id,
-      event_id: order.event_id,
-      ticket_type_id: order.ticket_type_id,
-      quantity: order.quantity,
-    });
-
-    await sendConfirmationEmailSafely(sb, order.id);
+    // Same single idempotent fulfilment path as the webhook and callback.
+    const { fulfilPaidOrder } = await import("@/lib/fulfilment.server");
+    try {
+      await fulfilPaidOrder(sb, {
+        reference: order.paystack_reference,
+        verifiedData: verifyData.data,
+        amount: Number(verifyData.data?.amount ?? 0) / 100 || undefined,
+      });
+    } catch (err) {
+      console.error("[reconcileOrder] fulfilment failed, falling back", order.id, err);
+      await generateTicketsSafely(sb, {
+        id: order.id,
+        event_id: order.event_id,
+        ticket_type_id: order.ticket_type_id,
+        quantity: Number(order.quantity),
+      });
+      await sendConfirmationEmailOnce(sb, order.id);
+    }
 
     return {
       success: true as const,
