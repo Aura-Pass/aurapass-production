@@ -60,8 +60,10 @@ export async function sendConfirmationEmailSafely(sb: Sb, orderId: string) {
  */
 export async function ensureTicketsForOrder(
   sb: Sb,
-  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
+  order: { id: string; event_id: string; ticket_type_id: string | null; quantity: number },
 ): Promise<{ created: number; existing: number }> {
+  // Merch-only orders (ticket_type_id null, quantity 0) have no ticket rows.
+  if (!order.ticket_type_id || order.quantity <= 0) return { created: 0, existing: 0 };
   const countTickets = async () => {
     const { count, error } = await sb
       .from("tickets")

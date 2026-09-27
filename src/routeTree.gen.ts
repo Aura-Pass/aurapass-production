@@ -79,6 +79,7 @@ import { Route as EquipmentIdIndexRouteImport } from './routes/equipment.$id.ind
 import { Route as EquipmentIdRequestRouteImport } from './routes/equipment.$id.request'
 import { Route as EventsSlugIndexRouteImport } from './routes/events.$slug.index'
 import { Route as EventsSlugCheckoutRouteImport } from './routes/events.$slug.checkout'
+import { Route as EventsSlugMerchRouteImport } from './routes/events.$slug.merch'
 import { Route as DashboardGateScanIndexRouteImport } from './routes/dashboard.gate.scan.index'
 import { Route as DashboardOrganiserEditEventEventIdRouteImport } from './routes/dashboard.organiser.edit-event.$eventId'
 import { Route as DashboardOrganiserFundRequestsEventIdRouteImport } from './routes/dashboard.organiser.fund-requests.$eventId'
@@ -455,6 +456,11 @@ const EventsSlugCheckoutRoute = EventsSlugCheckoutRouteImport.update({
   path: '/events/$slug/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsSlugMerchRoute = EventsSlugMerchRouteImport.update({
+  id: '/events/$slug/merch',
+  path: '/events/$slug/merch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardGateScanIndexRoute = DashboardGateScanIndexRouteImport.update({
   id: '/gate/scan/',
   path: '/gate/scan/',
@@ -564,6 +570,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/equipment/$id/request': typeof EquipmentIdRequestRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/events/$slug/merch': typeof EventsSlugMerchRoute
   '/artists/$id/': typeof ArtistsIdIndexRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
@@ -636,6 +643,7 @@ export interface FileRoutesByTo {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/equipment/$id/request': typeof EquipmentIdRequestRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/events/$slug/merch': typeof EventsSlugMerchRoute
   '/artists/$id': typeof ArtistsIdIndexRoute
   '/dashboard/admin': typeof DashboardAdminIndexRoute
   '/dashboard/artist': typeof DashboardArtistIndexRoute
@@ -717,6 +725,7 @@ export interface FileRoutesById {
   '/dashboard/organiser/tickets': typeof DashboardOrganiserTicketsRoute
   '/equipment/$id/request': typeof EquipmentIdRequestRoute
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
+  '/events/$slug/merch': typeof EventsSlugMerchRoute
   '/artists/$id/': typeof ArtistsIdIndexRoute
   '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
@@ -799,6 +808,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/equipment/$id/request'
     | '/events/$slug/checkout'
+    | '/events/$slug/merch'
     | '/artists/$id/'
     | '/dashboard/admin/'
     | '/dashboard/artist/'
@@ -871,6 +881,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/equipment/$id/request'
     | '/events/$slug/checkout'
+    | '/events/$slug/merch'
     | '/artists/$id'
     | '/dashboard/admin'
     | '/dashboard/artist'
@@ -951,6 +962,7 @@ export interface FileRouteTypes {
     | '/dashboard/organiser/tickets'
     | '/equipment/$id/request'
     | '/events/$slug/checkout'
+    | '/events/$slug/merch'
     | '/artists/$id/'
     | '/dashboard/admin/'
     | '/dashboard/artist/'
@@ -1006,6 +1018,7 @@ export interface RootRouteChildren {
   EventsIndexRoute: typeof EventsIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   EventsSlugCheckoutRoute: typeof EventsSlugCheckoutRoute
+  EventsSlugMerchRoute: typeof EventsSlugMerchRoute
   EventsSlugIndexRoute: typeof EventsSlugIndexRoute
 }
 
@@ -1501,6 +1514,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsSlugCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events/$slug/merch': {
+      id: '/events/$slug/merch'
+      path: '/events/$slug/merch'
+      fullPath: '/events/$slug/merch'
+      preLoaderRoute: typeof EventsSlugMerchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/gate/scan/': {
       id: '/dashboard/gate/scan/'
       path: '/gate/scan'
@@ -1764,6 +1784,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsIndexRoute: EventsIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   EventsSlugCheckoutRoute: EventsSlugCheckoutRoute,
+  EventsSlugMerchRoute: EventsSlugMerchRoute,
   EventsSlugIndexRoute: EventsSlugIndexRoute,
 }
 export const routeTree = rootRouteImport

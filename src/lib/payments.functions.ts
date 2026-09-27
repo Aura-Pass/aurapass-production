@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateTicketCode } from "@/lib/generateTicketCode";
+import { generateTicketCode, generateMerchCode } from "@/lib/generateTicketCode";
 import { sendTicketConfirmationEmail } from "@/lib/email.functions";
 
 async function sendConfirmationEmailSafely(sb: any, orderId: string) {
@@ -52,8 +52,9 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
  */
 async function generateTicketsSafely(
   sb: any,
-  order: { id: string; event_id: string; ticket_type_id: string; quantity: number },
+  order: { id: string; event_id: string; ticket_type_id: string | null; quantity: number },
 ) {
+  if (!order.ticket_type_id || order.quantity <= 0) return; // merch-only order
   const { ensureTicketsForOrder } = await import("@/lib/fulfilment.server");
   try {
     await ensureTicketsForOrder(sb, order);
@@ -102,11 +103,14 @@ async function sendConfirmationEmailOnce(sb: any, orderId: string) {
 
 async function releaseReservation(
   sb: any,
-  ticketTypeId: string,
+  ticketTypeId: string | null,
   ticketQuantity: number,
   orderId: string,
 ) {
-  await sb.rpc("release_ticket_stock", { p_ticket_type_id: ticketTypeId, p_quantity: ticketQuantity });
+  // Merch-only orders have no ticket_type_id and no ticket stock to release.
+  if (ticketTypeId && ticketQuantity > 0) {
+    await sb.rpc("release_ticket_stock", { p_ticket_type_id: ticketTypeId, p_quantity: ticketQuantity });
+  }
   const { data: orderMerch } = await sb
     .from("order_merch_items")
     .select("merch_item_id, quantity")
@@ -123,7 +127,8 @@ interface MerchSelection {
 
 interface InitInput {
   eventId: string;
-  ticketTypeId: string;
+  /** null/empty for a merch-only order (quantity must then be 0). */
+  ticketTypeId: string | null;
   quantity: number;
   buyerName: string;
   buyerEmail: string;
@@ -139,7 +144,7 @@ export const initializePayment = createServerFn({ method: "POST" })
     if (
       !data ||
       typeof data.eventId !== "string" ||
-      typeof data.ticketTypeId !== "string" ||
+      (data.ticketTypeId !== null && typeof data.ticketTypeId !== "string") ||
       typeof data.quantity !== "number" ||
       !Number.isInteger(data.quantity) ||
       typeof data.buyerName !== "string" ||
@@ -149,7 +154,13 @@ export const initializePayment = createServerFn({ method: "POST" })
     ) {
       throw new Error("Invalid input");
     }
-    if (data.quantity < 1 || data.quantity > 10) {
+    const merchOnly = !data.ticketTypeId;
+    if (merchOnly) {
+      if (data.quantity !== 0) throw new Error("Merch-only orders cannot include tickets");
+      if (!Array.isArray(data.merchItems) || data.merchItems.length === 0) {
+        throw new Error("Please select at least one merch item");
+      }
+    } else if (data.quantity < 1 || data.quantity > 10) {
       throw new Error("You can purchase between 1 and 10 tickets per order");
     }
     if (data.merchItems !== undefined) {
@@ -173,39 +184,63 @@ export const initializePayment = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const sb = supabaseAdmin as any;
 
-    const { data: ticketType, error: ticketError } = await sb
-      .from("ticket_types")
-      .select("*, events(title, status)")
-      .eq("id", data.ticketTypeId)
-      .single();
+    const isMerchOnly = !data.ticketTypeId;
+    const ticketTypeId = isMerchOnly ? null : (data.ticketTypeId as string);
+    const releaseTickets = async () => {
+      if (!isMerchOnly) {
+        await sb.rpc("release_ticket_stock", { p_ticket_type_id: ticketTypeId, p_quantity: data.quantity });
+      }
+    };
 
-    if (ticketError || !ticketType) {
-      return { error: "Ticket type not found" as const };
-    }
+    let ticketType: any = null;
+    let eventTitle: string | undefined;
 
-    if (ticketType.events?.status !== "published") {
-      return { error: "This event is not currently available for purchase." as const };
-    }
+    if (isMerchOnly) {
+      const { data: ev } = await sb
+        .from("events")
+        .select("id, title, status")
+        .eq("id", data.eventId)
+        .maybeSingle();
+      if (!ev || ev.status !== "published") {
+        return { error: "This event is not currently available for purchase." as const };
+      }
+      eventTitle = ev.title;
+    } else {
+      const { data: tt, error: ticketError } = await sb
+        .from("ticket_types")
+        .select("*, events(title, status)")
+        .eq("id", ticketTypeId)
+        .single();
 
-    if (ticketType.is_hidden === true) {
-      return { error: "This event is not currently available for purchase." as const };
-    }
+      if (ticketError || !tt) {
+        return { error: "Ticket type not found" as const };
+      }
+      ticketType = tt;
+      eventTitle = tt.events?.title;
 
-    const now = Date.now();
-    if (ticketType.sale_start && now < new Date(ticketType.sale_start).getTime()) {
-      return { error: "Ticket sales are not currently open for this ticket type." as const };
-    }
-    if (ticketType.sale_end && now > new Date(ticketType.sale_end).getTime()) {
-      return { error: "Ticket sales are not currently open for this ticket type." as const };
-    }
+      if (ticketType.event_id && ticketType.event_id !== data.eventId) {
+        return { error: "Ticket type not found" as const };
+      }
+      if (ticketType.events?.status !== "published" || ticketType.is_hidden === true) {
+        return { error: "This event is not currently available for purchase." as const };
+      }
 
-    // --- Atomically reserve ticket stock (replaces the old read-then-write check) ---
-    const { data: ticketReserved } = await sb.rpc("reserve_ticket_stock", {
-      p_ticket_type_id: data.ticketTypeId,
-      p_quantity: data.quantity,
-    });
-    if (!ticketReserved) {
-      return { error: "Not enough tickets available" as const };
+      const now = Date.now();
+      if (ticketType.sale_start && now < new Date(ticketType.sale_start).getTime()) {
+        return { error: "Ticket sales are not currently open for this ticket type." as const };
+      }
+      if (ticketType.sale_end && now > new Date(ticketType.sale_end).getTime()) {
+        return { error: "Ticket sales are not currently open for this ticket type." as const };
+      }
+
+      // --- Atomically reserve ticket stock ---
+      const { data: ticketReserved } = await sb.rpc("reserve_ticket_stock", {
+        p_ticket_type_id: ticketTypeId,
+        p_quantity: data.quantity,
+      });
+      if (!ticketReserved) {
+        return { error: "Not enough tickets available" as const };
+      }
     }
 
     // --- Merch: validate selections server-side, then atomically reserve each ---
@@ -228,14 +263,14 @@ export const initializePayment = createServerFn({ method: "POST" })
         .in("id", merchIds);
 
       if (merchErr) {
-        await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+        await releaseTickets();
         return { error: "Could not load merch items" as const };
       }
 
       for (const sel of merchSelections) {
         const item = merchItemsDb?.find((m: any) => m.id === sel.merchItemId);
         if (!item || item.event_id !== data.eventId || item.is_active !== true) {
-          await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+          await releaseTickets();
           for (const rm of reservedMerch) {
             await sb.rpc("release_merch_stock", { p_merch_item_id: rm.merch_item_id, p_quantity: rm.quantity });
           }
@@ -247,7 +282,7 @@ export const initializePayment = createServerFn({ method: "POST" })
           p_quantity: sel.quantity,
         });
         if (!merchReserved) {
-          await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+          await releaseTickets();
           for (const rm of reservedMerch) {
             await sb.rpc("release_merch_stock", { p_merch_item_id: rm.merch_item_id, p_quantity: rm.quantity });
           }
@@ -268,7 +303,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       }
     }
 
-    const ticketPrice = Number(ticketType.price);
+    const ticketPrice = isMerchOnly ? 0 : Number(ticketType.price);
     const ticketSubtotal = ticketPrice * data.quantity;
     const combinedSubtotal = ticketSubtotal + merchSubtotal;
     const isFree = combinedSubtotal === 0;
@@ -288,7 +323,7 @@ export const initializePayment = createServerFn({ method: "POST" })
       .from("orders")
       .insert({
         event_id: data.eventId,
-        ticket_type_id: data.ticketTypeId,
+        ticket_type_id: ticketTypeId,
         buyer_name: data.buyerName,
         buyer_email: data.buyerEmail,
         buyer_phone: data.buyerPhone,
@@ -299,12 +334,15 @@ export const initializePayment = createServerFn({ method: "POST" })
         status: isFree ? "confirmed" : "pending",
         user_id: data.userId || null,
         referred_by: referredBy,
+        ...(merchRows.length > 0
+          ? { merch_qr_code: generateMerchCode(), merch_pickup_status: "pending" }
+          : {}),
       })
       .select()
       .single();
 
     if (orderError || !order) {
-      await sb.rpc("release_ticket_stock", { p_ticket_type_id: data.ticketTypeId, p_quantity: data.quantity });
+      await releaseTickets();
       for (const rm of reservedMerch) {
         await sb.rpc("release_merch_stock", { p_merch_item_id: rm.merch_item_id, p_quantity: rm.quantity });
       }
@@ -321,12 +359,14 @@ export const initializePayment = createServerFn({ method: "POST" })
     }
 
     if (isFree) {
-      await generateTicketsSafely(sb, {
-        id: order.id,
-        event_id: data.eventId,
-        ticket_type_id: data.ticketTypeId,
-        quantity: data.quantity,
-      });
+      if (!isMerchOnly) {
+        await generateTicketsSafely(sb, {
+          id: order.id,
+          event_id: data.eventId,
+          ticket_type_id: ticketTypeId as string,
+          quantity: data.quantity,
+        });
+      }
 
       await sendConfirmationEmailOnce(sb, order.id);
 
@@ -335,7 +375,7 @@ export const initializePayment = createServerFn({ method: "POST" })
 
     const secret = process.env.PAYSTACK_SECRET_KEY;
     if (!secret) {
-      await releaseReservation(sb, data.ticketTypeId, data.quantity, order.id);
+      await releaseReservation(sb, ticketTypeId, data.quantity, order.id);
       await sb.from("orders").update({ status: "failed" }).eq("id", order.id);
       return { error: "Payment provider not configured" as const };
     }
@@ -350,14 +390,14 @@ export const initializePayment = createServerFn({ method: "POST" })
         email: data.buyerEmail,
         amount: Math.round(totalAmount * 100),
         callback_url: data.callbackUrl,
-        metadata: { order_id: order.id, event_title: ticketType.events?.title },
+        metadata: { order_id: order.id, event_title: eventTitle, merch_only: isMerchOnly },
       }),
     });
 
     const paystackData = (await paystackRes.json()) as any;
 
     if (!paystackData?.status) {
-      await releaseReservation(sb, data.ticketTypeId, data.quantity, order.id);
+      await releaseReservation(sb, ticketTypeId, data.quantity, order.id);
       await sb.from("orders").update({ status: "failed" }).eq("id", order.id);
       return { error: "Could not initialize payment" as const };
     }

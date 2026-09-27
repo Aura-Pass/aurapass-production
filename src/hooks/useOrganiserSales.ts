@@ -36,6 +36,7 @@ export function useOrganiserSales() {
            events!inner ( id, title, event_date, status, organiser_id )`,
         )
         .eq("status", "confirmed")
+        .not("ticket_type_id", "is", null)
         .eq("events.organiser_id", user!.id);
 
       if (active && !error && data) {
