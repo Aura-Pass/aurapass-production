@@ -59,7 +59,7 @@ export function ExportEventSalesButton({
         o.buyer_name,
         o.buyer_email,
         o.buyer_phone,
-        o.ticket_types?.name ?? "",
+        (o.ticket_types?.name ?? (o.quantity === 0 ? "Merch only" : "")),
         o.quantity,
         o.ticket_price,
         o.platform_fee,

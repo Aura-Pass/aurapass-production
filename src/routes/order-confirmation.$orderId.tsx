@@ -58,7 +58,8 @@ function OrderConfirmationPage() {
       const needsRepair =
         !result.order ||
         result.order.status !== "confirmed" ||
-        result.tickets.length < Number(result.order.quantity ?? 0);
+        (!!result.order.ticket_type_id &&
+          result.tickets.length < Number(result.order.quantity ?? 0));
 
       if (needsRepair) {
         try {
@@ -109,21 +110,30 @@ function OrderConfirmationPage() {
   }
 
   const isFree = Number(order.total_amount) === 0;
+  const isMerchOnly = !order.ticket_type_id;
 
   return (
     <PageWrapper>
       <div className="mx-auto max-w-xl px-4 py-12">
         <Card className="p-8 text-center">
           <CheckCircle2 className="mx-auto h-14 w-14 text-success" />
-          <h1 className="mt-4 text-2xl font-bold text-foreground">You're all set!</h1>
+          <h1 className="mt-4 text-2xl font-bold text-foreground">
+            {isMerchOnly ? "Your merch is reserved!" : "You're all set!"}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             A confirmation has been sent to {order.buyer_email}.
           </p>
 
           <div className="mt-8 space-y-3 rounded-xl bg-muted p-5 text-left text-sm">
             <Row label="Event" value={order.events?.title ?? "—"} />
-            <Row label="Ticket" value={order.ticket_types?.name ?? "—"} />
-            <Row label="Quantity" value={String(order.quantity)} />
+            {isMerchOnly ? (
+              <Row label="Order type" value="Merch only" />
+            ) : (
+              <>
+                <Row label="Ticket" value={order.ticket_types?.name ?? "—"} />
+                <Row label="Quantity" value={String(order.quantity)} />
+              </>
+            )}
             <Row
               label="Total paid"
               value={isFree ? "Free" : formatCurrency(Number(order.total_amount))}
@@ -157,8 +167,22 @@ function OrderConfirmationPage() {
                   <span className="font-medium text-foreground">{formatCurrency(Number(m.subtotal))}</span>
                 </div>
               ))}
+              {order.merch_qr_code && order.status === "confirmed" ? (
+                <div className="mt-4 flex flex-col items-center rounded-xl border border-border bg-background p-5">
+                  <p className="text-sm font-medium text-muted-foreground">Merch pickup</p>
+                  <div className="mt-3">
+                    <TicketQRCode value={order.merch_qr_code} size={180} />
+                  </div>
+                  <p className="mt-2 text-xs font-mono text-muted-foreground break-all">{order.merch_qr_code}</p>
+                  <p className="mt-2 text-xs font-medium text-foreground">
+                    {order.merch_pickup_status === "collected"
+                      ? `Collected${order.merch_picked_up_at ? ` · ${new Date(order.merch_picked_up_at).toLocaleString()}` : ""}`
+                      : "Not yet collected"}
+                  </p>
+                </div>
+              ) : null}
               <p className="text-xs text-muted-foreground pt-2">
-                Show this page or your ticket QR at the merch table to collect.
+                Show this merch QR code at the merch table to collect all items in this order.
               </p>
             </div>
           )}

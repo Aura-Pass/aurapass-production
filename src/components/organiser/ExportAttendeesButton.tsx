@@ -61,7 +61,7 @@ export function ExportAttendeesButton({ eventId, eventTitle }: Props) {
           o.buyer_name ?? "",
           o.buyer_email ?? "",
           o.buyer_phone ?? "",
-          o.ticket_types?.name ?? "",
+          (o.ticket_types?.name ?? (o.quantity === 0 ? "Merch only" : "")),
           o.quantity ?? 0,
           o.total_amount ?? 0,
           o.created_at ? new Date(o.created_at).toISOString() : "",
