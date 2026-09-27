@@ -37,6 +37,9 @@ function ScanPage() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [optimisticCheckedIn, setOptimisticCheckedIn] = useState<number | null>(null);
   const [ticketSearch, setTicketSearch] = useState("");
+  const [scanMode, setScanMode] = useState<"tickets" | "merch">("tickets");
+  const scanModeRef = useRef<"tickets" | "merch">("tickets");
+  scanModeRef.current = scanMode;
   const { tickets, refetch: refetchTickets } = useEventTickets(eventId);
 
   const filteredTickets = tickets.filter(
@@ -173,7 +176,7 @@ function ScanPage() {
       const result = await processCode(code);
       console.log("[scanner] result:", result);
       setScanState(result);
-      if (result.kind === "success") {
+      if (result.kind === "success" && scanModeRef.current === "tickets") {
         markSuccessfulCheckIn();
         setRefreshKey((k) => k + 1);
         void refetchTickets();
@@ -203,6 +206,16 @@ function ScanPage() {
   }
 
   async function processCode(code: string): Promise<ScanState> {
+    const isMerchCode = code.trim().toUpperCase().startsWith("MERCH-");
+    if (scanModeRef.current === "merch") {
+      if (!isMerchCode) {
+        return { kind: "error", message: "Not a merch QR", sub: "Switch to Ticket check-in to scan tickets" };
+      }
+      return processMerchCode(code.trim());
+    }
+    if (isMerchCode) {
+      return { kind: "error", message: "Merch pickup QR", sub: "Switch to Merch pickup to collect this order" };
+    }
     const { data: ticket, error: qErr } = await (supabase as any)
       .from("tickets")
       .select("id, status, event_id, checked_in_at, ticket_type:ticket_types(name)")
@@ -218,6 +231,35 @@ function ScanPage() {
     }
 
     return validateAndAdmitTicket(ticket, "scan");
+  }
+
+  async function processMerchCode(code: string): Promise<ScanState> {
+    const { data, error } = await (supabase as any).rpc("mark_merch_collected", {
+      p_code: code,
+      p_event_id: eventId,
+    });
+    if (error) return { kind: "error", message: "Lookup failed", sub: error.message };
+    const items = ((data?.items as any[]) ?? []).map((i) => `${i.name} × ${i.quantity}`).join(", ");
+    if (data?.ok) {
+      return { kind: "success", message: `Merch collected — ${data.buyer_name ?? ""}`, sub: items };
+    }
+    switch (data?.reason) {
+      case "already_collected":
+        return {
+          kind: "error",
+          message: "Already collected",
+          sub: data.picked_up_at ? `Collected ${new Date(data.picked_up_at).toLocaleString()}` : items,
+        };
+      case "wrong_event":
+        return { kind: "error", message: "Wrong event", sub: "This merch order is for a different event" };
+      case "not_paid":
+        return { kind: "error", message: "Order not paid", sub: "This merch order isn't confirmed" };
+      case "forbidden":
+      case "unauthorized":
+        return { kind: "error", message: "Not allowed", sub: "You can't collect merch for this event" };
+      default:
+        return { kind: "error", message: "Invalid merch QR", sub: "QR not found in database" };
+    }
   }
 
   function markSuccessfulCheckIn() {
@@ -446,6 +488,23 @@ function ScanPage() {
             </p>
           </Card>
 
+          <div className="mt-4 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1">
+            <Button
+              type="button"
+              variant={scanMode === "tickets" ? "primary" : "ghost"}
+              onClick={() => setScanMode("tickets")}
+            >
+              Ticket check-in
+            </Button>
+            <Button
+              type="button"
+              variant={scanMode === "merch" ? "primary" : "ghost"}
+              onClick={() => setScanMode("merch")}
+            >
+              Merch pickup
+            </Button>
+          </div>
+
           <Card className="mt-4 overflow-hidden relative" style={{ borderRadius: 12 }}>
             <div
               className="relative w-full overflow-hidden bg-black"
@@ -494,7 +553,9 @@ function ScanPage() {
                 {cameraError ? (
                   <span className="text-destructive-strong">Camera: {cameraError}</span>
                 ) : (
-                  "Point camera at a ticket QR code"
+                  scanMode === "merch"
+                    ? "Point camera at a merch pickup QR code"
+                    : "Point camera at a ticket QR code"
                 )}
               </div>
             )}
