@@ -160,6 +160,22 @@ function EventDetailPage() {
     });
   }
 
+  const [hasMerch, setHasMerch] = useState(false);
+  useEffect(() => {
+    if (!event?.id) return;
+    let active = true;
+    (async () => {
+      const { data } = await (supabase as any).rpc("get_event_merch_items", {
+        p_event_id: event.id,
+        p_include_inactive: false,
+      });
+      if (active) setHasMerch(((data as any[]) ?? []).some((m) => m.is_active !== false));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [event?.id]);
+
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -439,6 +455,15 @@ function EventDetailPage() {
                 <ShareEventButton title={event.title} description={event.description ?? ""} />
               </Card>
 
+              {hasMerch && (
+                <Card className="p-6">
+                  <p className="text-sm text-muted-foreground">Event merch</p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">Get official merch</p>
+                  <Button asChild variant="primary" size="lg" className="mt-4 w-full">
+                    <Link to="/events/$slug/merch" params={{ slug }}>Buy Merch</Link>
+                  </Button>
+                </Card>
+              )}
 
               <Card className="p-6">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
