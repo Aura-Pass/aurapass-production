@@ -96,11 +96,50 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
     ? `<tr><td style="padding:16px 32px 0;">
          <h2 style="margin:0 0 12px;font-size:16px;font-weight:600;color:#111827;">Your merch</h2>
          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;">${merchRowsHtml}</table>
-         <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show this email or your ticket QR at the merch table at the event to collect.</p>
+         <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show the merch pickup QR code in this email at the merch table to collect.</p>
        </td></tr>`
     : "";
 
+  const { data: merchOrder } = await (supabaseAdmin as any)
+    .from("orders")
+    .select("merch_qr_code")
+    .eq("id", data.orderId)
+    .maybeSingle();
+  const merchQrCode: string | null = merchOrder?.merch_qr_code ?? null;
+
   const ticketList = tickets ?? [];
+  const isMerchOnly = ticketList.length === 0 && Number(data.quantity) === 0;
+
+  let merchQrHtml = "";
+  if (merchQrCode) {
+    try {
+      const qrBuffer = await QRCode.toBuffer(merchQrCode, {
+        width: 300,
+        margin: 2,
+        color: { dark: "#111827", light: "#FFFFFF" },
+      });
+      const fileName = `qr-codes/merch-${data.orderId}.png`;
+      const { error: upErr } = await supabaseAdmin.storage
+        .from("event-banners")
+        .upload(fileName, qrBuffer, { contentType: "image/png", upsert: true, cacheControl: "31536000" });
+      if (!upErr) {
+        const { data: urlData } = supabaseAdmin.storage.from("event-banners").getPublicUrl(fileName);
+        merchQrHtml = `
+        <tr><td style="padding:24px 32px;border-top:1px solid #E5E7EB;text-align:center;">
+          <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;">Merch pickup</p>
+          <p style="margin:0 0 16px;font-size:11px;color:#9CA3AF;font-family:monospace;">${escapeHtml(merchQrCode)}</p>
+          <img src="${urlData.publicUrl}" width="200" height="200" alt="Merch pickup QR ${escapeHtml(merchQrCode)}"
+               style="display:block;margin:0 auto;border:1px solid #E5E7EB;border-radius:8px;padding:8px;background:#fff;" />
+          <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">Show this QR code at the merch table to collect all items in this order</p>
+        </td></tr>`;
+      } else {
+        console.error("[sendTicketConfirmationEmail] merch QR upload failed", upErr);
+      }
+    } catch (err) {
+      console.error("[sendTicketConfirmationEmail] merch QR generation failed", err);
+    }
+  }
+
   const totalQuantity = ticketList.length || data.quantity;
 
   const qrSections: string[] = [];
@@ -169,9 +208,9 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
             </tr>
             <tr>
               <td style="padding:32px;text-align:center;">
-                <div style="font-size:40px;line-height:1;">🎟️</div>
-                <h1 style="margin:16px 0 4px;font-size:24px;font-weight:700;color:#111827;">You're going!</h1>
-                <p style="margin:0;color:#6B7280;font-size:14px;">Your ticket has been confirmed</p>
+                <div style="font-size:40px;line-height:1;">${isMerchOnly ? "🛍️" : "🎟️"}</div>
+                <h1 style="margin:16px 0 4px;font-size:24px;font-weight:700;color:#111827;">${isMerchOnly ? "Your merch is reserved!" : "You're going!"}</h1>
+                <p style="margin:0;color:#6B7280;font-size:14px;">${isMerchOnly ? "Your merch order has been confirmed" : "Your ticket has been confirmed"}</p>
               </td>
             </tr>
             <tr>
@@ -181,19 +220,20 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
                   ${row("Date", formattedDate)}
                   ${row("Time", data.eventTime)}
                   ${row("Venue", `${data.eventVenue}, ${data.eventCity}`)}
-                  ${row("Ticket", `${data.ticketTypeName} × ${data.quantity}`)}
+                  ${isMerchOnly ? "" : row("Ticket", `${data.ticketTypeName} × ${data.quantity}`)}
                   ${row("Total", amountDisplay, true)}
                 </table>
               </td>
             </tr>
             ${qrHtml}
             ${merchSectionHtml}
+            ${merchQrHtml}
             <tr>
               <td style="padding:24px 32px 8px;text-align:center;">
                 <a href="${confirmationUrl}" style="display:inline-block;background:#111827;color:#FFFFFF;text-decoration:none;padding:14px 24px;border-radius:10px;font-weight:600;font-size:15px;">
-                  View My Tickets Online
+                  ${isMerchOnly ? "View My Order Online" : "View My Tickets Online"}
                 </a>
-                <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">You can also show this email at the gate</p>
+                <p style="margin:12px 0 0;font-size:12px;color:#6B7280;">${isMerchOnly ? "You can also show this email at the merch table" : "You can also show this email at the gate"}</p>
               </td>
             </tr>
             <tr>
@@ -223,7 +263,9 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
     body: JSON.stringify({
       from: "AuraPass <noreply@aurapassticket.com>",
       to: [data.to],
-      subject: `Your ticket for ${data.eventTitle} — AuraPass`,
+      subject: isMerchOnly
+        ? `Your merch order for ${data.eventTitle} — AuraPass`
+        : `Your ticket for ${data.eventTitle} — AuraPass`,
       html,
     }),
   });
