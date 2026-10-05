@@ -131,28 +131,7 @@ function EventDetailPage() {
   const { user, loading: authLoading } = useAuth();
   const { aref } = Route.useSearch();
 
-  async function handleBuyTickets(ticketTypeId: string) {
-    if (authLoading) return;
-
-    let isAuthenticated = !!user;
-    if (!isAuthenticated) {
-      const { supabase } = await import("@/lib/supabase");
-      const { data: { session } } = await supabase.auth.getSession();
-      isAuthenticated = !!session;
-    }
-
-    if (!isAuthenticated) {
-      navigate({
-        to: "/login",
-        search: {
-          redirect: `/events/${slug}/checkout`,
-          ticketTypeId,
-          ...(aref ? { aref } : {}),
-        },
-      });
-      return;
-    }
-
+  function handleBuyTickets(ticketTypeId: string) {
     navigate({
       to: "/events/$slug/checkout",
       params: { slug },
