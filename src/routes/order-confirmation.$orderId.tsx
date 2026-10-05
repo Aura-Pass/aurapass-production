@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { TicketQRCode } from "@/components/ui/TicketQRCode";
-import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import type { Ticket } from "@/types";
 
