@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { reconcileOrder } from "@/lib/payments.functions";
+import { getOrderForConfirmation, reconcileOrder } from "@/lib/payments.functions";
 
 import { CheckCircle2, Download } from "lucide-react";
 import QRCode from "qrcode";
@@ -30,23 +30,9 @@ function OrderConfirmationPage() {
   useEffect(() => {
     let active = true;
 
-    const load = async () => {
-      const { data } = await (supabase as any)
-        .from("orders")
-        .select("*, events(title, event_date, venue, city), ticket_types(name)")
-        .eq("id", orderId)
-        .maybeSingle();
-      const { data: ticketRows } = await (supabase as any)
-        .from("tickets")
-        .select("*")
-        .eq("order_id", orderId)
-        .order("created_at", { ascending: true });
-      const { data: merchRows } = await (supabase as any)
-        .from("order_merch_items")
-        .select("*")
-        .eq("order_id", orderId);
-      return { order: data, tickets: (ticketRows ?? []) as Ticket[], merch: merchRows ?? [] };
-    };
+    // Fetched through a server fn (service role) because RLS hides orders and
+    // tickets from logged-out visitors on the browser client.
+    const load = () => getOrderForConfirmation({ data: { orderId } });
 
     (async () => {
       let result = await load();
