@@ -473,6 +473,41 @@ export const verifyPayment = createServerFn({ method: "POST" })
     return { success: true as const, orderId: order.id as string };
   });
 
+/**
+ * Guest-safe read of a single order for the confirmation page. The browser
+ * client hits RLS (anon sees nothing), so the page fetches through this
+ * service-role path instead — scoped to exactly one order by ID. No RLS
+ * policy is relaxed; this is the only bypass.
+ */
+export const getOrderForConfirmation = createServerFn({ method: "GET" })
+  .inputValidator((data: { orderId: string }) => {
+    if (!data || typeof data.orderId !== "string") throw new Error("Invalid input");
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const sb = supabaseAdmin as any;
+
+    const [{ data: order }, { data: tickets }, { data: merch }] = await Promise.all([
+      sb
+        .from("orders")
+        .select("*, events(title, event_date, venue, city), ticket_types(name)")
+        .eq("id", data.orderId)
+        .maybeSingle(),
+      sb
+        .from("tickets")
+        .select("*")
+        .eq("order_id", data.orderId)
+        .order("created_at", { ascending: true }),
+      sb
+        .from("order_merch_items")
+        .select("*")
+        .eq("order_id", data.orderId),
+    ]);
+
+    return { order: order ?? null, tickets: tickets ?? [], merch: merch ?? [] };
+  });
+
 export const reconcileOrder = createServerFn({ method: "POST" })
   .inputValidator((data: { orderId: string }) => {
     if (!data || typeof data.orderId !== "string") throw new Error("Invalid input");
