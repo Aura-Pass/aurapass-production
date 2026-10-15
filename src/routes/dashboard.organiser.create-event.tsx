@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -20,7 +21,14 @@ import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/ui/CitySelect";
 
 export const Route = createFileRoute("/dashboard/organiser/create-event")({
-  head: () => ({ meta: [{ title: "Create Event — AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "Create Event — AuraPass" },
+    { name: "description", content: "Create and submit an AuraPass event for review." },
+    { property: "og:title", content: "Create Event — AuraPass" },
+    { property: "og:description", content: "Create and submit an AuraPass event for review." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser"]}>
       <CreateEventPage />
@@ -424,9 +432,7 @@ function CreateEventPage() {
       <div className="bg-muted">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
           <div className="mb-6 flex items-center justify-between">
-            <Link to="/dashboard/organiser" className="text-sm text-muted-foreground hover:text-foreground">
-              ← Back to dashboard
-            </Link>
+            <OrganiserBackButton variant="ghost" className="px-0 text-sm text-muted-foreground hover:text-foreground" />
           </div>
 
           <StepIndicator step={step} />
@@ -465,7 +471,7 @@ function CreateEventPage() {
                   onClick={goBack}
                   disabled={step === 1 || submitting}
                 >
-                  Back
+                  Previous step
                 </Button>
                 {step < 4 ? (
                   <Button type="button" variant="primary" onClick={goNext}>

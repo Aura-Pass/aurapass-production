@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import type { Html5Qrcode as Html5QrcodeType } from "html5-qrcode";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { supabase } from "@/lib/supabase";
@@ -10,7 +11,14 @@ import { useEventCheckInCount } from "@/hooks/useEventCheckInCount";
 import { useEventTickets } from "@/hooks/useEventTickets";
 
 export const Route = createFileRoute("/dashboard/organiser/scan/$eventId")({
-  head: () => ({ meta: [{ title: "Ticket Scanner | AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "Ticket Scanner | AuraPass" },
+    { name: "description", content: "Check in event tickets and collect merchandise with AuraPass." },
+    { property: "og:title", content: "Ticket Scanner | AuraPass" },
+    { property: "og:description", content: "Check in event tickets and collect merchandise with AuraPass." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin", "gate_attendant"]}>
       <ScanPage />
@@ -476,9 +484,7 @@ function ScanPage() {
                 {eventTitle || "Event"}
               </h1>
             </div>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/dashboard/organiser">Back</Link>
-            </Button>
+            <OrganiserBackButton variant="outline" size="sm" />
           </div>
 
           <Card className="mt-4 p-4" style={{ borderRadius: 12 }}>

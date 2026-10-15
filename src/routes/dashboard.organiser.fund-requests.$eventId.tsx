@@ -11,6 +11,7 @@ import { Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
@@ -251,9 +252,7 @@ function FundRequestsPage() {
               : "Request a payout of your ticket sales revenue."}
           </p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>Back to My Events</Link>
-        </Button>
+        <OrganiserBackButton variant="outline" size="sm" />
       </div>
 
       <Card className="p-6" style={{ borderRadius: 12 }}>

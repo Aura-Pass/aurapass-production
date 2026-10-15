@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -17,7 +18,14 @@ import { EVENT_CATEGORIES } from "@/constants";
 import { CitySelect } from "@/components/ui/CitySelect";
 
 export const Route = createFileRoute("/dashboard/organiser/edit-event/$eventId")({
-  head: () => ({ meta: [{ title: "Edit Event — AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "Edit Event — AuraPass" },
+    { name: "description", content: "Edit your AuraPass event details and ticket types." },
+    { property: "og:title", content: "Edit Event — AuraPass" },
+    { property: "og:description", content: "Edit your AuraPass event details and ticket types." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <EditEventPage />
@@ -269,9 +277,7 @@ function EditEventPage() {
             You don't have permission to edit this event, or it no longer exists.
           </p>
           <div className="mt-6">
-            <Button asChild variant="primary">
-              <Link to="/dashboard/organiser">Back to dashboard</Link>
-            </Button>
+            <OrganiserBackButton variant="primary" />
           </div>
         </div>
       </>
@@ -283,9 +289,7 @@ function EditEventPage() {
       <div className="bg-muted">
         <div className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-10">
           <div className="mb-6">
-            <Link to="/dashboard/organiser" className="text-sm text-muted-foreground hover:text-foreground">
-              ← Back to dashboard
-            </Link>
+            <OrganiserBackButton variant="ghost" className="px-0 text-sm text-muted-foreground hover:text-foreground" />
           </div>
 
           <Card className="p-6 md:p-8" style={{ borderRadius: 12 }}>

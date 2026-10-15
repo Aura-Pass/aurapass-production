@@ -7,11 +7,12 @@
  * does not rely on any parent-layout guard.
  */
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Megaphone, Copy, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -199,11 +200,7 @@ function MarketersPage() {
               : "People promoting this event with a tracked referral link."}
           </p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>
-            Back to events
-          </Link>
-        </Button>
+        <OrganiserBackButton variant="outline" size="sm" />
       </div>
 
       <Card className="space-y-4 p-5" style={{ borderRadius: 12 }}>

@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useOrganiserSales, type SaleRecord } from "@/hooks/useOrganiserSales";
@@ -10,7 +11,14 @@ import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/organiser/sales")({
-  head: () => ({ meta: [{ title: "Sales | AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "Sales | AuraPass" },
+    { name: "description", content: "Review confirmed ticket sales and revenue across your AuraPass events." },
+    { property: "og:title", content: "Sales | AuraPass" },
+    { property: "og:description", content: "Review confirmed ticket sales and revenue across your AuraPass events." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <SalesPage />
@@ -45,9 +53,7 @@ function SalesPage() {
                 Revenue and ticket sales across all your events.
               </p>
             </div>
-            <Button asChild variant="outline">
-              <Link to="/dashboard/organiser">Back</Link>
-            </Button>
+            <OrganiserBackButton variant="outline" fallback="/dashboard/organiser" />
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">

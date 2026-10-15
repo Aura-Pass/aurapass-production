@@ -26,7 +26,7 @@ export const Route = createFileRoute("/dashboard/organiser/events")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { filter: FilterKey; eventId?: string } => ({
     filter: (typeof s.filter === "string" ? s.filter : "all") as FilterKey,
     eventId: typeof s.eventId === "string" ? s.eventId : undefined,
   }),

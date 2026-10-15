@@ -7,11 +7,12 @@
  * admins.
  */
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Package, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -290,11 +291,7 @@ function MerchPage() {
     return (
       <Card className="p-8 text-center" style={{ borderRadius: 12 }}>
         <p className="text-foreground">You do not have access to this event's merch.</p>
-        <Button asChild variant="primary" className="mt-4">
-          <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>
-            Back to my events
-          </Link>
-        </Button>
+        <OrganiserBackButton variant="primary" className="mt-4" />
       </Card>
     );
   }
@@ -314,11 +311,7 @@ function MerchPage() {
           <Button variant="primary" size="sm" onClick={openAdd}>
             + Add item
           </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>
-              Back to events
-            </Link>
-          </Button>
+          <OrganiserBackButton variant="outline" size="sm" />
         </div>
       </div>
 
