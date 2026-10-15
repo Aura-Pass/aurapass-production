@@ -45,7 +45,7 @@ export async function sendConfirmationEmailSafely(sb: Sb, orderId: string) {
       quantity: Number(order.quantity ?? 1),
       totalAmount: Number(order.total_amount ?? 0),
       orderId: String(order.id),
-      isFree: Number(order.ticket_price ?? 0) === 0,
+      isFree: Number(order.total_amount ?? 0) === 0,
     });
     console.log("[fulfilment] confirmation email sent for order", orderId);
   } catch (err) {

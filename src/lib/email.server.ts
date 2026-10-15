@@ -63,7 +63,10 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
     // fall back to raw value
   }
 
-  const amountDisplay = data.isFree
+  // "Free" only when nothing was charged. Never infer it from the ticket price:
+  // merch-only orders have a ticket price of 0 but a non-zero total.
+  const isFree = Number(data.totalAmount) === 0;
+  const amountDisplay = isFree
     ? "Free"
     : `₦${Number(data.totalAmount).toLocaleString("en-NG")}`;
 
