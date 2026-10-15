@@ -1,0 +1,3 @@
+- [x] Adapt organiser event list and selected-event overview to the uploaded visual reference.
+- [x] Retain existing management actions and cancellation approval flow; display only real event/order figures.
+- [ ] Verify signed-in organiser rendering and interactions — blocked by unavailable organiser session; signed-out redirect verified without runtime errors.

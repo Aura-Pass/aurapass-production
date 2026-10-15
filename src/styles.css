@@ -14,6 +14,7 @@
 
   --font-heading: "Playfair Display", Georgia, serif;
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-workspace: "Manrope", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -176,3 +177,11 @@
     font-family: var(--font-heading);
   }
 }
+
+.organiser-event { font-family: var(--font-workspace); letter-spacing: 0; }
+.organiser-event h1, .organiser-event h2 { font-family: var(--font-workspace); }
+.event-tools > div > button { width: 100%; }
+.event-sales-progress { height: 5px; border: 0; border-radius: 8px; overflow: hidden; background: var(--accent); accent-color: var(--primary); }
+.event-sales-progress::-webkit-progress-bar { background: var(--accent); }
+.event-sales-progress::-webkit-progress-value { background: var(--primary); border-radius: 8px; }
+.event-sales-progress::-moz-progress-bar { background: var(--primary); border-radius: 8px; }

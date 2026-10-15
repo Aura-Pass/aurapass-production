@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, ChevronRight, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
-import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
+import { EventOverview } from "@/components/organiser/EventOverview";
 import { formatDate } from "@/lib/utils";
 import { requestEventCancellation } from "@/lib/cancellation.functions";
 import type { Event } from "@/types";
@@ -17,7 +17,14 @@ import type { Event } from "@/types";
 type FilterKey = "all" | "published" | "pending_review" | "rejected" | "draft";
 
 export const Route = createFileRoute("/dashboard/organiser/events")({
-  head: () => ({ meta: [{ title: "My Events | AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "Manage Your Events | AuraPass" },
+    { name: "description", content: "Manage your AuraPass events, review confirmed sales and access organiser tools." },
+    { property: "og:title", content: "Manage Your Events | AuraPass" },
+    { property: "og:description", content: "Your events, sales performance and organiser tools on AuraPass." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: (s: Record<string, unknown>) => ({
     filter: (typeof s.filter === "string" ? s.filter : "all") as FilterKey,
   }),
@@ -60,14 +67,17 @@ function MyEventsPage() {
   const { events, loading, refresh } = useOrganiserEvents(user?.id);
   const search = Route.useSearch();
   const [tab, setTab] = useState<FilterKey>(search.filter ?? "all");
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const selectedEvent = events.find((event) => event.id === selectedEventId);
 
   const [cancellingEvent, setCancellingEvent] = useState<Event | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
 
   const filtered = useMemo(
-    () => (tab === "all" ? events : events.filter((e) => e.status === tab)),
-    [events, tab],
+    () => events.filter((e) => (tab === "all" || e.status === tab) && `${e.title} ${e.city} ${e.venue}`.toLowerCase().includes(query.toLowerCase())),
+    [events, tab, query],
   );
 
   function closeCancel() {
@@ -103,11 +113,12 @@ function MyEventsPage() {
 
   return (
     <>
-      <div className="bg-muted min-h-screen">
-        <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+      <div className="organiser-event min-h-screen bg-muted">
+        <div className="mx-auto max-w-7xl py-4 md:py-6">
+          {selectedEvent ? <EventOverview event={selectedEvent} onBack={() => setSelectedEventId(null)} onCancel={() => setCancellingEvent(selectedEvent)} /> : <>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground md:text-3xl">My Events</h1>
+              <h1 className="font-sans text-2xl font-extrabold text-foreground md:text-3xl">My events</h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Manage every event you've created.
               </p>
@@ -117,28 +128,33 @@ function MyEventsPage() {
                 <Link to="/dashboard/organiser">Back</Link>
               </Button>
               <Button asChild variant="primary">
-                <Link to="/dashboard/organiser/create-event">+ Create Event</Link>
+                <Link to="/dashboard/organiser/create-event"><Plus /> Create event</Link>
               </Button>
             </div>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2 border-b border-border">
             {TABS.map((t) => (
-              <button
+              <Button
+                variant="ghost"
                 key={t.key}
                 type="button"
                 onClick={() => setTab(t.key)}
-                className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                className={`-mb-px rounded-none border-b-2 px-3 py-2 text-sm font-semibold transition-colors ${
                   tab === t.key
                     ? "border-primary text-primary"
                     : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t.label}
-              </button>
+                {t.label}{t.key === "all" && <span className="rounded-full bg-accent px-1.5 text-[10px] text-muted-foreground">{events.length}</span>}
+              </Button>
             ))}
           </div>
 
+          <label className="mt-4 flex max-w-sm items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-muted-foreground">
+            <Search className="h-4 w-4 shrink-0" />
+            <input aria-label="Search your events" placeholder="Search events" value={query} onChange={(e) => setQuery(e.target.value)} className="min-w-0 w-full bg-transparent text-xs text-foreground outline-none" />
+          </label>
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <Spinner className="h-8 w-8" />
@@ -146,9 +162,9 @@ function MyEventsPage() {
           ) : filtered.length === 0 ? (
             <Card
               className="mt-8 flex flex-col items-center justify-center gap-3 p-10 text-center"
-              style={{ borderRadius: 12 }}
+              
             >
-              <p className="text-muted-foreground">You haven't created any events yet</p>
+              <p className="text-muted-foreground">{events.length ? "No events match your search." : "You haven’t created any events yet."}</p>
               <Button asChild variant="primary">
                 <Link to="/dashboard/organiser/create-event">Create your first event</Link>
               </Button>
@@ -160,16 +176,18 @@ function MyEventsPage() {
                   key={evt.id}
                   event={evt}
                   onCancel={() => setCancellingEvent(evt)}
+                  onManage={() => setSelectedEventId(evt.id)}
                 />
               ))}
             </div>
           )}
+          </>}
         </div>
       </div>
 
       {cancellingEvent && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4"
           onClick={closeCancel}
         >
           <div
@@ -209,22 +227,24 @@ function MyEventsPage() {
             </div>
 
             <div className="mt-5 flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 onClick={closeCancel}
                 disabled={cancelling}
                 className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-60"
               >
                 Keep Event
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="destructive"
                 type="button"
                 disabled={cancelReason.trim().length < 20 || cancelling}
                 onClick={confirmCancel}
-                className="flex-1 rounded-lg bg-destructive px-4 py-2.5 text-sm font-semibold text-white hover:bg-destructive disabled:opacity-50"
+                className="flex-1 rounded-lg bg-destructive px-4 py-2.5 text-sm font-semibold text-destructive-foreground hover:bg-destructive disabled:opacity-50"
               >
                 {cancelling ? "Submitting..." : "Submit Request"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -234,13 +254,13 @@ function MyEventsPage() {
 }
 
 
-function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) {
+function EventCard({ event, onCancel, onManage }: { event: Event; onCancel: () => void; onManage: () => void }) {
   const s = statusVariant(event.status);
   const isPublished = event.status === "published";
   return (
-    <Card className="overflow-hidden" style={{ borderRadius: 12 }}>
-      <div className="flex flex-col gap-4 p-5 md:flex-row">
-        <div className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-accent md:w-44">
+    <Card className="overflow-hidden rounded-lg">
+      <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
+        <div className="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden rounded-lg bg-accent sm:h-20 sm:w-24">
           {event.banner_url ? (
             <img
               src={event.banner_url}
@@ -253,11 +273,11 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
         </div>
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-foreground">{event.title}</h3>
+            <Button variant="ghost" onClick={onManage} className="h-auto justify-start whitespace-normal p-0 text-left text-sm font-bold hover:bg-transparent">{event.title}</Button>
             <Badge className={s.className}>{s.label}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            {formatDate(event.event_date)} · {event.city}
+            {formatDate(event.event_date)} · {event.venue}, {event.city}
           </p>
           {event.cancellation_status === "requested" && (
             <div className="mt-1 rounded-md border border-warning-light bg-warning-light px-3 py-2">
@@ -278,78 +298,17 @@ function EventCard({ event, onCancel }: { event: Event; onCancel: () => void }) 
           )}
           {isPublished &&
             !["requested", "approved"].includes(event.cancellation_status ?? "") && (
-              <button
+              <Button
+                variant="link"
                 type="button"
                 onClick={onCancel}
-                className="text-xs font-medium text-destructive hover:underline"
+                className="h-auto p-0 text-xs font-medium text-destructive hover:underline"
               >
                 Cancel Event
-              </button>
+              </Button>
             )}
         </div>
-        <div className="flex flex-wrap items-center gap-2 md:flex-col md:items-stretch md:w-40">
-          {isPublished ? (
-            <Button asChild variant="primary" size="sm">
-              <Link
-                to="/dashboard/organiser/scan/$eventId"
-                params={{ eventId: event.id }}
-              >
-                Scan Tickets
-              </Link>
-            </Button>
-          ) : (
-            <Button variant="primary" size="sm" disabled>
-              Scan Tickets
-            </Button>
-          )}
-          {isPublished ? (
-            <ExportAttendeesButton eventId={event.id} eventTitle={event.title} />
-          ) : (
-            <Button variant="outline" size="sm" disabled>
-              Export CSV
-            </Button>
-          )}
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/dashboard/organiser/edit-event/$eventId"
-              params={{ eventId: event.id }}
-            >
-              Edit
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/dashboard/organiser/gate-attendants/$eventId"
-              params={{ eventId: event.id }}
-            >
-              Gate Attendants
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/dashboard/organiser/marketers/$eventId"
-              params={{ eventId: event.id }}
-            >
-              Marketers
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/dashboard/organiser/merch/$eventId"
-              params={{ eventId: event.id }}
-            >
-              Merch
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/dashboard/organiser/fund-requests/$eventId"
-              params={{ eventId: event.id }}
-            >
-              Request Funds
-            </Link>
-          </Button>
-        </div>
+        <Button variant="ghost" size="sm" onClick={onManage} className="shrink-0 justify-start text-primary">Manage event <ChevronRight /></Button>
       </div>
     </Card>
   );
