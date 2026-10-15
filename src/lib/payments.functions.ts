@@ -33,7 +33,7 @@ async function sendConfirmationEmailSafely(sb: any, orderId: string) {
           quantity: Number(order.quantity),
           totalAmount: Number(order.total_amount),
           orderId: order.id,
-          isFree: Number(order.ticket_price) === 0,
+          isFree: Number(order.total_amount) === 0,
         },
       });
       console.log("✅ Ticket confirmation email sent to", order.buyer_email);
