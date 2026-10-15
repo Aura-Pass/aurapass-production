@@ -1,3 +1,6 @@
 - [x] Adapt organiser event list and selected-event overview to the uploaded visual reference.
 - [x] Retain existing management actions and cancellation approval flow; display only real event/order figures.
 - [ ] Verify signed-in organiser rendering and interactions — blocked by unavailable organiser session; signed-out redirect verified without runtime errors.
+- [x] Remove cancellation action from event cards, retaining cancellation in event settings.
+- [x] Anchor ended-event chart ranges and add All time without changing revenue calculations; five date-window tests pass.
+- [x] Update all organiser page Back controls to history with logical parent fallbacks; shared control verified in browser for previous-page and direct-entry cases. Creation wizard retains a separately labelled Previous step control.

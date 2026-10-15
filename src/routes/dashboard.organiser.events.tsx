@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganiserEvents } from "@/hooks/useOrganiserEvents";
 import { EventOverview } from "@/components/organiser/EventOverview";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { formatDate } from "@/lib/utils";
 import { requestEventCancellation } from "@/lib/cancellation.functions";
 import type { Event } from "@/types";
@@ -25,8 +26,9 @@ export const Route = createFileRoute("/dashboard/organiser/events")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { filter: FilterKey; eventId?: string } => ({
     filter: (typeof s.filter === "string" ? s.filter : "all") as FilterKey,
+    eventId: typeof s.eventId === "string" ? s.eventId : undefined,
   }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
@@ -67,9 +69,8 @@ function MyEventsPage() {
   const { events, loading, refresh } = useOrganiserEvents(user?.id);
   const search = Route.useSearch();
   const [tab, setTab] = useState<FilterKey>(search.filter ?? "all");
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const selectedEvent = events.find((event) => event.id === selectedEventId);
+  const selectedEvent = events.find((event) => event.id === search.eventId);
 
   const [cancellingEvent, setCancellingEvent] = useState<Event | null>(null);
   const [cancelReason, setCancelReason] = useState("");
@@ -115,7 +116,7 @@ function MyEventsPage() {
     <>
       <div className="organiser-event min-h-screen bg-muted">
         <div className="mx-auto max-w-7xl py-4 md:py-6">
-          {selectedEvent ? <EventOverview event={selectedEvent} onBack={() => setSelectedEventId(null)} onCancel={() => setCancellingEvent(selectedEvent)} /> : <>
+          {selectedEvent ? <EventOverview key={selectedEvent.id} event={selectedEvent} onCancel={() => setCancellingEvent(selectedEvent)} /> : <>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="font-sans text-2xl font-extrabold text-foreground md:text-3xl">My events</h1>
@@ -124,9 +125,7 @@ function MyEventsPage() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button asChild variant="outline">
-                <Link to="/dashboard/organiser">Back</Link>
-              </Button>
+              <OrganiserBackButton variant="outline" fallback="/dashboard/organiser" />
               <Button asChild variant="primary">
                 <Link to="/dashboard/organiser/create-event"><Plus /> Create event</Link>
               </Button>
@@ -175,8 +174,7 @@ function MyEventsPage() {
                 <EventCard
                   key={evt.id}
                   event={evt}
-                  onCancel={() => setCancellingEvent(evt)}
-                  onManage={() => setSelectedEventId(evt.id)}
+                  filter={tab}
                 />
               ))}
             </div>
@@ -254,9 +252,8 @@ function MyEventsPage() {
 }
 
 
-function EventCard({ event, onCancel, onManage }: { event: Event; onCancel: () => void; onManage: () => void }) {
+function EventCard({ event, filter }: { event: Event; filter: FilterKey }) {
   const s = statusVariant(event.status);
-  const isPublished = event.status === "published";
   return (
     <Card className="overflow-hidden rounded-lg">
       <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
@@ -273,7 +270,7 @@ function EventCard({ event, onCancel, onManage }: { event: Event; onCancel: () =
         </div>
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="ghost" onClick={onManage} className="h-auto justify-start whitespace-normal p-0 text-left text-sm font-bold hover:bg-transparent">{event.title}</Button>
+            <Button asChild variant="ghost" className="h-auto justify-start whitespace-normal p-0 text-left text-sm font-bold hover:bg-transparent"><Link to="/dashboard/organiser/events" search={{ filter, eventId: event.id }}>{event.title}</Link></Button>
             <Badge className={s.className}>{s.label}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -296,19 +293,8 @@ function EventCard({ event, onCancel, onManage }: { event: Event; onCancel: () =
               </p>
             </div>
           )}
-          {isPublished &&
-            !["requested", "approved"].includes(event.cancellation_status ?? "") && (
-              <Button
-                variant="link"
-                type="button"
-                onClick={onCancel}
-                className="h-auto p-0 text-xs font-medium text-destructive hover:underline"
-              >
-                Cancel Event
-              </Button>
-            )}
         </div>
-        <Button variant="ghost" size="sm" onClick={onManage} className="shrink-0 justify-start text-primary">Manage event <ChevronRight /></Button>
+        <Button asChild variant="ghost" size="sm" className="shrink-0 justify-start text-primary"><Link to="/dashboard/organiser/events" search={{ filter, eventId: event.id }}>Manage event <ChevronRight /></Link></Button>
       </div>
     </Card>
   );

@@ -1,16 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Users, X } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/dashboard/organiser/gate-attendants/$eventId")({
-  head: () => ({ meta: [{ title: "Gate Attendants | AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "Gate Attendants | AuraPass" },
+    { name: "description", content: "Manage the gate attendants assigned to your AuraPass event." },
+    { property: "og:title", content: "Gate Attendants | AuraPass" },
+    { property: "og:description", content: "Manage the gate attendants assigned to your AuraPass event." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <GateAttendantsPage />
@@ -150,9 +158,7 @@ function GateAttendantsPage() {
               : "People who can scan tickets for this event."}
           </p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link to="/dashboard/organiser/events" search={{ filter: "all" }}>Back to events</Link>
-        </Button>
+        <OrganiserBackButton variant="outline" size="sm" />
       </div>
 
       <Card className="space-y-4 p-5" style={{ borderRadius: 12 }}>

@@ -5,6 +5,8 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
+import { eventSalesEnd, isEventEnded, salesChartDays, type SalesPeriod } from "@/lib/organiser-sales-chart";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
@@ -15,13 +17,15 @@ interface OrderRow {
   order_merch_items: { quantity: number; unit_price: number }[];
 }
 
-export function EventOverview({ event, onBack, onCancel }: { event: Event; onBack: () => void; onCancel: () => void }) {
+export function EventOverview({ event, onCancel }: { event: Event; onCancel: () => void }) {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [tiers, setTiers] = useState<TicketType[]>([]);
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [period, setPeriod] = useState(30);
+  const ended = isEventEnded(event.status, event.event_date);
+  const [selectedPeriod, setPeriod] = useState<SalesPeriod | null>(null);
+  const period = selectedPeriod ?? (ended ? "all" : 30);
   const [tab, setTab] = useState("Overview");
   useEffect(() => {
     let active = true;
@@ -53,13 +57,11 @@ export function EventOverview({ event, onBack, onCancel }: { event: Event; onBac
     return { tickets, ticketRevenue, merchRevenue, collected: merchOrders.filter(o => o.merch_pickup_status === "collected").length, pending: merchOrders.filter(o => o.merch_pickup_status !== "collected").length };
   }, [orders]);
   const chart = useMemo(() => {
-    const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - period + 1);
-    return Array.from({ length: period }, (_, i) => {
-      const day = new Date(start); day.setDate(day.getDate() + i);
+    return salesChartDays(orders.map(o => o.created_at), period, ended ? eventSalesEnd(event.event_date) : new Date()).map(day => {
       const rows = orders.filter(o => new Date(o.created_at).toDateString() === day.toDateString());
       return { date: day.toLocaleDateString("en-GB", { day: "numeric", month: "short" }), tickets: rows.reduce((s, o) => s + Number(o.quantity) * Number(o.ticket_price), 0), merch: rows.reduce((s, o) => s + (o.order_merch_items ?? []).reduce((v, m) => v + Number(m.quantity) * Number(m.unit_price), 0), 0) };
     });
-  }, [orders, period]);
+  }, [orders, period, ended, event.event_date]);
   const published = event.status === "published";
   const canCancel = published && !["requested", "approved"].includes(event.cancellation_status ?? "");
 
@@ -77,7 +79,7 @@ export function EventOverview({ event, onBack, onCancel }: { event: Event; onBac
   </section>;
 
   return <div className="organiser-event space-y-6">
-    <Button variant="ghost" size="sm" className="px-0 text-muted-foreground" onClick={onBack}><ArrowLeft /> All events</Button>
+    <OrganiserBackButton variant="ghost" size="sm" className="px-0 text-muted-foreground"><ArrowLeft /> Back</OrganiserBackButton>
     <header className="flex items-start gap-4">
       <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-accent">{event.banner_url ? <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" /> : <ImageIcon className="text-muted-foreground" />}</div>
       <div className="min-w-0 flex-1"><div className="mb-2 flex flex-wrap items-center gap-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${published ? "bg-success-light text-success-strong" : "bg-accent text-muted-foreground"}`}>{event.status.replaceAll("_", " ")}</span><span className="break-all text-[10px] text-muted-foreground">Event ID · {event.id}</span></div><h1 className="font-sans text-xl font-extrabold leading-tight md:text-2xl">{event.title}</h1><p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" />{formatDate(event.event_date)} · {event.event_time?.slice(0, 5)}</p><p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5 shrink-0" />{event.venue}, {event.city}</p></div>
@@ -92,10 +94,10 @@ export function EventOverview({ event, onBack, onCancel }: { event: Event; onBac
           { label: "Merch sales", value: formatCurrency(stats.merchRevenue), icon: Store, detail: `${stats.collected} collected · ${stats.pending} pending` },
           { label: "Confirmed orders", value: orders.length.toLocaleString(), icon: Users, detail: "Tickets and merchandise" },
         ].map(metric => <article key={metric.label} className="rounded-lg border border-border bg-card p-4"><div className="flex items-center justify-between gap-2"><span className="text-xs text-muted-foreground">{metric.label}</span><metric.icon className="h-7 w-7 shrink-0 rounded-md bg-brand-tint p-1.5 text-primary" /></div><strong className="mt-3 block break-words text-lg font-extrabold md:text-xl">{metric.value}</strong><p className="mt-2 text-[10px] text-muted-foreground">{metric.detail}</p></article>)}</div>
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_240px]"><div className="min-w-0 space-y-6"><section className="min-w-0 border-b border-border pb-5"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-sans text-base font-bold">Sales revenue</h2><div className="flex rounded-md bg-accent p-1">{[7, 30, 90].map(days => <Button key={days} variant="ghost" size="sm" onClick={() => setPeriod(days)} aria-pressed={period === days} className={`h-7 px-2 text-[10px] ${period === days ? "bg-card" : "text-muted-foreground"}`}>{days}D</Button>)}</div></div><div className="my-4 flex flex-wrap gap-4 text-xs text-muted-foreground"><span className="text-primary">● Tickets</span><span>● Merchandise</span></div><div className="h-56 min-w-0"><ResponsiveContainer width="100%" height="100%"><AreaChart data={chart} margin={{ top: 5, right: 4, left: 0, bottom: 0 }}><CartesianGrid vertical={false} stroke="var(--border)" /><XAxis dataKey="date" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} minTickGap={45} axisLine={false} tickLine={false} /><YAxis width={48} tickFormatter={v => Number(v) >= 1000 ? `${Number(v) / 1000}k` : String(v)} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip formatter={(value: number) => formatCurrency(value)} contentStyle={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--foreground)", borderRadius: 8 }} /><Area name="Tickets" type="monotone" dataKey="tickets" stroke="var(--primary)" fill="var(--brand-soft)" strokeWidth={2} /><Area name="Merchandise" type="monotone" dataKey="merch" stroke="var(--foreground-secondary)" fill="transparent" strokeDasharray="4 4" strokeWidth={2} /></AreaChart></ResponsiveContainer></div></section><TicketPerformance tiers={tiers} orders={orders} /></div><div className="space-y-6">{tools}<section className="rounded-lg bg-foreground p-5 text-background"><p className="text-xs opacity-75">Available to withdraw</p><strong className="mt-2 block break-words text-xl">{balance === null ? "Unavailable" : formatCurrency(balance)}</strong><Button asChild variant="outline" className="mt-5 w-full"><Link to="/dashboard/organiser/fund-requests/$eventId" params={{ eventId: event.id }}>Request funds <ChevronRight /></Link></Button></section></div></div>
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_240px]"><div className="min-w-0 space-y-6"><section className="min-w-0 border-b border-border pb-5"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-sans text-base font-bold">Sales revenue</h2><div className="flex rounded-md bg-accent p-1">{([7, 30, 90, "all"] as const).map(days => <Button key={days} variant="ghost" size="sm" onClick={() => setPeriod(days)} aria-pressed={period === days} className={`h-7 px-2 text-[10px] ${period === days ? "bg-card" : "text-muted-foreground"}`}>{days === "all" ? "All time" : `${days}D`}</Button>)}</div></div><div className="my-4 flex flex-wrap gap-4 text-xs text-muted-foreground"><span className="text-primary">● Tickets</span><span>● Merchandise</span></div><div className="h-56 min-w-0">{chart.length === 0 ? <p className="flex h-full items-center justify-center text-sm text-muted-foreground">No confirmed sales yet.</p> : <ResponsiveContainer width="100%" height="100%"><AreaChart data={chart} margin={{ top: 5, right: 4, left: 0, bottom: 0 }}><CartesianGrid vertical={false} stroke="var(--border)" /><XAxis dataKey="date" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} minTickGap={45} axisLine={false} tickLine={false} /><YAxis width={48} tickFormatter={v => Number(v) >= 1000 ? `${Number(v) / 1000}k` : String(v)} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip formatter={(value: number) => formatCurrency(value)} contentStyle={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--foreground)", borderRadius: 8 }} /><Area name="Tickets" type="monotone" dataKey="tickets" stroke="var(--primary)" fill="var(--brand-soft)" strokeWidth={2} dot={chart.length === 1} /><Area name="Merchandise" type="monotone" dataKey="merch" stroke="var(--foreground-secondary)" fill="transparent" strokeDasharray="4 4" strokeWidth={2} dot={chart.length === 1} /></AreaChart></ResponsiveContainer>}</div></section><TicketPerformance tiers={tiers} orders={orders} /></div><div className="space-y-6">{tools}<section className="rounded-lg bg-foreground p-5 text-background"><p className="text-xs opacity-75">Available to withdraw</p><strong className="mt-2 block break-words text-xl">{balance === null ? "Unavailable" : formatCurrency(balance)}</strong><Button asChild variant="outline" className="mt-5 w-full"><Link to="/dashboard/organiser/fund-requests/$eventId" params={{ eventId: event.id }}>Request funds <ChevronRight /></Link></Button></section></div></div>
       </>}
       {tab === "Tickets" && <TicketPerformance tiers={tiers} orders={orders} />}
-      {tab === "Event settings" && <div className="space-y-6">{tools}<div className="border-t border-border pt-6"><h2 className="font-sans text-base font-bold">Cancellation</h2>{event.cancellation_status === "requested" && <p className="mt-2 text-sm text-warning-strong">Cancellation pending admin review</p>}{event.cancellation_admin_remark && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{event.cancellation_admin_remark}</p>}{canCancel && <Button variant="destructive" className="mt-4" onClick={onCancel}>Request cancellation</Button>}</div></div>}
+      {tab === "Event settings" && <div className="space-y-6">{tools}<div className="border-t border-border pt-6"><h2 className="font-sans text-base font-bold text-destructive">Danger zone</h2><h3 className="mt-3 text-sm font-semibold">Cancellation</h3>{event.cancellation_status === "requested" && <p className="mt-2 text-sm text-warning-strong">Cancellation pending admin review</p>}{event.cancellation_admin_remark && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{event.cancellation_admin_remark}</p>}{canCancel && <Button variant="destructive" className="mt-4" onClick={onCancel}>Request cancellation</Button>}</div></div>}
     </>}
   </div>;
 }

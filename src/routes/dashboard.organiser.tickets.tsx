@@ -1,12 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyTickets } from "@/hooks/useMyTickets";
 import { MyTicketsList } from "@/components/tickets/MyTicketsList";
 
 export const Route = createFileRoute("/dashboard/organiser/tickets")({
-  head: () => ({ meta: [{ title: "My Tickets | AuraPass" }] }),
+  head: () => ({ meta: [
+    { title: "My Tickets | AuraPass" },
+    { name: "description", content: "View your purchased AuraPass tickets and admission QR codes." },
+    { property: "og:title", content: "My Tickets | AuraPass" },
+    { property: "og:description", content: "View your purchased AuraPass tickets and admission QR codes." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: () => (
     <ProtectedRoute allowedRoles={["organiser", "admin"]}>
       <OrganiserTicketsPage />
@@ -30,9 +38,7 @@ function OrganiserTicketsPage() {
                 Tickets you've purchased as an attendee. Tap an event to reveal QR codes.
               </p>
             </div>
-            <Button asChild variant="outline">
-              <Link to="/dashboard/organiser">Back</Link>
-            </Button>
+            <OrganiserBackButton variant="outline" fallback="/dashboard/organiser" />
           </div>
           <div className="mt-6">
             <MyTicketsList
