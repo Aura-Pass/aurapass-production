@@ -1,0 +1,3 @@
+- [ ] Adapt organiser event list and selected-event overview to the uploaded visual reference.
+- [ ] Retain existing management actions and cancellation approval flow; display only real event/order figures.
+- [ ] Verify page rendering and available organiser interactions.
