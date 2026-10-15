@@ -9,7 +9,7 @@ describe("organiser sales chart windows", () => {
     expect(isEventEnded("ended", "2026-12-20", now)).toBe(true);
   });
   test("7D/30D/90D end on the ended event's date, not today", () => {
-    for (const period of [7, 30, 90] as const) {
+    for (const period of [7, 30, 90]) {
       const days = salesChartDays(["2026-06-19T12:00:00"], period, eventSalesEnd("2026-06-20"));
       expect(days.length).toBe(period);
       expect(days.at(-1)?.toDateString()).toBe(new Date("2026-06-20T00:00:00").toDateString());
