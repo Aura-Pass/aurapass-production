@@ -66,7 +66,7 @@ export function EventOverview({ event, onBack, onCancel }: { event: Event; onBac
   const tools = <section className="event-tools min-w-0">
     <h2 className="mb-4 font-sans text-base font-bold">Event tools</h2>
     <div className="space-y-2">
-      <Button asChild variant={published ? "primary" : "outline"} className="w-full justify-start" disabled={!published}><Link to="/dashboard/organiser/scan/$eventId" params={{ eventId: event.id }}><ScanLine /> Scan tickets <ChevronRight className="ml-auto" /></Link></Button>
+      {published ? <Button asChild variant="primary" className="w-full justify-start"><Link to="/dashboard/organiser/scan/$eventId" params={{ eventId: event.id }}><ScanLine /> Scan tickets <ChevronRight className="ml-auto" /></Link></Button> : <Button variant="outline" disabled className="w-full justify-start"><ScanLine /> Scan tickets</Button>}
       {published && <ExportAttendeesButton eventId={event.id} eventTitle={event.title} />}
       <Button asChild variant="ghost" className="w-full justify-start"><Link to="/dashboard/organiser/edit-event/$eventId" params={{ eventId: event.id }}><Pencil /> Edit event <ChevronRight className="ml-auto" /></Link></Button>
       <Button asChild variant="ghost" className="w-full justify-start"><Link to="/dashboard/organiser/gate-attendants/$eventId" params={{ eventId: event.id }}><Users /> Gate attendants <ChevronRight className="ml-auto" /></Link></Button>

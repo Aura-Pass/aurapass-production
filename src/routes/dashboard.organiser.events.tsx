@@ -227,22 +227,24 @@ function MyEventsPage() {
             </div>
 
             <div className="mt-5 flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 onClick={closeCancel}
                 disabled={cancelling}
                 className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-60"
               >
                 Keep Event
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="destructive"
                 type="button"
                 disabled={cancelReason.trim().length < 20 || cancelling}
                 onClick={confirmCancel}
                 className="flex-1 rounded-lg bg-destructive px-4 py-2.5 text-sm font-semibold text-destructive-foreground hover:bg-destructive disabled:opacity-50"
               >
                 {cancelling ? "Submitting..." : "Submit Request"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -296,13 +298,14 @@ function EventCard({ event, onCancel, onManage }: { event: Event; onCancel: () =
           )}
           {isPublished &&
             !["requested", "approved"].includes(event.cancellation_status ?? "") && (
-              <button
+              <Button
+                variant="link"
                 type="button"
                 onClick={onCancel}
-                className="text-xs font-medium text-destructive hover:underline"
+                className="h-auto p-0 text-xs font-medium text-destructive hover:underline"
               >
                 Cancel Event
-              </button>
+              </Button>
             )}
         </div>
         <Button variant="ghost" size="sm" onClick={onManage} className="shrink-0 justify-start text-primary">Manage event <ChevronRight /></Button>
