@@ -5,6 +5,8 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ExportAttendeesButton } from "@/components/organiser/ExportAttendeesButton";
+import { OrganiserBackButton } from "@/components/organiser/OrganiserBackButton";
+import { eventSalesEnd, isEventEnded, salesChartDays, type SalesPeriod } from "@/lib/organiser-sales-chart";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Event, TicketType } from "@/types";
@@ -15,13 +17,15 @@ interface OrderRow {
   order_merch_items: { quantity: number; unit_price: number }[];
 }
 
-export function EventOverview({ event, onBack, onCancel }: { event: Event; onBack: () => void; onCancel: () => void }) {
+export function EventOverview({ event, onCancel }: { event: Event; onCancel: () => void }) {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [tiers, setTiers] = useState<TicketType[]>([]);
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [period, setPeriod] = useState(30);
+  const ended = isEventEnded(event.status, event.event_date);
+  const [selectedPeriod, setPeriod] = useState<SalesPeriod | null>(null);
+  const period = selectedPeriod ?? (ended ? "all" : 30);
   const [tab, setTab] = useState("Overview");
   useEffect(() => {
     let active = true;
@@ -53,13 +57,11 @@ export function EventOverview({ event, onBack, onCancel }: { event: Event; onBac
     return { tickets, ticketRevenue, merchRevenue, collected: merchOrders.filter(o => o.merch_pickup_status === "collected").length, pending: merchOrders.filter(o => o.merch_pickup_status !== "collected").length };
   }, [orders]);
   const chart = useMemo(() => {
-    const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - period + 1);
-    return Array.from({ length: period }, (_, i) => {
-      const day = new Date(start); day.setDate(day.getDate() + i);
+    return salesChartDays(orders.map(o => o.created_at), period, ended ? eventSalesEnd(event.event_date) : new Date()).map(day => {
       const rows = orders.filter(o => new Date(o.created_at).toDateString() === day.toDateString());
       return { date: day.toLocaleDateString("en-GB", { day: "numeric", month: "short" }), tickets: rows.reduce((s, o) => s + Number(o.quantity) * Number(o.ticket_price), 0), merch: rows.reduce((s, o) => s + (o.order_merch_items ?? []).reduce((v, m) => v + Number(m.quantity) * Number(m.unit_price), 0), 0) };
     });
-  }, [orders, period]);
+  }, [orders, period, ended, event.event_date]);
   const published = event.status === "published";
   const canCancel = published && !["requested", "approved"].includes(event.cancellation_status ?? "");
 
@@ -77,7 +79,7 @@ export function EventOverview({ event, onBack, onCancel }: { event: Event; onBac
   </section>;
 
   return <div className="organiser-event space-y-6">
-    <Button variant="ghost" size="sm" className="px-0 text-muted-foreground" onClick={onBack}><ArrowLeft /> All events</Button>
+    <OrganiserBackButton variant="ghost" size="sm" className="px-0 text-muted-foreground"><ArrowLeft /> Back</OrganiserBackButton>
     <header className="flex items-start gap-4">
       <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-accent">{event.banner_url ? <img src={event.banner_url} alt={event.title} className="h-full w-full object-cover" /> : <ImageIcon className="text-muted-foreground" />}</div>
       <div className="min-w-0 flex-1"><div className="mb-2 flex flex-wrap items-center gap-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${published ? "bg-success-light text-success-strong" : "bg-accent text-muted-foreground"}`}>{event.status.replaceAll("_", " ")}</span><span className="break-all text-[10px] text-muted-foreground">Event ID · {event.id}</span></div><h1 className="font-sans text-xl font-extrabold leading-tight md:text-2xl">{event.title}</h1><p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" />{formatDate(event.event_date)} · {event.event_time?.slice(0, 5)}</p><p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5 shrink-0" />{event.venue}, {event.city}</p></div>
