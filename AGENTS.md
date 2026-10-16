@@ -4,3 +4,4 @@
 - Organiser page-return controls use the shared OrganiserBackButton with router history and parent fallback; form-step controls remain local to avoid abandoning in-progress forms.
 - Selected event management is encoded in the events page's eventId search parameter so history preserves the list-to-management-to-tool navigation flow.
 - Sales window generation stays in the browser-safe organiser-sales-chart module, separate from unchanged order revenue calculations, for deterministic date-range testing.
+- Homepage feature navigation lives in its own browser-safe carousel and reuses existing public event/artist hooks; this keeps homepage presentation independent of backend and checkout logic.

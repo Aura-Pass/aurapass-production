@@ -185,3 +185,29 @@
 .event-sales-progress::-webkit-progress-bar { background: var(--accent); }
 .event-sales-progress::-webkit-progress-value { background: var(--primary); border-radius: 8px; }
 .event-sales-progress::-moz-progress-bar { background: var(--primary); border-radius: 8px; }
+
+/* Homepage feature photography stays legible in both themes. */
+:root { --feature-overlay: linear-gradient(90deg, rgba(11, 7, 12, .9), rgba(11, 7, 12, .58) 58%, rgba(11, 7, 12, .08)); --feature-fallback: #28202d; }
+.home-feature-carousel { max-width: 1280px; margin-inline: auto; padding: 24px 0 12px 24px; letter-spacing: 0; }
+.home-feature-carousel:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.home-feature-rail { position: relative; display: flex; gap: 16px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x pan-y; }
+.home-feature-rail::-webkit-scrollbar { display: none; }
+.home-feature-card { position: relative; flex: 0 0 610px; height: 270px; overflow: hidden; border-radius: 8px; scroll-snap-align: start; background: var(--feature-fallback); color: var(--brand-foreground); }
+.home-feature-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.home-feature-wash { position: absolute; inset: 0; background: var(--feature-overlay); }
+.home-feature-copy { position: relative; display: flex; flex-direction: column; justify-content: center; width: 65%; height: 100%; padding: 24px; }
+.home-feature-spacer { flex: 0 0 calc(100% - 626px); }
+@media (max-width: 767px) {
+  .home-feature-carousel { padding: 16px 0 8px 16px; }
+  .home-feature-carousel h2 { font-size: 18px; }
+  .home-feature-rail { gap: 10px; }
+  .home-feature-card { flex-basis: 83vw; height: 205px; }
+  .home-feature-copy { width: 90%; padding: 16px; }
+  .home-feature-copy h3 { font-size: 21px; margin-top: 8px; }
+  .home-feature-copy p { font-size: 11px; margin-top: 6px; }
+  .home-feature-copy a { margin-top: 10px; }
+  .home-feature-spacer { flex-basis: calc(17vw - 26px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-feature-carousel *, .home-feature-carousel *::before, .home-feature-carousel *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
