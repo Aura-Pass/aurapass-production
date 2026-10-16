@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
+import { getPlatformUserCount } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/dashboard/admin/analytics")({
   head: () => ({ meta: [{ title: "Platform Analytics | AuraPass" }] }),
@@ -28,7 +29,7 @@ function PlatformAnalytics() {
     (async () => {
       const db = supabase as any;
       const [users, organisers, events, published, orders] = await Promise.all([
-        db.from("profiles").select("*", { count: "exact", head: true }),
+        getPlatformUserCount().catch(() => null),
         db.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "organiser"),
         db.from("events").select("*", { count: "exact", head: true }),
         db.from("events").select("*", { count: "exact", head: true }).eq("status", "published"),
@@ -38,7 +39,7 @@ function PlatformAnalytics() {
       if (!active) return;
       const rows = (orders.data as Array<{ total_amount: number | null }> | null) ?? [];
       setStats({
-        users: users.count ?? 0,
+        users: users?.users ?? 0,
         organisers: organisers.count ?? 0,
         events: events.count ?? 0,
         publishedEvents: published.count ?? 0,

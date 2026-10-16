@@ -26,7 +26,12 @@ import {
   Megaphone,
   Menu,
   X,
+  Home,
+  CalendarCheck,
+  XCircle,
+  ArrowLeft,
 } from "lucide-react";
+import { useAdminCounts, type AdminCounts } from "@/hooks/useAdminCounts";
 import type { LucideIcon } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Card } from "@/components/ui/card";
@@ -47,6 +52,8 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
   exact?: boolean;
+  search?: Record<string, string>;
+  badge?: keyof AdminCounts;
 }
 
 interface NavSection {
@@ -132,15 +139,107 @@ const SECTIONS: NavSection[] = [
     role: "admin",
     label: "Admin",
     items: [
-      { to: "/dashboard/admin", label: "Moderation Queue", icon: ClipboardList, exact: true },
-      { to: "/dashboard/admin/analytics", label: "Platform Analytics", icon: BarChart3 },
-      { to: "/dashboard/admin/users", label: "User Management", icon: ShieldCheck },
-      { to: "/dashboard/admin/fund-requests", label: "Fund Requests", icon: WalletCards },
+      { to: "/dashboard/admin", label: "Admin area", icon: ShieldCheck, exact: true },
     ],
   },
 ];
 
+const ADMIN_SECTIONS: NavSection[] = [
+  {
+    role: "admin",
+    label: "Overview",
+    items: [{ to: "/dashboard/admin", label: "Overview", icon: Home, exact: true }],
+  },
+  {
+    role: "admin",
+    label: "Moderation",
+    items: [
+      { to: "/dashboard/admin/moderation", label: "Events", icon: CalendarCheck, search: { tab: "pending_review" }, badge: "pendingEvents" },
+      { to: "/dashboard/admin/moderation", label: "Cancellations", icon: XCircle, search: { tab: "cancellation_requests" }, badge: "cancellations" },
+      { to: "/dashboard/admin/moderation", label: "Artist applications", icon: Mic2, search: { tab: "artist_applications" }, badge: "artistApplications" },
+      { to: "/dashboard/admin/moderation", label: "Equipment applications", icon: Wrench, search: { tab: "equipment_applications" }, badge: "equipmentApplications" },
+    ],
+  },
+  {
+    role: "admin",
+    label: "Money",
+    items: [{ to: "/dashboard/admin/fund-requests", label: "Fund requests", icon: WalletCards, badge: "fundRequests" }],
+  },
+  {
+    role: "admin",
+    label: "People",
+    items: [{ to: "/dashboard/admin/users", label: "Users & roles", icon: Users }],
+  },
+  {
+    role: "admin",
+    label: "Analytics",
+    items: [{ to: "/dashboard/admin/analytics", label: "Platform analytics", icon: BarChart3 }],
+  },
+];
+
+function AdminSidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+  const location = useLocation();
+  const { pathname } = location;
+  const currentTab = (location.search as { tab?: string })?.tab ?? "pending_review";
+  const { counts } = useAdminCounts();
+
+  return (
+    <nav className="flex flex-col gap-1">
+      <Link
+        to="/dashboard"
+        onClick={onNavigate}
+        className="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-brand-tint hover:text-primary"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" /> Main dashboard
+      </Link>
+      {ADMIN_SECTIONS.map((section) => (
+        <div key={section.label} className="flex flex-col gap-1">
+          <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground-light">
+            {section.label}
+          </p>
+          {section.items.map((item) => {
+            const Icon = item.icon;
+            const onPath = item.exact
+              ? pathname === item.to || pathname === `${item.to}/`
+              : pathname === item.to || pathname.startsWith(item.to + "/");
+            const active = onPath && (!item.search || item.search.tab === currentTab);
+            const count = item.badge ? counts[item.badge] : 0;
+            return (
+              <Link
+                key={item.label}
+                to={item.to as never}
+                search={item.search as never}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  active
+                    ? "bg-brand-tint text-primary"
+                    : "text-muted-foreground hover:bg-brand-tint hover:text-primary",
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="flex-1 truncate">{item.label}</span>
+                {count > 0 ? (
+                  <span className="min-w-5 rounded-full bg-primary px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none text-primary-foreground">
+                    {count}
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
+    </nav>
+  );
+}
+
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+  const { pathname } = useLocation();
+  if (pathname.startsWith("/dashboard/admin")) return <AdminSidebarNav onNavigate={onNavigate} />;
+  return <MainSidebarNav onNavigate={onNavigate} />;
+}
+
+function MainSidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { pathname } = useLocation();
   const { activeRoles } = useAuth();
 
