@@ -243,6 +243,7 @@
   --hero-media-chip: rgba(11, 7, 12, .42);
   --hero-media-border: rgba(255, 255, 255, .3);
   --hero-media-badge: rgba(36, 8, 43, .65);
+  --hero-media-desktop-overlay: linear-gradient(135deg, rgba(8, 5, 12, .70), rgba(36, 8, 43, .67));
 }
 .home-hero-intro { position: relative; isolation: isolate; margin-inline: auto; max-width: 1060px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px 48px; align-items: center; padding-block: 0 24px; }
 .home-hero-copy { min-width: 0; grid-column: 1; grid-row: 2; text-align: left; }
@@ -255,7 +256,20 @@
 .home-hero-intro .home-eyebrow { letter-spacing: 0; }
 .home-hero-actions { justify-content: flex-start; }
 @media (min-width: 900px) {
-  .home-hero-poster, .home-hero-video { object-position: center 30%; }
+  .home-hero-intro { display: block; max-width: 1060px; min-height: 400px; padding: 32px 32px 40px; border-radius: 16px; overflow: hidden; }
+  .home-hero-media { position: absolute; inset: 0; width: 100%; max-width: none; height: 100%; aspect-ratio: auto; border-radius: inherit; box-shadow: none; z-index: -2; }
+  .home-hero-intro::after { content: ""; position: absolute; inset: 0; background: var(--hero-media-desktop-overlay); z-index: -1; pointer-events: none; }
+  .home-hero-poster, .home-hero-video { object-fit: cover; object-position: center 35%; }
+  .home-hero-video { filter: blur(2px); transform: scale(1.05); }
+  .home-hero-copy { text-align: center; }
+  .home-hero-intro .home-chips { justify-content: center; }
+  .home-hero-intro .home-chip { color: var(--hero-media-foreground); background: var(--hero-media-chip); border-color: var(--hero-media-border); }
+  .home-hero-intro .home-chip:hover, .home-hero-intro .home-chip:focus-visible { color: var(--hero-media-foreground); border-color: var(--primary); background: var(--hero-media-badge); }
+  .home-hero-intro .home-eyebrow { background: var(--hero-media-badge); color: var(--hero-media-foreground); }
+  .home-hero-intro .home-headline { color: var(--hero-media-foreground); }
+  .home-hero-intro .home-headline-accent { background-image: var(--hero-media-gradient); }
+  .home-hero-intro .home-hero-subtitle { color: var(--hero-media-muted); margin-inline: auto; }
+  .home-hero-actions { justify-content: center; }
 }
 @media (max-width: 899px) {
   .home-hero-intro { display: block; max-width: 680px; padding: 26px 20px 30px; border-radius: 16px; overflow: hidden; }
