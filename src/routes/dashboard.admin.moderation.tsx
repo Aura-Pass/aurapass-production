@@ -27,8 +27,21 @@ import {
 } from "@/lib/cancellation.functions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/admin/")({
-  head: () => ({ meta: [{ title: "Admin Panel | AuraPass" }] }),
+const TABS = [
+  "pending_review",
+  "published",
+  "rejected",
+  "cancellation_requests",
+  "artist_applications",
+  "equipment_applications",
+] as const;
+
+export const Route = createFileRoute("/dashboard/admin/moderation")({
+  validateSearch: (search: Record<string, unknown>): { tab?: Tab } => {
+    const t = search.tab;
+    return typeof t === "string" && (TABS as readonly string[]).includes(t) ? { tab: t as Tab } : {};
+  },
+  head: () => ({ meta: [{ title: "Moderation | AuraPass Admin" }] }),
   component: AdminDashboard,
 });
 
@@ -45,7 +58,10 @@ function AdminDashboard() {
   const { profile, user } = useAuth();
   const email = profile?.email ?? user?.email;
   const { tickets } = useMyTickets(email);
-  const [tab, setTab] = useState<Tab>("pending_review");
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const tab: Tab = search.tab ?? "pending_review";
+  const setTab = (t: Tab) => navigate({ search: { tab: t }, replace: true });
   const [rejectTarget, setRejectTarget] = useState<AdminEvent | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
@@ -157,7 +173,7 @@ function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-foreground md:text-3xl">Admin Panel</h1>
+      <h1 className="text-2xl font-bold text-foreground md:text-3xl">Moderation</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         Review organiser submissions and moderate events.
       </p>
