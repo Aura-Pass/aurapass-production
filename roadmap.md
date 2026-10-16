@@ -1,3 +1,4 @@
+- [ ] Restore the centred desktop video panel from 900px, centralise media paths, and verify 1440px / 1024px / 390px without mobile or playback changes.
 - [x] Adapt organiser event list and selected-event overview to the uploaded visual reference.
 - [x] Recreate the public homepage top carousel and compact search/intro/actions using existing public data and brand styling.
 - [x] Add the supplied homepage video and poster, respect motion/data preferences, and verify mobile/desktop in both themes without changing search or carousel; compatible encodings play on desktop and mobile and pause offscreen.
