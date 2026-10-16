@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import videoAsset from "../../../public/videos/hero-bg-portrait.mp4.asset.json";
+import videoAsset from "../../../public/videos/hero-bg-compatible.mp4.asset.json";
+import webmAsset from "../../../public/videos/hero-bg-compatible.webm.asset.json";
 import posterAsset from "../../../public/videos/poster-portrait.jpg.asset.json";
 import { canPlayHomeVideo } from "@/lib/home-video-playback";
 
@@ -11,6 +12,7 @@ export function HomeHeroVideo() {
   const poster = useRef<HTMLImageElement>(null);
   const [posterReady, setPosterReady] = useState(false);
   const [loadVideo, setLoadVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string>();
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
@@ -22,6 +24,7 @@ export function HomeHeroVideo() {
     const panel = container.current;
     const player = video.current;
     if (!panel || !player || !posterReady) return;
+    setVideoUrl(player.canPlayType('video/mp4; codecs="avc1.42E01E"') ? videoAsset.url : webmAsset.url);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const connection = (navigator as Navigator & { connection?: Connection }).connection;
     let inView = false;
@@ -70,7 +73,7 @@ export function HomeHeroVideo() {
   return (
     <div ref={container} className="home-hero-media" aria-hidden="true">
       <img ref={poster} src={posterAsset.url} alt="" fetchPriority="high" onLoad={() => setPosterReady(true)} className="home-hero-poster" />
-      <video ref={video} src={loadVideo ? videoAsset.url : undefined} poster={posterAsset.url}
+      <video ref={video} src={loadVideo ? videoUrl : undefined} poster={posterAsset.url}
         muted loop playsInline autoPlay={loadVideo} preload="metadata" tabIndex={-1} aria-hidden="true"
         onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setPlaying(false)}
         className={`home-hero-video${playing ? " is-playing" : ""}`} />
