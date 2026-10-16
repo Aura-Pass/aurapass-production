@@ -213,10 +213,10 @@
 }
 
 /* Homepage text block under search */
-:root { --hero-glow: radial-gradient(ellipse 60% 70% at 50% 55%, rgba(217, 70, 239, .14), transparent 70%); --brand-gradient: linear-gradient(90deg, #d946ef, #a855f7 55%, #ec4899); }
-.dark { --hero-glow: radial-gradient(ellipse 60% 70% at 50% 55%, rgba(217, 70, 239, .22), transparent 70%); --brand-gradient: linear-gradient(90deg, #e879f9, #c084fc 55%, #f472b6); }
+:root { --hero-glow: radial-gradient(ellipse 55% 60% at 50% 50%, rgba(217, 70, 239, .14), transparent 70%); --brand-gradient: linear-gradient(90deg, #d946ef, #a855f7 55%, #ec4899); }
+.dark { --hero-glow: radial-gradient(ellipse 55% 60% at 50% 50%, rgba(217, 70, 239, .22), transparent 70%); --brand-gradient: linear-gradient(90deg, #e879f9, #c084fc 55%, #f472b6); }
 .home-hero-block { position: relative; padding-top: 4px; padding-bottom: 0; }
-.home-hero-block::before { content: ""; position: absolute; inset: 40px 0 -40px; background: var(--hero-glow); pointer-events: none; }
+.home-hero-block::before { content: ""; position: absolute; inset: 40px 0 0; background: var(--hero-glow); pointer-events: none; }
 .home-chips { display: flex; justify-content: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .home-chips::-webkit-scrollbar { display: none; }
 .home-chip { flex: 0 0 auto; padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--background); color: var(--foreground-secondary); font-size: 12px; font-weight: 500; transition: border-color .15s, color .15s, background .15s; }
