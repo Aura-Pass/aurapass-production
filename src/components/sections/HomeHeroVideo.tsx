@@ -3,6 +3,12 @@ import videoAsset from "../../../public/videos/hero-bg-portrait.mp4.asset.json";
 import posterAsset from "../../../public/videos/poster-portrait.jpg.asset.json";
 import { canPlayHomeVideo } from "@/lib/home-video-playback";
 
+// Swap the asset pointers here; the panel does not depend on footage aspect ratio.
+const HOME_HERO_MEDIA = {
+  video: videoAsset.url,
+  poster: posterAsset.url,
+};
+
 type Connection = EventTarget & { saveData?: boolean };
 
 export function HomeHeroVideo() {
@@ -23,7 +29,7 @@ export function HomeHeroVideo() {
     const panel = container.current;
     const player = video.current;
     if (!panel || !player || !posterReady) return;
-    setVideoUrl(videoAsset.url);
+    setVideoUrl(HOME_HERO_MEDIA.video);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const connection = (navigator as Navigator & { connection?: Connection }).connection;
     let inView = false;
@@ -71,8 +77,8 @@ export function HomeHeroVideo() {
 
   return (
     <div ref={container} className="home-hero-media" aria-hidden="true">
-      <img ref={poster} src={posterAsset.url} alt="" fetchPriority="high" onLoad={() => setPosterReady(true)} className="home-hero-poster" />
-      <video ref={video} src={loadVideo ? videoUrl : undefined} poster={posterAsset.url}
+      <img ref={poster} src={HOME_HERO_MEDIA.poster} alt="" fetchPriority="high" onLoad={() => setPosterReady(true)} className="home-hero-poster" />
+      <video ref={video} src={loadVideo ? videoUrl : undefined} poster={HOME_HERO_MEDIA.poster}
         muted loop playsInline autoPlay={loadVideo} preload="metadata" tabIndex={-1} aria-hidden="true"
         onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setPlaying(false)}
         className={`home-hero-video${playing ? " is-playing" : ""}`} />
