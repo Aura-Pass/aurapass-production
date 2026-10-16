@@ -105,10 +105,12 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
 
   const { data: merchOrder } = await (supabaseAdmin as any)
     .from("orders")
-    .select("merch_qr_code")
+    .select("merch_qr_code, platform_fee, ticket_price")
     .eq("id", data.orderId)
     .maybeSingle();
   const merchQrCode: string | null = merchOrder?.merch_qr_code ?? null;
+  const platformFee = Number(merchOrder?.platform_fee ?? 0);
+  const ticketSubtotal = Number(merchOrder?.ticket_price ?? 0) * Number(data.quantity ?? 0);
 
   const ticketList = tickets ?? [];
   const isMerchOnly = ticketList.length === 0 && Number(data.quantity) === 0;
@@ -223,7 +225,8 @@ export async function sendTicketConfirmationEmailImpl(data: TicketConfirmationIn
                   ${row("Date", formattedDate)}
                   ${row("Time", data.eventTime)}
                   ${row("Venue", `${data.eventVenue}, ${data.eventCity}`)}
-                  ${isMerchOnly ? "" : row("Ticket", `${data.ticketTypeName} × ${data.quantity}`)}
+                  ${isMerchOnly ? "" : row("Ticket", `${data.ticketTypeName} × ${data.quantity}${ticketSubtotal > 0 ? ` — ₦${ticketSubtotal.toLocaleString("en-NG")}` : ""}`)}
+                  ${platformFee > 0 ? row("Platform fee", `₦${platformFee.toLocaleString("en-NG")}`) : ""}
                   ${row("Total", amountDisplay, true)}
                 </table>
               </td>
