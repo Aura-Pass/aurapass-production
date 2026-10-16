@@ -19,11 +19,17 @@ function getInitialTheme(): Theme {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+  const [theme, setThemeState] = useState<Theme>("light");
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    setThemeState(getInitialTheme());
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme, hydrated]);
 
   useEffect(() => {
     // Only follow system changes if the user hasn't made an explicit choice.
