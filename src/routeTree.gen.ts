@@ -49,6 +49,7 @@ import { Route as OrganisersUsernameRouteImport } from './routes/organisers.$use
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ArtistsIdIndexRouteImport } from './routes/artists.$id.index'
 import { Route as ArtistsIdBookRouteImport } from './routes/artists.$id.book'
+import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
 import { Route as DashboardAdminFundRequestsRouteImport } from './routes/dashboard.admin.fund-requests'
 import { Route as DashboardAdminModerationRouteImport } from './routes/dashboard.admin.moderation'
@@ -292,6 +293,11 @@ const ArtistsIdBookRoute = ArtistsIdBookRouteImport.update({
   id: '/book',
   path: '/book',
   getParentRoute: () => ArtistsIdRoute,
+} as any)
+const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAdminRoute,
 } as any)
 const DashboardAdminAnalyticsRoute = DashboardAdminAnalyticsRouteImport.update({
   id: '/analytics',
@@ -574,6 +580,7 @@ export interface FileRoutesByFullPath {
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/events/$slug/merch': typeof EventsSlugMerchRoute
   '/artists/$id/': typeof ArtistsIdIndexRoute
+  '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/equipment/': typeof DashboardEquipmentIndexRoute
@@ -614,7 +621,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/organisers/$username': typeof OrganisersUsernameRoute
   '/artists': typeof ArtistsIndexRoute
@@ -648,6 +654,7 @@ export interface FileRoutesByTo {
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/events/$slug/merch': typeof EventsSlugMerchRoute
   '/artists/$id': typeof ArtistsIdIndexRoute
+  '/dashboard/admin': typeof DashboardAdminIndexRoute
   '/dashboard/artist': typeof DashboardArtistIndexRoute
   '/dashboard/attendee': typeof DashboardAttendeeIndexRoute
   '/dashboard/equipment': typeof DashboardEquipmentIndexRoute
@@ -730,6 +737,7 @@ export interface FileRoutesById {
   '/events/$slug/checkout': typeof EventsSlugCheckoutRoute
   '/events/$slug/merch': typeof EventsSlugMerchRoute
   '/artists/$id/': typeof ArtistsIdIndexRoute
+  '/dashboard/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/artist/': typeof DashboardArtistIndexRoute
   '/dashboard/attendee/': typeof DashboardAttendeeIndexRoute
   '/dashboard/equipment/': typeof DashboardEquipmentIndexRoute
@@ -813,6 +821,7 @@ export interface FileRouteTypes {
     | '/events/$slug/checkout'
     | '/events/$slug/merch'
     | '/artists/$id/'
+    | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
     | '/dashboard/equipment/'
@@ -853,7 +862,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/dashboard/admin'
     | '/order-confirmation/$orderId'
     | '/organisers/$username'
     | '/artists'
@@ -887,6 +895,7 @@ export interface FileRouteTypes {
     | '/events/$slug/checkout'
     | '/events/$slug/merch'
     | '/artists/$id'
+    | '/dashboard/admin'
     | '/dashboard/artist'
     | '/dashboard/attendee'
     | '/dashboard/equipment'
@@ -968,6 +977,7 @@ export interface FileRouteTypes {
     | '/events/$slug/checkout'
     | '/events/$slug/merch'
     | '/artists/$id/'
+    | '/dashboard/admin/'
     | '/dashboard/artist/'
     | '/dashboard/attendee/'
     | '/dashboard/equipment/'
@@ -1307,6 +1317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtistsIdBookRouteImport
       parentRoute: typeof ArtistsIdRoute
     }
+    '/dashboard/admin/': {
+      id: '/dashboard/admin/'
+      path: '/'
+      fullPath: '/dashboard/admin/'
+      preLoaderRoute: typeof DashboardAdminIndexRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/analytics': {
       id: '/dashboard/admin/analytics'
       path: '/analytics'
@@ -1589,6 +1606,7 @@ interface DashboardAdminRouteChildren {
   DashboardAdminModerationRoute: typeof DashboardAdminModerationRoute
   DashboardAdminTicketsRoute: typeof DashboardAdminTicketsRoute
   DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute
+  DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
@@ -1597,6 +1615,7 @@ const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminModerationRoute: DashboardAdminModerationRoute,
   DashboardAdminTicketsRoute: DashboardAdminTicketsRoute,
   DashboardAdminUsersRoute: DashboardAdminUsersRoute,
+  DashboardAdminIndexRoute: DashboardAdminIndexRoute,
 }
 
 const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
