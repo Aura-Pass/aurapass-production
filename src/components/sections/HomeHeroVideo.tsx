@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import videoAsset from "../../../public/videos/hero-bg-compatible.mp4.asset.json";
-import webmAsset from "../../../public/videos/hero-bg-compatible.webm.asset.json";
+import videoAsset from "../../../public/videos/hero-bg-portrait.mp4.asset.json";
 import posterAsset from "../../../public/videos/poster-portrait.jpg.asset.json";
 import { canPlayHomeVideo } from "@/lib/home-video-playback";
 
@@ -24,7 +23,7 @@ export function HomeHeroVideo() {
     const panel = container.current;
     const player = video.current;
     if (!panel || !player || !posterReady) return;
-    setVideoUrl(player.canPlayType('video/mp4; codecs="avc1.42E01E"') ? videoAsset.url : webmAsset.url);
+    setVideoUrl(videoAsset.url);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const connection = (navigator as Navigator & { connection?: Connection }).connection;
     let inView = false;

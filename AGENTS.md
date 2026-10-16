@@ -5,4 +5,4 @@
 - Selected event management is encoded in the events page's eventId search parameter so history preserves the list-to-management-to-tool navigation flow.
 - Sales window generation stays in the browser-safe organiser-sales-chart module, separate from unchanged order revenue calculations, for deterministic date-range testing.
 - Homepage feature navigation lives in its own browser-safe carousel and reuses existing public event/artist hooks; this keeps homepage presentation independent of backend and checkout logic.
-- Homepage decorative video is isolated in HomeHeroVideo with poster-first loading and browser visibility/preference gates, leaving carousel, search and navigation unchanged; supplied media uses static Lovable asset pointers and compatible MP4/WebM encodings selected by browser codec support.
+- Homepage decorative video is isolated in HomeHeroVideo with poster-first loading and browser visibility/preference gates, leaving carousel, search and navigation unchanged; supplied original media uses static Lovable asset pointers, with the poster retained when the browser cannot decode or autoplay it.
