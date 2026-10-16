@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { HomeFeatureCarousel } from "@/components/sections/HomeFeatureCarousel";
+import { HomeHeroVideo } from "@/components/sections/HomeHeroVideo";
 import { EVENT_CATEGORIES } from "@/constants";
 
 export function HomepageHero() {
@@ -57,14 +58,18 @@ export function HomepageHero() {
               <span className="hidden sm:inline">Search</span>
             </Button>
           </form>
-          <nav aria-label="Quick categories" className="home-chips mt-3">
+        </div>
+        <div className="home-hero-intro mt-3">
+          <HomeHeroVideo />
+          <div className="home-hero-copy">
+          <nav aria-label="Quick categories" className="home-chips">
             {QUICK_CATEGORIES.map((c) => (
               <Link key={c.slug} to="/events" search={{ category: c.slug }} className="home-chip">
                 {c.label}
               </Link>
             ))}
           </nav>
-          <span className="home-eyebrow mt-7">
+          <span className="home-eyebrow mt-5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
             Access the moment
           </span>
@@ -72,12 +77,13 @@ export function HomepageHero() {
             <span className="block">Explore the Raves.</span>
             <span className="home-headline-accent block">Enjoy the Experience.</span>
           </h1>
-          <p className="mx-auto mt-3 max-w-[480px] text-sm leading-relaxed text-muted-foreground md:text-base">
+          <p className="home-hero-subtitle mt-3 max-w-[480px] text-sm leading-relaxed text-muted-foreground md:text-base">
             Tickets, artists, gear and merch: everything for your next night out, in one place.
           </p>
-          <div className="mt-6 flex items-center justify-center gap-3">
+          <div className="home-hero-actions mt-6 flex items-center gap-3">
             <Button asChild variant="primary" className="home-cta-primary px-5"><Link to="/events">Explore Events</Link></Button>
             <Button variant="secondary" className="home-cta-secondary px-5" onClick={handleCreateEvent}>Create an Event</Button>
+          </div>
           </div>
         </div>
       </div>
