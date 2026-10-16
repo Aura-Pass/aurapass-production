@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { HomeFeatureCarousel } from "@/components/sections/HomeFeatureCarousel";
 
 export function HomepageHero() {
   const [query, setQuery] = useState<string>("");
@@ -33,51 +34,39 @@ export function HomepageHero() {
 
   return (
     <section className="relative overflow-hidden bg-background">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-          "radial-gradient(60% 60% at 50% 0%, rgba(217,70,239,0.20) 0%, rgba(217,70,239,0.08) 40%, rgba(255,255,255,0) 75%)",
-        }}
-      />
-      <div className="relative mx-auto max-w-7xl px-4 pt-16 pb-20 md:px-6 md:pt-24 md:pb-28">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-[32px] font-bold leading-tight tracking-tight text-foreground md:text-5xl">
-            Explore the Raves. Enjoy the Experience.
-          </h1>
-          <p className="mt-4 text-base text-muted-foreground md:text-lg">
-            Discover the biggest events across Nigeria and create memories.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" variant="primary">
-              <Link to="/events">Explore Events</Link>
-            </Button>
-            <Button size="lg" variant="secondary" onClick={handleCreateEvent}>
-              Create an Event
-            </Button>
-          </div>
-
+      <HomeFeatureCarousel />
+      <div className="mx-auto max-w-7xl px-4 pb-8 md:px-6 md:pb-10">
+        <div className="mx-auto max-w-[620px] text-center">
           <form
             onSubmit={handleSearch}
-            className="mt-10 mx-auto flex w-full items-stretch overflow-hidden rounded-xl border border-border bg-background shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
+            className="mx-auto flex h-12 w-full items-center gap-2 rounded-lg border border-border bg-background p-1 pl-3 shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
           >
+            <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <label htmlFor="home-event-search" className="sr-only">Search events, artists, venues</label>
             <input
+              id="home-event-search"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search events, artists, venues..."
-              className="flex-1 min-w-0 bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground-light focus:outline-none"
+              className="flex-1 min-w-0 bg-transparent py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none md:text-sm"
             />
-            <button
+            <Button
               type="submit"
               aria-label="Search"
-              className="flex shrink-0 items-center gap-2 bg-primary px-3 sm:px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover"
+              className="h-10 shrink-0 px-3 sm:px-5"
             >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Search</span>
-            </button>
+            </Button>
           </form>
+          <p className="mt-5 text-[10px] font-semibold uppercase text-primary">Access the moment</p>
+          <h1 className="mt-2 text-2xl font-bold leading-tight text-foreground md:text-[32px]">Explore the Raves. Enjoy the Experience.</h1>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground md:text-sm">Discover the biggest events across Nigeria and create memories.</p>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <Button asChild variant="primary" className="px-4 text-xs"><Link to="/events">Explore Events</Link></Button>
+            <Button variant="secondary" className="px-4 text-xs" onClick={handleCreateEvent}>Create an Event</Button>
+          </div>
         </div>
       </div>
     </section>
