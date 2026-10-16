@@ -60,8 +60,6 @@ export function HomepageHero() {
           </form>
         </div>
         <div className="home-hero-intro mt-3">
-          <HomeHeroVideo />
-          <div className="home-hero-copy">
           <nav aria-label="Quick categories" className="home-chips">
             {QUICK_CATEGORIES.map((c) => (
               <Link key={c.slug} to="/events" search={{ category: c.slug }} className="home-chip">
@@ -69,6 +67,8 @@ export function HomepageHero() {
               </Link>
             ))}
           </nav>
+          <HomeHeroVideo />
+          <div className="home-hero-copy">
           <span className="home-eyebrow mt-5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
             Access the moment
