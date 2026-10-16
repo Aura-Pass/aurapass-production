@@ -9,7 +9,7 @@ export function FeaturedEvents() {
   const items = events.map(toEventCardData);
 
   return (
-    <section className="bg-background py-16 md:py-20">
+    <section className="bg-background pt-8 pb-16 md:pt-12 md:pb-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>

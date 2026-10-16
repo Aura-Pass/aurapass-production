@@ -79,7 +79,7 @@ export function HomeFeatureCarousel() {
           const Icon = feature.icon;
           return <article key={feature.label} className="home-feature-card" aria-roledescription="slide" aria-label={`${index + 1} of 6: ${feature.label}`}>
             {feature.image && <img src={feature.image} alt={feature.alt} width={960} height={512} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} decoding="async" className="home-feature-image" />}
-            <div className="home-feature-wash" />
+            <div className={feature.label === "Events" ? "home-feature-wash home-feature-wash-strong" : "home-feature-wash"} />
             <div className="home-feature-copy">
               <span className="flex items-center gap-2 text-[11px] font-semibold"><Icon className="h-4 w-4" />{feature.label}</span>
               <h3 className="mt-3 font-heading text-2xl font-bold leading-tight md:text-3xl">{feature.title}</h3>
