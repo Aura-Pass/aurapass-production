@@ -8,9 +8,15 @@ type Connection = EventTarget & { saveData?: boolean };
 export function HomeHeroVideo() {
   const container = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
+  const poster = useRef<HTMLImageElement>(null);
   const [posterReady, setPosterReady] = useState(false);
   const [loadVideo, setLoadVideo] = useState(false);
   const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    // A cached poster may finish before hydration attaches the load handler.
+    if (poster.current?.complete && poster.current.naturalWidth > 0) setPosterReady(true);
+  }, []);
 
   useEffect(() => {
     const panel = container.current;
@@ -63,7 +69,7 @@ export function HomeHeroVideo() {
 
   return (
     <div ref={container} className="home-hero-media" aria-hidden="true">
-      <img src={posterAsset.url} alt="" fetchPriority="high" onLoad={() => setPosterReady(true)} className="home-hero-poster" />
+      <img ref={poster} src={posterAsset.url} alt="" fetchPriority="high" onLoad={() => setPosterReady(true)} className="home-hero-poster" />
       <video ref={video} src={loadVideo ? videoAsset.url : undefined} poster={posterAsset.url}
         muted loop playsInline autoPlay={loadVideo} preload="metadata" tabIndex={-1} aria-hidden="true"
         onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setPlaying(false)}
