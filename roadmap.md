@@ -1,7 +1,7 @@
 - [x] Adapt organiser event list and selected-event overview to the uploaded visual reference.
 - [x] Recreate the public homepage top carousel and compact search/intro/actions using existing public data and brand styling.
 - [x] Add the supplied homepage video and poster, respect motion/data preferences, and verify mobile/desktop in both themes without changing search or carousel; compatible encodings play on desktop and mobile and pause offscreen.
-- [ ] Restore desktop intro from 900px with chips above, original supplied media only, and verify 1440px / 1024px / 390px in both themes.
+- [x] Restore desktop intro from 900px with chips above and original supplied media only; 1440px / 1024px / 900px / 390px verified in both themes, original files matched byte-for-byte, motion/data gates and four playback tests passed. Original MP4 is unsupported in test Chromium, so poster fallback is displayed; original-video playback remains unverified.
 - [x] Verify homepage links, search, carousel controls, reduced motion and 390px layout; actions fit at 390x667 and dark-mode hydration is error-free.
 - [x] Retain existing management actions and cancellation approval flow; display only real event/order figures.
 - [ ] Verify signed-in organiser rendering and interactions — blocked by unavailable organiser session; signed-out redirect verified without runtime errors.
