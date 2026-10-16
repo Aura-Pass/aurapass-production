@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { getPlatformUserCount } from "@/lib/admin.functions";
+import { PlatformRevenue } from "@/components/admin/PlatformRevenue";
 
 export const Route = createFileRoute("/dashboard/admin/analytics")({
   head: () => ({ meta: [{ title: "Platform Analytics | AuraPass" }] }),
@@ -74,6 +75,8 @@ function PlatformAnalytics() {
           <Stat label="Gross revenue" value={formatCurrency(stats.revenue)} />
         </div>
       )}
+
+      <PlatformRevenue />
     </div>
   );
 }
