@@ -1,3 +1,5 @@
+- [ ] Apply Release 1 Part 1 literal patch: sold-out availability, category removal, username reminder removal, curated homepage events, event previews and banner optimisation — awaiting plan approval.
+- [ ] Verify Release 1 source diff, focused rules and available user flows — blocked until implementation is approved.
 - [x] Restore the centred desktop video panel from 900px and centralise media paths; 1440px / 1024px / 390px verified in both themes, mobile baseline identical, four playback tests passed. Original video remains unsupported in test Chromium; poster fallback verified.
 - [x] Adapt organiser event list and selected-event overview to the uploaded visual reference.
 - [x] Recreate the public homepage top carousel and compact search/intro/actions using existing public data and brand styling.
