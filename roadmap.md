@@ -12,3 +12,4 @@
 - [x] Remove cancellation action from event cards, retaining cancellation in event settings.
 - [x] Anchor ended-event chart ranges and add All time without changing revenue calculations; five date-window tests pass.
 - [x] Update all organiser page Back controls to history with logical parent fallbacks; shared control verified in browser for previous-page and direct-entry cases. Creation wizard retains a separately labelled Previous step control.
+- [ ] Release 1 Parts 2 and 3 — on hold by Emmanuel's instruction (2026-10-19); not applied, awaiting his explicit approval.
