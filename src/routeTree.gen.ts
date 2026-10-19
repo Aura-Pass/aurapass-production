@@ -51,6 +51,7 @@ import { Route as ArtistsIdIndexRouteImport } from './routes/artists.$id.index'
 import { Route as ArtistsIdBookRouteImport } from './routes/artists.$id.book'
 import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
 import { Route as DashboardAdminAnalyticsRouteImport } from './routes/dashboard.admin.analytics'
+import { Route as DashboardAdminFeaturedRouteImport } from './routes/dashboard.admin.featured'
 import { Route as DashboardAdminFundRequestsRouteImport } from './routes/dashboard.admin.fund-requests'
 import { Route as DashboardAdminModerationRouteImport } from './routes/dashboard.admin.moderation'
 import { Route as DashboardAdminTicketsRouteImport } from './routes/dashboard.admin.tickets'
@@ -302,6 +303,11 @@ const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
 const DashboardAdminAnalyticsRoute = DashboardAdminAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardAdminFeaturedRoute = DashboardAdminFeaturedRouteImport.update({
+  id: '/featured',
+  path: '/featured',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
 const DashboardAdminFundRequestsRoute =
@@ -557,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
+  '/dashboard/admin/featured': typeof DashboardAdminFeaturedRoute
   '/dashboard/admin/fund-requests': typeof DashboardAdminFundRequestsRoute
   '/dashboard/admin/moderation': typeof DashboardAdminModerationRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
@@ -631,6 +638,7 @@ export interface FileRoutesByTo {
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
+  '/dashboard/admin/featured': typeof DashboardAdminFeaturedRoute
   '/dashboard/admin/fund-requests': typeof DashboardAdminFundRequestsRoute
   '/dashboard/admin/moderation': typeof DashboardAdminModerationRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
@@ -714,6 +722,7 @@ export interface FileRoutesById {
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/artists/$id/book': typeof ArtistsIdBookRoute
   '/dashboard/admin/analytics': typeof DashboardAdminAnalyticsRoute
+  '/dashboard/admin/featured': typeof DashboardAdminFeaturedRoute
   '/dashboard/admin/fund-requests': typeof DashboardAdminFundRequestsRoute
   '/dashboard/admin/moderation': typeof DashboardAdminModerationRoute
   '/dashboard/admin/tickets': typeof DashboardAdminTicketsRoute
@@ -798,6 +807,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
     | '/dashboard/admin/analytics'
+    | '/dashboard/admin/featured'
     | '/dashboard/admin/fund-requests'
     | '/dashboard/admin/moderation'
     | '/dashboard/admin/tickets'
@@ -872,6 +882,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
     | '/dashboard/admin/analytics'
+    | '/dashboard/admin/featured'
     | '/dashboard/admin/fund-requests'
     | '/dashboard/admin/moderation'
     | '/dashboard/admin/tickets'
@@ -954,6 +965,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack-webhook'
     | '/artists/$id/book'
     | '/dashboard/admin/analytics'
+    | '/dashboard/admin/featured'
     | '/dashboard/admin/fund-requests'
     | '/dashboard/admin/moderation'
     | '/dashboard/admin/tickets'
@@ -1331,6 +1343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminAnalyticsRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/admin/featured': {
+      id: '/dashboard/admin/featured'
+      path: '/featured'
+      fullPath: '/dashboard/admin/featured'
+      preLoaderRoute: typeof DashboardAdminFeaturedRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/fund-requests': {
       id: '/dashboard/admin/fund-requests'
       path: '/fund-requests'
@@ -1602,6 +1621,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardAdminRouteChildren {
   DashboardAdminAnalyticsRoute: typeof DashboardAdminAnalyticsRoute
+  DashboardAdminFeaturedRoute: typeof DashboardAdminFeaturedRoute
   DashboardAdminFundRequestsRoute: typeof DashboardAdminFundRequestsRoute
   DashboardAdminModerationRoute: typeof DashboardAdminModerationRoute
   DashboardAdminTicketsRoute: typeof DashboardAdminTicketsRoute
@@ -1611,6 +1631,7 @@ interface DashboardAdminRouteChildren {
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminAnalyticsRoute: DashboardAdminAnalyticsRoute,
+  DashboardAdminFeaturedRoute: DashboardAdminFeaturedRoute,
   DashboardAdminFundRequestsRoute: DashboardAdminFundRequestsRoute,
   DashboardAdminModerationRoute: DashboardAdminModerationRoute,
   DashboardAdminTicketsRoute: DashboardAdminTicketsRoute,
