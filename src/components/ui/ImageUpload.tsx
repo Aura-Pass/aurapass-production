@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/compress-image";
 import { Loader2, Upload, X } from "lucide-react";
 
 interface ImageUploadProps {
@@ -25,12 +26,14 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
     }
 
     setUploading(true);
-    const fileExt = file.name.split(".").pop() ?? "jpg";
+    // Shrink before upload so WhatsApp/Facebook link previews (limit ~300 KB) show the banner.
+    const toUpload = await compressImage(file);
+    const fileExt = toUpload.name.split(".").pop() ?? "jpg";
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
       .from("event-banners")
-      .upload(fileName, file, { cacheControl: "3600", upsert: false });
+      .upload(fileName, toUpload, { cacheControl: "31536000", upsert: false });
 
     if (uploadError) {
       console.error("[ImageUpload] upload failed", uploadError);

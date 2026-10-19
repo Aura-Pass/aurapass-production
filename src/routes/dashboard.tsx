@@ -30,6 +30,7 @@ import {
   CalendarCheck,
   XCircle,
   ArrowLeft,
+  Star,
 } from "lucide-react";
 import { useAdminCounts, type AdminCounts } from "@/hooks/useAdminCounts";
 import type { LucideIcon } from "lucide-react";
@@ -159,6 +160,11 @@ const ADMIN_SECTIONS: NavSection[] = [
       { to: "/dashboard/admin/moderation", label: "Artist applications", icon: Mic2, search: { tab: "artist_applications" }, badge: "artistApplications" },
       { to: "/dashboard/admin/moderation", label: "Equipment applications", icon: Wrench, search: { tab: "equipment_applications" }, badge: "equipmentApplications" },
     ],
+  },
+  {
+    role: "admin",
+    label: "Homepage",
+    items: [{ to: "/dashboard/admin/featured", label: "Featured events", icon: Star }],
   },
   {
     role: "admin",

@@ -1,4 +1,6 @@
 # Project rules
+- Release 1 availability polling and featured-event reads use focused browser-safe hooks and existing RPCs; this preserves stock privacy and avoids schema changes.
+- Banner compression is shared between new uploads and admin optimisation in a browser-only helper; this keeps image processing out of the server runtime.
 - Organiser event insights live within the existing event-management page and use owner-scoped browser reads; preserve existing management routes and cancellation approval logic.
 - Event overview figures and charts must derive from confirmed orders, not reserved stock or reference/demo figures, so unpaid reservations are never presented as sales.
 - Organiser page-return controls use the shared OrganiserBackButton with router history and parent fallback; form-step controls remain local to avoid abandoning in-progress forms.

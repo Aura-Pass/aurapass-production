@@ -2,10 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { EventCard } from "@/components/ui/event-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePublishedEvents } from "@/hooks/usePublishedEvents";
+import { useFeaturedEvents } from "@/hooks/useFeaturedEvents";
 import { toEventCardData } from "@/lib/event-adapter";
 
 export function FeaturedEvents() {
-  const { events, loading } = usePublishedEvents(6);
+  // Admin-curated list first; if nothing is curated (or all have ended) fall back
+  // to the next upcoming events so the homepage is never empty.
+  const featured = useFeaturedEvents();
+  const upcoming = usePublishedEvents(6);
+  const useCurated = featured.events.length > 0;
+  const events = useCurated ? featured.events : upcoming.events;
+  const loading = featured.loading || (!useCurated && upcoming.loading);
   const items = events.map(toEventCardData);
 
   return (

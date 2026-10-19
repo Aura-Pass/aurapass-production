@@ -16,6 +16,16 @@ import { supabase } from "@/lib/supabase";
 import { sendAdminEventSubmissionEmailFn } from "@/lib/email.functions";
 import { EVENT_CATEGORIES } from "@/constants";
 import { CitySelect } from "@/components/ui/CitySelect";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/dashboard/organiser/edit-event/$eventId")({
   head: () => ({ meta: [
@@ -74,6 +84,8 @@ function EditEventPage() {
     banner_url: "",
   });
   const [tickets, setTickets] = useState<TicketRow[]>([]);
+  const [removeTarget, setRemoveTarget] = useState<{ index: number; row: TicketRow } | null>(null);
+  const [removing, setRemoving] = useState(false);
   const [originalStatus, setOriginalStatus] = useState<string>("");
   const [originalReviewFields, setOriginalReviewFields] = useState<{
     title: string;
@@ -122,13 +134,15 @@ function EditEventPage() {
         banner_url: evt.banner_url ?? "",
       });
       setTickets(
-        (evt.ticket_types ?? []).map((t: any) => ({
+        (evt.ticket_types ?? [])
+          .filter((t: any) => t.is_hidden !== true) // archived (removed) categories stay hidden
+          .map((t: any) => ({
           id: t.id,
           name: t.name,
           price: String(t.price),
           quantity: String(t.quantity),
           quantity_sold: Number(t.quantity_sold ?? 0),
-        })),
+          })),
       );
       setLoading(false);
     })();
@@ -136,6 +150,45 @@ function EditEventPage() {
       active = false;
     };
   }, [eventId, user]);
+
+  async function confirmRemoveTicket() {
+    if (!removeTarget) return;
+    const { index, row } = removeTarget;
+    if (!row.id) {
+      setTickets((rows) => rows.filter((_, i) => i !== index));
+      setRemoveTarget(null);
+      return;
+    }
+    setRemoving(true);
+    try {
+      // Server decides: hard-delete if never sold, otherwise archive (hide) so
+      // existing buyers keep their tickets and sales history is preserved.
+      const { data, error: rpcErr } = await (supabase as any).rpc("remove_ticket_type", {
+        p_ticket_type_id: row.id,
+      });
+      if (rpcErr) throw new Error(rpcErr.message);
+      if (!data?.ok) {
+        throw new Error(
+          data?.reason === "last_ticket_type"
+            ? "An event needs at least one ticket category."
+            : data?.reason === "forbidden"
+              ? "You can't change this event."
+              : "Could not remove this ticket category.",
+        );
+      }
+      setTickets((rows) => rows.filter((_, i) => i !== index));
+      toast.success(
+        data.action === "archived"
+          ? `"${row.name}" removed. Existing buyers keep their tickets.`
+          : `"${row.name}" removed.`,
+      );
+      setRemoveTarget(null);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not remove this ticket category.");
+    } finally {
+      setRemoving(false);
+    }
+  }
 
   function validate(): string | null {
     if (!form.title.trim()) return "Please enter an event title.";
@@ -409,17 +462,15 @@ function EditEventPage() {
                           )
                         }
                       />
-                      {!t.id ? (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setTickets((rows) => rows.filter((_, idx) => idx !== i))}
-                        >
-                          Remove
-                        </Button>
-                      ) : (
-                        <div className="text-xs text-muted-foreground-light">Existing</div>
-                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={tickets.length <= 1}
+                        title={tickets.length <= 1 ? "An event needs at least one ticket category" : undefined}
+                        onClick={() => (t.id ? setRemoveTarget({ index: i, row: t }) : setTickets((rows) => rows.filter((_, idx) => idx !== i)))}
+                      >
+                        Remove
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -461,6 +512,31 @@ function EditEventPage() {
           </Card>
         </div>
       </div>
+
+      <AlertDialog open={removeTarget !== null} onOpenChange={(o) => !o && !removing && setRemoveTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove “{removeTarget?.row.name}”?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {removeTarget && removeTarget.row.quantity_sold > 0
+                ? `${removeTarget.row.quantity_sold} ticket(s) were already sold. They stay valid and buyers keep them, but this category will no longer be offered for sale.`
+                : "This category will be removed and can no longer be bought."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={removing}>Keep it</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={removing}
+              onClick={(e) => {
+                e.preventDefault();
+                void confirmRemoveTicket();
+              }}
+            >
+              {removing ? "Removing…" : "Remove category"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
