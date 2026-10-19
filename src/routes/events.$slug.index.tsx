@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Calendar, MapPin, Clock, ImageIcon, Share2, Check } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { useLiveAvailability } from "@/hooks/useLiveAvailability";
 import { Spinner } from "@/components/ui/spinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -32,11 +33,13 @@ interface EventWithTickets extends Omit<Event, "ticket_types"> {
 type Availability =
   | { type: "loading" }
   | { type: "privileged"; quantity: number; quantity_sold: number; remaining: number }
-  | { type: "public"; status: "low" | "available"; remaining?: number; label: string };
+  | { type: "public"; status: "low" | "available" | "sold_out"; remaining?: number; label: string };
 
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { getPublishedEventForHead } from "@/lib/events.functions";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const search = z.object({
   aref: fallback(z.string(), "").default(""),
@@ -49,7 +52,12 @@ export const Route = createFileRoute("/events/$slug/")({
     const canonicalUrl = event
       ? `https://aurapassticket.com/events/${event.slug ?? params.slug}`
       : `https://aurapassticket.com/events/${params.slug}`;
-    const image = event?.banner_url ?? "https://aurapassticket.com/og-default.png";
+    // Must be an absolute https URL for WhatsApp/Facebook scrapers.
+    const rawBanner = event?.banner_url?.trim();
+    const image =
+      rawBanner && /^https?:\/\//i.test(rawBanner)
+        ? rawBanner.replace(/^http:\/\//i, "https://")
+        : "https://aurapassticket.com/og-default.png";
     return {
       meta: event
         ? [
@@ -58,14 +66,24 @@ export const Route = createFileRoute("/events/$slug/")({
             { property: "og:title", content: event.title },
             { property: "og:description", content: (event.description ?? "").slice(0, 160) },
             { property: "og:image", content: image },
+            { property: "og:image:secure_url", content: image },
+            { property: "og:image:alt", content: event.title },
             { property: "og:url", content: canonicalUrl },
             { property: "og:type", content: "article" },
             { property: "og:site_name", content: "AuraPass" },
             { name: "twitter:card", content: "summary_large_image" },
             { name: "twitter:title", content: event.title },
+            { name: "twitter:description", content: (event.description ?? "").slice(0, 160) },
             { name: "twitter:image", content: image },
           ]
-        : [{ title: "Event | AuraPass" }],
+        : [
+            { title: "Event | AuraPass" },
+            { name: "description", content: "Discover events and tickets on AuraPass." },
+            { property: "og:title", content: "Event | AuraPass" },
+            { property: "og:description", content: "Discover events and tickets on AuraPass." },
+            { property: "og:type", content: "article" },
+            { name: "twitter:card", content: "summary_large_image" },
+          ],
       links: [{ rel: "canonical", href: canonicalUrl }],
       scripts: event
         ? [
@@ -127,6 +145,7 @@ function EventDetailPage() {
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [availability, setAvailability] = useState<Record<string, Availability>>({});
+  const [soldOutIds, setSoldOutIds] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { aref } = Route.useSearch();
@@ -160,11 +179,13 @@ function EventDetailPage() {
     setLoading(true);
 
     (async () => {
-      const { data, error } = await (supabase as any)
+      // Events created before slugs existed are linked by id, so accept either.
+      let q = (supabase as any)
         .from("events")
-        .select(`*, ticket_types (id, name, price)`)
-        .eq("slug", slug)
-        .maybeSingle();
+        .select(`*, ticket_types (id, name, price, is_hidden)`)
+        .eq("ticket_types.is_hidden", false);
+      q = UUID_RE.test(slug) ? q.or(`slug.eq.${slug},id.eq.${slug}`) : q.eq("slug", slug);
+      const { data, error } = await q.maybeSingle();
 
       if (!active) return;
       if (error || !data) {
@@ -221,48 +242,71 @@ function EventDetailPage() {
     }
   }, [event]);
 
+  const loadAvailability = useCallback(async () => {
+    const types = event?.ticket_types;
+    if (!types?.length) return;
+    const results = await Promise.all(
+      types.map(async (t) => {
+        const { data, error } = await (supabase as any).rpc("get_ticket_availability", {
+          p_ticket_type_id: t.id,
+        });
+        if (error || !data) return null;
+        const result = data as any;
+        const availabilityEntry: Availability = result.privileged
+          ? {
+              type: "privileged",
+              quantity: Number(result.quantity),
+              quantity_sold: Number(result.quantity_sold),
+              remaining: Number(result.remaining),
+            }
+          : {
+              type: "public",
+              status: result.status,
+              remaining: result.remaining != null ? Number(result.remaining) : undefined,
+              label: result.label,
+            };
+        return [t.id, availabilityEntry] as [string, Availability];
+      }),
+    );
+    setAvailability((prev) => ({
+      ...prev,
+      ...Object.fromEntries(results.filter((r): r is [string, Availability] => r !== null)),
+    }));
+  }, [event?.ticket_types]);
+
   useEffect(() => {
     if (!event?.ticket_types?.length) return;
-    let active = true;
     setAvailability(
       Object.fromEntries(event.ticket_types.map((t) => [t.id, { type: "loading" } as Availability])),
     );
+    void loadAvailability();
+  }, [event?.ticket_types, loadAvailability]);
 
-    (async () => {
-      const results = await Promise.all(
-        event.ticket_types.map(async (t) => {
-          const { data, error } = await (supabase as any).rpc("get_ticket_availability", {
-            p_ticket_type_id: t.id,
-          });
-          if (error || !data) return null;
-          const result = data as any;
-          const availabilityEntry: Availability = result.privileged
-            ? {
-                type: "privileged",
-                quantity: Number(result.quantity),
-                quantity_sold: Number(result.quantity_sold),
-                remaining: Number(result.remaining),
-              }
-            : {
-                type: "public",
-                status: result.status,
-                remaining: result.remaining != null ? Number(result.remaining) : undefined,
-                label: result.label,
-              };
-          return [t.id, availabilityEntry] as [string, Availability];
-        }),
-      );
-      if (!active) return;
-      setAvailability((prev) => ({
-        ...prev,
-        ...Object.fromEntries(results.filter((r): r is [string, Availability] => r !== null)),
-      }));
-    })();
+  // Keep "X left" / "Sold out" fresh while the page stays open (visible tab only).
+  useLiveAvailability(loadAvailability, Boolean(event?.ticket_types?.length));
 
+  // Which ticket types are sold out (boolean only — never exposes exact stock).
+  // Refreshed every 20s while the tab is visible so "Sold out" appears live.
+  useEffect(() => {
+    const eventId = event?.id;
+    if (!eventId) return;
+    let active = true;
+    const load = async () => {
+      if (document.visibilityState !== "visible") return;
+      const { data: ids, error: soldErr } = await (supabase as any).rpc("get_sold_out_ticket_types", {
+        p_event_id: eventId,
+      });
+      if (active && !soldErr && Array.isArray(ids)) setSoldOutIds(new Set(ids as string[]));
+    };
+    void load();
+    const timer = window.setInterval(() => void load(), 20_000);
+    document.addEventListener("visibilitychange", load);
     return () => {
       active = false;
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", load);
     };
-  }, [event?.ticket_types]);
+  }, [event?.id]);
 
   if (loading) {
     return (
@@ -291,6 +335,16 @@ function EventDetailPage() {
   }
 
   const tiers = event.ticket_types ?? [];
+  const isSoldOut = (id: string) => {
+    if (soldOutIds.has(id)) return true;
+    const av = availability[id];
+    if (!av || av.type === "loading") return false;
+    return av.type === "privileged" ? av.remaining < 1 : av.remaining != null && av.remaining < 1;
+  };
+  const firstAvailableId = tiers.find((t) => !isSoldOut(t.id))?.id;
+  const allSoldOut = tiers.length > 0 && !firstAvailableId;
+  const buyTicketId = selectedTicketId || firstAvailableId || "";
+  const buyBlocked = tiers.length === 0 || allSoldOut || (buyTicketId !== "" && isSoldOut(buyTicketId));
   const prices = tiers.map((t) => Number(t.price));
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const maxPrice = prices.length ? Math.max(...prices) : 0;
@@ -370,8 +424,7 @@ function EventDetailPage() {
                   >
                     {tiers.map((t) => {
                       const av = availability[t.id];
-                      const soldOut =
-                        av && av.type !== "loading" && (av.type === "privileged" ? av.remaining < 1 : (av.remaining ?? 1) < 1);
+                      const soldOut = isSoldOut(t.id);
                       return (
                         <Label
                           key={t.id}
@@ -389,7 +442,9 @@ function EventDetailPage() {
                               <p className="text-sm text-muted-foreground">
                                 {Number(t.price) === 0 ? "Free" : formatCurrency(Number(t.price))}
                                 {" · "}
-                                {!av || av.type === "loading" ? (
+                                {soldOut ? (
+                                  <span className="font-semibold text-destructive-strong">Sold out</span>
+                                ) : !av || av.type === "loading" ? (
                                   "Checking availability…"
                                 ) : av.type === "privileged" ? (
                                   `${av.quantity_sold} / ${av.quantity} sold`
@@ -418,15 +473,14 @@ function EventDetailPage() {
                   size="lg"
                   className="mt-4 w-full"
                   onClick={() => {
-                    const ttId = selectedTicketId || tiers[0]?.id;
-                    if (!ttId) return;
-                    handleBuyTickets(ttId);
+                    if (!buyTicketId || buyBlocked) return;
+                    handleBuyTickets(buyTicketId);
                   }}
-                  disabled={tiers.length === 0 || authLoading}
+                  disabled={buyBlocked || authLoading}
                 >
-                  Buy Tickets
+                  {allSoldOut || (buyTicketId !== "" && isSoldOut(buyTicketId)) ? "Sold out" : "Buy Tickets"}
                 </Button>
-                {tiers.length > 1 && !selectedTicketId && (
+                {tiers.length > 1 && !selectedTicketId && !allSoldOut && (
                   <p className="mt-2 text-xs text-muted-foreground text-center">
                     Select a ticket type above.
                   </p>
@@ -513,7 +567,12 @@ function ShareEventButton({ title, description }: { title: string; description: 
 
   async function handleShare() {
     if (typeof window === "undefined") return;
-    const url = window.location.href;
+    // Share the clean canonical link (keeps ?aref= for marketers, drops anything else).
+    const current = new URL(window.location.href);
+    const clean = new URL(current.origin + current.pathname);
+    const aref = current.searchParams.get("aref");
+    if (aref) clean.searchParams.set("aref", aref);
+    const url = clean.toString();
     const text = (description || "").slice(0, 160);
     const nav = window.navigator as Navigator & {
       share?: (data: ShareData) => Promise<void>;

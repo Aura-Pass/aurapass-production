@@ -2,7 +2,8 @@ import type { MockEvent } from "@/constants/mockEvents";
 import type { PublishedEvent } from "@/hooks/usePublishedEvents";
 
 export function toEventCardData(e: PublishedEvent): MockEvent {
-  const tickets = e.ticket_types ?? [];
+  // Archived (removed-by-organiser) categories must not affect the displayed price.
+  const tickets = (e.ticket_types ?? []).filter((t) => !t.is_hidden);
   const prices = tickets.map((t) => Number(t.price));
   const min = prices.length ? Math.min(...prices) : 0;
   const max = prices.length ? Math.max(...prices) : 0;
