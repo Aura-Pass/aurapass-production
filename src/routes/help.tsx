@@ -20,7 +20,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "When do I get paid as an organiser?",
-    a: "Payouts are processed after your event concludes. You receive the full ticket price — the buyer covers the service fee.",
+    a: "Payouts are processed after your event concludes. The buyer covers the service fee. AuraPass charges organisers 1.5% when funds are withdrawn, and before the event ends you can request a withdrawal up to twice, for up to 80% of total ticket sales in all. See our Terms for details.",
   },
 ];
 
@@ -118,7 +118,7 @@ function HelpPage() {
             />
             <FAQ
               q="When do I get paid as an organiser?"
-              a="Payouts are processed after your event concludes. You receive the full ticket price — the buyer covers the service fee."
+              a="Payouts are processed after your event concludes. The buyer covers the service fee. AuraPass charges organisers 1.5% when funds are withdrawn, and before the event ends you can request a withdrawal up to twice, for up to 80% of total ticket sales in all. See our Terms for details."
             />
             <FAQ
               q="Still stuck?"
